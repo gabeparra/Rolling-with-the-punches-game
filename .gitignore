@@ -6,6 +6,7 @@
 [Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
+.utmp/s
 
 # Generated files
 *.pidb
@@ -36,3 +37,6 @@ Recordings/
 
 # Recordings directory
 /Recordings/
+
+*.blend1
+*.blend1.meta
