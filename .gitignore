@@ -1,0 +1,38 @@
+# Unity generated files
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Generated files
+*.pidb
+*.VC.db
+*.csproj
+*.sln
+
+# Mono metadata files
+mono_crash.*.json
+
+# Visual Studio / Rider / MonoDevelop cache directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS specific
+Thumbs.db
+.Thumbs.db
+
+# Packages
+Packages/*/
+
+# Recorders
+Recordings/
+
+# Recordings directory
+/Recordings/
