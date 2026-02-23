@@ -14,8 +14,12 @@ public class PlayerController : MonoBehaviour
     //use commented version to use project-wide input mapping (doesn't currently work)
     private void OnEnable()
     {
-        input.actions["Interact"].performed += OnInteract;
-        input.actions["Interact"].Enable();
+        input.actions["Save"].performed += OnSave;
+        input.actions["Save"].Enable();
+
+        input.actions["Load"].performed += OnLoad;
+        input.actions["Load"].Enable();
+
         // InputSystem.actions["Interact"].performed += OnInteract;
         // InputSystem.actions["Interact"].Enable();
 
@@ -24,14 +28,26 @@ public class PlayerController : MonoBehaviour
     //use commented version to use project-wide input mapping (doesn't currently work)
     private void OnDisable()
     {
-        input.actions["Interact"].performed -= OnInteract;
-        input.actions["Interact"].Disable();
+        input.actions["Save"].performed -= OnSave;
+        input.actions["Save"].Disable();
+
+        input.actions["Load"].performed -= OnLoad;
+        input.actions["Load"].Disable();
+
         // InputSystem.actions["Interact"].performed -= OnInteract;
         // InputSystem.actions["Interact"].Disable();
     }
 
-    private void OnInteract(InputAction.CallbackContext ctx)
+    private void OnSave(InputAction.CallbackContext ctx)
     {
-        Debug.Log("interact pressed");
+        Debug.Log("save");
+        GameManager.Instance.Save();
+    }
+
+    private void OnLoad(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("load");
+        GameManager.Instance.Load();
+        
     }
 }
