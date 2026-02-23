@@ -5,11 +5,12 @@ public class GameManager : MonoBehaviour
     /*got this from google so might not be best*/
     //public static property to access the single instance of this class
     public static GameManager Instance{get; private set;}
+    private static SaveObject metaSave; //hold meta progression data while the game is open
 
     //awake runs before start
     private void Awake()
     {
-        //check if an instance already exists
+        //check if a GameManager instance already exists
         if(Instance != null && Instance != this)
         {
             Destroy(this.gameObject); //this object is a duplicate; delete it
@@ -19,27 +20,44 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
+
+        //initialize save system and load player's data
+        SaveSystem.Init();
+        Load();
+
     }
-
-    // // Start is called once before the first execution of Update after the MonoBehaviour is created
-    // void Start()
-    // {
-
-    // }
-
-    // // Update is called once per frame
-    // void Update()
-    // {
-
-    // }
 
     public void Save()
     {
-        Debug.Log("game should save");
+        string json = JsonUtility.ToJson(metaSave);
+        SaveSystem.Save(json);
+
+        Debug.Log("Saved!");
+        
     }
 
     public void Load()
     {
-        Debug.Log("game should load");
+        string json = SaveSystem.Load();
+        if(json != null)
+        {
+            metaSave = JsonUtility.FromJson<SaveObject>(json);
+            Debug.Log("Loaded!");
+            Debug.Log(json);
+        }
+        else //no savefile found, create a blank one
+        {
+            Debug.Log("no savefile found. a new one will be created");
+            metaSave = new SaveObject();
+            Save();
+        }
+
+        
+    }
+
+    //TODO: fill out this class with more relevant data
+    private class SaveObject
+    {
+        public int goldAmount = 5;
     }
 }
