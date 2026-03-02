@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
         int down = Keyboard.current.sKey.isPressed ? 1 : 0;
         int right = Keyboard.current.dKey.isPressed ? 1 : 0;
 
-        rb.linearVelocity = new Vector3((down - up), 0, (right - left)) * speed;
+        rb.linearVelocity = new Vector3((right - left),0,(up-down)) * speed;
     }
 
 

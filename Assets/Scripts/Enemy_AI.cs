@@ -39,6 +39,22 @@ public class Enemy_AI : MonoBehaviour
 
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject obj = collision.collider.gameObject;
+        if (obj)
+        {
+            Invoke("stopKnockback", 1f);
+            Debug.Log("OWW");
+        }
+    }
+
+    void stopKnockback()
+    {
+        GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+    }
+
+
     private void OnDrawGizmos()
     {
         head = transform.Find("Head") ? transform.Find("Head").gameObject : null;

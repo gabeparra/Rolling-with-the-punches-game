@@ -8,7 +8,7 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
     Vector3 spawn_position;
     Vector3 spawn_dir;
     public bool active = false;
-    int max_enemies = 20;
+    int max_enemies = 5;
     int enemies_spawned = 0;
     public GameObject loot_targets_container;
     Transform[] loot_targets;
@@ -53,8 +53,7 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    int getFighterCOunt()
     {
         int fighterCount = 0;
         for (int i = 0; i < enemy_list.Count; i++)
@@ -66,6 +65,13 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
                 fighterCount++;
             }
         }
+        return fighterCount;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
         //Debug.Log(fighterCount);
     }
 
@@ -84,9 +90,11 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         Renderer renderer = GetComponent<Renderer>();
         Vector3 size = renderer.bounds.size;
 
-        float sx = Random.Range(0,2) == 0 ? transform.position.x - size.x/2 -3 : transform.position.x + size.x / 2 + 3;
-        float sy = transform.position.y + 1;
-        float sz = Random.Range(transform.position.z - size.z / 2 - 1, transform.position.z + size.z / 2 + 1); 
+        //float sx = Random.Range(0,2) == 0 ? transform.position.x - size.x/2 +1 : transform.position.x + size.x / 2 - 1;
+        float sy = transform.position.y + 3;
+        float sz = Random.Range(0, 2) == 0 ? transform.position.z - size.z / 2 - 1 : transform.position.z + size.z / 2 + 1;
+        float sx = Random.Range(transform.position.x - size.x / 2 + 2, transform.position.x + size.x / 2 - 2);
+        //float sz = Random.Range(transform.position.z - size.z / 2 - 2, transform.position.z + size.z / 2 + 2); 
         spawn_position = new Vector3(sx,sy,sz);
         spawn_dir = spawn_position + new Vector3(transform.position.x > sx ? 3*1.5f : -3*1.5f,1f,0);
         if (enemyPrefab)

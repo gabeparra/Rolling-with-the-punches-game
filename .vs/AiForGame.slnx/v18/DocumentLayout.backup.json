@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\floorenemyspawnerspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\Enemy_AI.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Enemy_AI.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\users\\nahum\\documents\\github projects\\nahum-auguste\\aiforgame\\assets\\scripts\\enemy_ai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemy_ai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\users\\nahum\\documents\\github projects\\nahum-auguste\\aiforgame\\assets\\scripts\\enemyscript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemyscript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\Player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,15 +26,15 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "EnemyScript.cs",
-              "DocumentMoniker": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\EnemyScript.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\EnemyScript.cs",
-              "ToolTip": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\EnemyScript.cs",
-              "RelativeToolTip": "Assets\\Scripts\\EnemyScript.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAjAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "Enemy_AI.cs",
+              "DocumentMoniker": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\Enemy_AI.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemy_AI.cs",
+              "ToolTip": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\Enemy_AI.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemy_AI.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAxwB8AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-21T23:17:52.051Z",
+              "WhenOpened": "2026-02-21T17:52:34.592Z",
               "EditorCaption": ""
             },
             {
@@ -45,26 +45,22 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\FloorEnemySpawnerSpawner.cs",
               "ToolTip": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\FloorEnemySpawnerSpawner.cs",
               "RelativeToolTip": "Assets\\Scripts\\FloorEnemySpawnerSpawner.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAABkAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-21T23:16:44.459Z",
               "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{c6f34f0d-7ae5-4f3a-be61-fe0c21ae9eb8}"
-            },
-            {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Enemy_AI.cs",
-              "DocumentMoniker": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\Enemy_AI.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemy_AI.cs",
-              "ToolTip": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\Enemy_AI.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Enemy_AI.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAtAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "Player.cs",
+              "DocumentMoniker": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\Player.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player.cs",
+              "ToolTip": "C:\\Users\\nahum\\Documents\\GitHub Projects\\Nahum-Auguste\\AiForGame\\Assets\\Scripts\\Player.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAABQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-21T17:52:34.592Z",
+              "WhenOpened": "2026-03-02T15:09:39.69Z",
               "EditorCaption": ""
             }
           ]
