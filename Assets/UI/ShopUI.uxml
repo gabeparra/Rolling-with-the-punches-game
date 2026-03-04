@@ -1,6 +1,0 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="flex-grow: 1;">
-        <ui:Label text="Shop Item List"/>
-        <ui:ListView name="listView" binding-source-selection-mode="AutoAssign" item-template="project://database/Assets/UI/ShopItem.uxml?fileID=9197481963319205126&amp;guid=6183e6a4035dc53478d52af2fa7ae9b9&amp;type=3#ShopItem" virtualization-method="FixedHeight" fixed-item-height="68" data-source-type="Upgrade, Assembly-CSharp"/>
-    </ui:VisualElement>
-</ui:UXML>
