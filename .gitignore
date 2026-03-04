@@ -40,3 +40,7 @@ Recordings/
 
 *.blend1
 *.blend1.meta
+
+#player save data (generated when playing in editor)
+/Assets/Saves
+Assets/Saves.meta
