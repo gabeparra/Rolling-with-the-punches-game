@@ -1,9 +1,0 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement data-source-type="Upgrade, Assembly-CSharp" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center;">
-        <ui:VisualElement style="flex-grow: 1;">
-            <ui:Label text="upgradeName" data-source-path="upgradeName" style="-unity-text-align: upper-left;"/>
-            <ui:Label text="upgradeDescription" data-source-path="description"/>
-        </ui:VisualElement>
-        <ui:Button text="cost" data-source-path="cost"/>
-    </ui:VisualElement>
-</ui:UXML>

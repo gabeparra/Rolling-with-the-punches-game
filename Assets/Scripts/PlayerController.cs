@@ -1,53 +1,40 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(PlayerInput))]
-public class PlayerController : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
-    private PlayerInput input;
+    public float speed = 5.0f;
+    public float gravity = 9.81f; // Added Gravity
+    private CharacterController controller;
+    private Animator anim;
+    private Vector3 velocity;
 
-    private void Awake()
+    void Start()
     {
-        input = GetComponent<PlayerInput>();
+        controller = GetComponent<CharacterController>();
+        anim = GetComponent<Animator>();
     }
 
-    //use commented version to use project-wide input mapping (doesn't currently work)
-    private void OnEnable()
+    void Update()
     {
-        input.actions["Save"].performed += OnSave;
-        input.actions["Save"].Enable();
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
 
-        input.actions["Load"].performed += OnLoad;
-        input.actions["Load"].Enable();
-
-        // InputSystem.actions["Interact"].performed += OnInteract;
-        // InputSystem.actions["Interact"].Enable();
-
-    }
-
-    //use commented version to use project-wide input mapping (doesn't currently work)
-    private void OnDisable()
-    {
-        input.actions["Save"].performed -= OnSave;
-        input.actions["Save"].Disable();
-
-        input.actions["Load"].performed -= OnLoad;
-        input.actions["Load"].Disable();
-
-        // InputSystem.actions["Interact"].performed -= OnInteract;
-        // InputSystem.actions["Interact"].Disable();
-    }
-
-    private void OnSave(InputAction.CallbackContext ctx)
-    {
-        Debug.Log("save");
-        GameManager.Instance.Save();
-    }
-
-    private void OnLoad(InputAction.CallbackContext ctx)
-    {
-        Debug.Log("load");
-        GameManager.Instance.Load();
+        Vector3 move = transform.right * moveHorizontal + transform.forward * moveVertical;
         
+        controller.Move(move * speed * Time.deltaTime);
+
+        if (controller.isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f; // Keeps him "stuck" to the floor
+        }
+
+        velocity.y -= gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
+
+        if (anim != null)
+        {
+            float currentSpeed = new Vector2(moveHorizontal, moveVertical).magnitude;
+            anim.SetFloat("Speed", currentSpeed);
+        }
     }
 }
