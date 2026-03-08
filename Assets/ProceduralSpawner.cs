@@ -16,11 +16,11 @@ public class ProceduralSpawner : MonoBehaviour
     {
         for (int i = 0; i < numberOfRocks; i++)
         {
-            // Random position in circle
+            // Posición random en círculo
             Vector3 randomPos = Random.insideUnitCircle * spawnRadius;
             Vector3 spawnPosition = new Vector3(randomPos.x, 0.5f, randomPos.y);
             
-            // Spawn rock
+            // Spawna la roca
             Instantiate(rockPrefab, spawnPosition, Quaternion.identity);
         }
     }
