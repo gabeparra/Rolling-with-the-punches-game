@@ -32,6 +32,9 @@ public class WesternEnvironmentSpawner : MonoBehaviour
     public float nearMinZ = 3f;
     public float nearMaxZ = 10f;
 
+    [Header("Road Exclusion")]
+    public float roadHalfWidth = 5f;
+
     [Header("Scale Variation")]
     public float minScale = 0.8f;
     public float maxScale = 1.3f;
@@ -55,9 +58,10 @@ public class WesternEnvironmentSpawner : MonoBehaviour
         {
             float x = Random.Range(-trackLength / 2f, trackLength / 2f);
 
-            // Spawn on both sides of the track
+            // Spawn on both sides of the track, never inside the road
             float side = Random.value > 0.5f ? 1f : -1f;
-            float z = trackCenterZ + side * Random.Range(minZ, maxZ);
+            float effectiveMinZ = Mathf.Max(minZ, roadHalfWidth);
+            float z = trackCenterZ + side * Random.Range(effectiveMinZ, maxZ);
 
             Vector3 pos = new Vector3(x, 0f, z);
             Quaternion rot = randomRotation
