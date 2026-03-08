@@ -1,4 +1,5 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 0e80f2caf3e013d4a96974cbb71d91c5
 NativeFormatImporter:
   externalObjects: {}
@@ -6,3 +7,20 @@ NativeFormatImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+=======
+guid: 1257fedd83d48064e95b34f4048a3486
+timeCreated: 1519076166
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 112212
+  packageName: POLYGON Western - Low Poly 3D Art by Synty
+  packageVersion: 1.1.3
+  assetPath: Assets/PolygonWestern/Materials/Glass.mat
+  uploadId: 751513
+>>>>>>> origin/main
