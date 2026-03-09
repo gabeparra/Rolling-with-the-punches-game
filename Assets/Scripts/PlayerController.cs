@@ -50,4 +50,17 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.Load();
         
     }
+
+    private float speed = 4;
+    private void FixedUpdate()
+    {
+        Rigidbody rb = GetComponent<Rigidbody>();
+        int up = Keyboard.current.wKey.isPressed ? 1 : 0;
+        int left = Keyboard.current.aKey.isPressed ? 1 : 0;
+        int down = Keyboard.current.sKey.isPressed ? 1 : 0;
+        int right = Keyboard.current.dKey.isPressed ? 1 : 0;
+
+        rb.linearVelocity = new Vector3((right - left),0,(up-down)) * speed;
+    }
+
 }
