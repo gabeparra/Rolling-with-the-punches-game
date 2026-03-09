@@ -101,6 +101,7 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         {
             Debug.Log("spawning enemy");
             GameObject enemy = Instantiate(enemyPrefab, spawn_position, Quaternion.LookRotation(spawn_dir));
+            enemy.transform.localScale = Vector3.one; // Force it to scale -- change added by Hector to stop shrink on spawn
             enemy.GetComponent<Enemy_AI>().state = Enemy_AI.State.LOOT;
             enemy_list.Add(enemy);
             enemy.GetComponent<Enemy_AI>().player = player;

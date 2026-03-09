@@ -676,8 +676,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
+<<<<<<< Updated upstream:Train Game/Assets/Scenes/Scene 1.unity
   m_LocalRotation: {x: 0.13052616, y: 0, z: 0, w: 0.9914449}
   m_LocalPosition: {x: 9, y: 6, z: 1}
+=======
+  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: 9, y: 20, z: -2}
+>>>>>>> Stashed changes:Assets/Scenes/Scene 1.unity
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -741,6 +746,84 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   trainTransform: {fileID: 235254385}
   offset: {x: 0, y: 0, z: 0}
+<<<<<<< Updated upstream:Train Game/Assets/Scenes/Scene 1.unity
+=======
+--- !u!1 &364228845
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 364228847}
+  - component: {fileID: 364228846}
+  m_Layer: 0
+  m_Name: EnvironmentSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &364228846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364228845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504757732423c7a4b9c50985cdc1bc0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WesternEnvironmentSpawner
+  trackLength: 200
+  trackCenterZ: 0
+  buttePrefabs:
+  - {fileID: 1870744514898060, guid: 09fe488528bdf434694ecaa6bb101012, type: 3}
+  - {fileID: 1012088377111378, guid: 1b59243e2f47f98499ba84b48fa0d0ca, type: 3}
+  backgroundCardPrefabs: []
+  butteCount: 8
+  backgroundCardCount: 4
+  backgroundMinZ: 40
+  backgroundMaxZ: 80
+  cactusPrefabs:
+  - {fileID: 1887909896868874, guid: 05a0c8e6b527de943bd4968427568c0b, type: 3}
+  - {fileID: 1249960386514214, guid: d87dddf59b9a1ae4e9ed874abb4bde02, type: 3}
+  - {fileID: 1972112274761530, guid: 4b1245b5b00553649b27066dfc5f1eda, type: 3}
+  deadTreePrefabs: []
+  rockPrefabs:
+  - {fileID: 1720305142932156, guid: a1c336c621bd6df4fb879d6c512289fe, type: 3}
+  - {fileID: 1628725149435188, guid: 151dd6ca79107c24b8049b4cf802b1a7, type: 3}
+  cactusCount: 30
+  deadTreeCount: 15
+  rockCount: 20
+  midMinZ: 10
+  midMaxZ: 40
+  propPrefabs: []
+  grassPrefabs: []
+  propCount: 15
+  grassCount: 40
+  nearMinZ: 3
+  nearMaxZ: 10
+  minScale: 0.8
+  maxScale: 1.3
+--- !u!4 &364228847
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364228845}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.77147, y: 6.27703, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes:Assets/Scenes/Scene 1.unity
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -3945,3 +4028,7 @@ SceneRoots:
   - {fileID: 1732634007}
   - {fileID: 1699025956}
   - {fileID: 1454793290}
+<<<<<<< Updated upstream:Train Game/Assets/Scenes/Scene 1.unity
+=======
+  - {fileID: 364228847}
+>>>>>>> Stashed changes:Assets/Scenes/Scene 1.unity
