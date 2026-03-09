@@ -42,3 +42,6 @@ Recordings/
 *.blend1.meta
 
 test.blend
+
+/Assets/Saves
+/Assets/Saves.meta
