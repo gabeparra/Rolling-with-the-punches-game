@@ -15,7 +15,14 @@ public class TrainEngineConstant : MonoBehaviour
     void FixedUpdate()
     {
         // Move the train forward along its own Z-axis
-        Vector3 newPosition = rb.position + transform.forward * trainSpeed * Time.fixedDeltaTime;
-        rb.MovePosition(newPosition);
+        if (rb.position.x < 650f) 
+        {
+            Vector3 newPosition = rb.position + transform.forward * trainSpeed * Time.fixedDeltaTime;
+            rb.MovePosition(newPosition);
+        }
+        else
+        {
+            rb.linearVelocity = Vector3.zero;
+        }    
     }
 }

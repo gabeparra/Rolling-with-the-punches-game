@@ -7,6 +7,7 @@ public class Enemy_AI : MonoBehaviour
 {
     public GameObject head;
     public GameObject bulletPrefab;
+    public int health = 6; // Added by Hector to set enemy health value
     public GameObject loot_targets_container;
     private Transform target;
     private NavMeshAgent agent;
@@ -39,6 +40,21 @@ public class Enemy_AI : MonoBehaviour
 
     }
 
+    public void TakeDamage(int amount) // Method added by Hector to calculate damage taken by enemy
+    {
+        health -= amount;
+
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die() // Method added by Hector to destroy enemy on death
+    {
+        Destroy(gameObject);
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         GameObject obj = collision.collider.gameObject;
@@ -46,6 +62,14 @@ public class Enemy_AI : MonoBehaviour
         {
             Invoke("stopKnockback", 1f);
             Debug.Log("OWW");
+        }
+        if (collision.gameObject.CompareTag("Bullet"))
+        {
+            Bullet bullet = collision.gameObject.GetComponent<Bullet>();
+            if (bullet != null)
+            {
+                TakeDamage(bullet.damage);
+            }
         }
     }
 
@@ -165,6 +189,7 @@ public class Enemy_AI : MonoBehaviour
 
     private void OnDestroy()
     {
-        enemy_list.Remove(transform.parent.gameObject);
+        //enemy_list.Remove(transform.parent.gameObject);
+        enemy_list.Remove(this.gameObject); // Made adjustment to prevent non-parented error -- change by Hector 
     }
 }
