@@ -13,6 +13,7 @@
 *.VC.db
 *.csproj
 *.sln
+#*.slnx should maybe be added?
 
 # Mono metadata files
 mono_crash.*.json
