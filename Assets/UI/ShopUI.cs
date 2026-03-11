@@ -4,28 +4,17 @@ using UnityEngine;
 
 public class ShopUI : MonoBehaviour
 {
-    //list of upgrades available in shop TODO: make this one single list rather than several items
+    //list of upgrades available in shop
     [SerializeField]
-    private Upgrade up1;
-    [SerializeField]
-    private Upgrade up2;
-    [SerializeField]
-    private Upgrade up3;
+    private List<Upgrade> upgrades = new();
 
     private UIDocument uiDocument;
     private Button _btnClose;
     private ListView _list;
-    private List<Upgrade> upgrades;
 
 
     void Awake()
     {
-        //list of upgrades available (temporary, for testing, until list is a serialized field)
-        upgrades = new List<Upgrade>
-        {
-            up1, up2, up3
-        };
-
         //initialize references to UI objects
         uiDocument = GetComponent<UIDocument>();
         _btnClose = uiDocument.rootVisualElement.Q("close") as Button;
