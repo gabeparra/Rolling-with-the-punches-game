@@ -24,13 +24,13 @@ public class ShopUI : MonoBehaviour
         Hide(); //hide shop UI until player actually goes to shop
 
 
-        // _list.makeItem = () => new Label();
-        // _list.bindItem = (element, index) =>
-        // {
-        //     (element as Label).text = upgrades[index].upgradeName;
-        // };
-
-        //TODO: bind each upgrade to its shop slot
+        _list.bindItem = (e, i) =>
+        {
+            Upgrade u = upgrades[i];
+            e.Q<Label>("name").text = u.upgradeName;
+            e.Q<Label>("description").text = u.description;
+            e.Q<Button>("btn").text = u.cost.ToString();
+        };
     }
 
     //hide the UI (for when not in the shop)
