@@ -922,16 +922,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
-      propertyPath: m_Actions
-      value: 
-      objectReference: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-    - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
-      propertyPath: m_DefaultActionMap
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
       propertyPath: m_ActionEvents.Array.size
-      value: 19
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
       propertyPath: m_ActionEvents.Array.data[0].m_ActionId
@@ -1010,6 +1002,14 @@ PrefabInstance:
       value: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
       objectReference: {fileID: 0}
     - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
+      propertyPath: m_ActionEvents.Array.data[19].m_ActionId
+      value: 18e0daa9-e511-4af2-88b0-b940720365e5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_ActionId
+      value: 9191af4e-1eef-4435-8f5c-2f38e9bf1e3b
+      objectReference: {fileID: 0}
+    - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
       propertyPath: m_ActionEvents.Array.data[0].m_ActionName
       value: 'Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
       objectReference: {fileID: 0}
@@ -1084,6 +1084,14 @@ PrefabInstance:
     - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
       propertyPath: m_ActionEvents.Array.data[18].m_ActionName
       value: UI/TrackedDeviceOrientation
+      objectReference: {fileID: 0}
+    - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
+      propertyPath: m_ActionEvents.Array.data[19].m_ActionName
+      value: 'Player/Save[/Keyboard/p]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 5954559235572294427, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_ActionName
+      value: 'Player/Load[/Keyboard/l]'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

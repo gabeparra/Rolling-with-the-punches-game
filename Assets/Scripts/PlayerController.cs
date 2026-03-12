@@ -2,8 +2,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    private Rigidbody rb;
+    private float speed = 4;
+    private Vector3 movementVector = Vector3.zero;
+
     //the default input mapping suddenly started working again... keep the temporary stuff available in case it breaks again
     //private PlayerInput input;
     public static bool canMove = true; //set to false to prevent movement (like when in a shop)
@@ -11,11 +16,17 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         //input = GetComponent<PlayerInput>();
+        rb = GetComponent<Rigidbody>();
     }
 
     //use input.actions instead of InputSystem.actions if default action mapping stops working again
     private void OnEnable()
     {
+        //subscribe to both press and release of movement
+        InputSystem.actions["Move"].performed += OnMove;
+        InputSystem.actions["Move"].canceled += OnMove;
+        InputSystem.actions["Move"].Enable();
+
         InputSystem.actions["Save"].performed += OnSave;
         InputSystem.actions["Save"].Enable();
 
@@ -27,6 +38,11 @@ public class PlayerController : MonoBehaviour
     //use input.actions instead of InputSystem.actions if default action mapping stops working again
     private void OnDisable()
     {
+        //unsubscribe from both press and release of movement
+        InputSystem.actions["Move"].performed -= OnMove;
+        InputSystem.actions["Move"].canceled -= OnMove;
+        InputSystem.actions["Move"].Disable();
+
         InputSystem.actions["Save"].performed -= OnSave;
         InputSystem.actions["Save"].Disable();
 
@@ -47,16 +63,22 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    private float speed = 4;
+    private void OnMove(InputAction.CallbackContext ctx)
+    {
+        if(!canMove)
+        {
+            movementVector = Vector3.zero;
+            return;
+        }
+
+        movementVector = InputSystem.actions["Move"].ReadValue<Vector2>();
+        movementVector = new Vector3(movementVector.x, movementVector.z, movementVector.y);
+    }
+
+    
     private void FixedUpdate()
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
-        int up = Keyboard.current.wKey.isPressed ? 1 : 0;
-        int left = Keyboard.current.aKey.isPressed ? 1 : 0;
-        int down = Keyboard.current.sKey.isPressed ? 1 : 0;
-        int right = Keyboard.current.dKey.isPressed ? 1 : 0;
-
-        rb.linearVelocity = canMove ? new Vector3((right - left),0,(up-down)) * speed : Vector3.zero;
+        rb.linearVelocity = movementVector * speed;
     }
 
 }
