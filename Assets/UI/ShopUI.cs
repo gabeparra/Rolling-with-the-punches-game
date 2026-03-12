@@ -37,12 +37,14 @@ public class ShopUI : MonoBehaviour
     private void Hide()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.None;
+        PlayerController.canMove = true;
     }
 
     //show the UI (for when player enters shop)
     public void Show()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+        PlayerController.canMove = false;
     }
 
     //automatically bind event

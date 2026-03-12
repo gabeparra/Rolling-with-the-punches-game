@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     private PlayerInput input;
+    public static bool canMove = true; //set to false to prevent movement (like when in a shop)
 
     private void Awake()
     {
@@ -60,7 +61,7 @@ public class PlayerController : MonoBehaviour
         int down = Keyboard.current.sKey.isPressed ? 1 : 0;
         int right = Keyboard.current.dKey.isPressed ? 1 : 0;
 
-        rb.linearVelocity = new Vector3((right - left),0,(up-down)) * speed;
+        rb.linearVelocity = canMove ? new Vector3((right - left),0,(up-down)) * speed : Vector3.zero;
     }
 
 }
