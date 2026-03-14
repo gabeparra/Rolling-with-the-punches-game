@@ -6,7 +6,10 @@ public class FollowTrainScript : MonoBehaviour
     public Transform playerTransform;  // side-to-side movement
 
     public Vector3 offset;
-
+    [Header("Camera Tuning")]
+    public float leftOffset = -3f;     
+    public float smoothSpeed = 8f;     
+    
     void Start()
     {
         if (offset == Vector3.zero && trainTransform != null)
@@ -19,11 +22,12 @@ public class FollowTrainScript : MonoBehaviour
     {
         if (trainTransform != null && playerTransform != null)
         {
-            transform.position = new Vector3(
-                playerTransform.position.x + offset.x,  // follow player sideways
-                transform.position.y,                   // keep camera height
-                trainTransform.position.z + offset.z    // follow train forward
+            Vector3 targetPos = new Vector3(
+                playerTransform.position.x + offset.x + leftOffset,
+                transform.position.y,
+                trainTransform.position.z + offset.z
             );
+            transform.position = Vector3.Lerp(transform.position, targetPos, smoothSpeed * Time.deltaTime);
         }
     }
 }

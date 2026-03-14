@@ -30,26 +30,28 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
 
     void ensureFighters()
     {
-        int fighterCount = 0;
-        if (enemy_list.Count<1) { return; }
+        enemy_list.RemoveAll(e => e == null);
 
-        for (int i=0; i<enemy_list.Count; i++)
+        if (enemy_list.Count < 1) { return; }
+
+        int fighterCount = 0;
+        for (int i = 0; i < enemy_list.Count; i++)
         {
-            GameObject enemy = enemy_list[i];
-            Enemy_AI ai = enemy.GetComponent<Enemy_AI>();
-            if (ai.state==Enemy_AI.State.FIGHT)
+            Enemy_AI ai = enemy_list[i].GetComponent<Enemy_AI>();
+            if (ai != null && ai.state == Enemy_AI.State.FIGHT)
             {
                 fighterCount++;
             }
         }
-        //Debug.Log(fighterCount);
 
-        if (fighterCount<maxFighters)
+        if (fighterCount < maxFighters)
         {
             GameObject enemy = enemy_list[Random.Range(0, enemy_list.Count)];
             Enemy_AI ai = enemy.GetComponent<Enemy_AI>();
-            ai.state = Enemy_AI.State.FIGHT;
-            Debug.Log("Ensured a Fighter");
+            if (ai != null)
+            {
+                ai.state = Enemy_AI.State.FIGHT;
+            }
         }
     }
 
