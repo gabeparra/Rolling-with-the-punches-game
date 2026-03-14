@@ -93,7 +93,7 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         Vector3 size = renderer.bounds.size;
 
         //float sx = Random.Range(0,2) == 0 ? transform.position.x - size.x/2 +1 : transform.position.x + size.x / 2 - 1;
-        float sy = transform.position.y + 3;
+        float sy = transform.position.y + 3; 
         float sz = Random.Range(0, 2) == 0 ? transform.position.z - size.z / 2 - 1 : transform.position.z + size.z / 2 + 1;
         float sx = Random.Range(transform.position.x - size.x / 2 + 2, transform.position.x + size.x / 2 - 2);
         //float sz = Random.Range(transform.position.z - size.z / 2 - 2, transform.position.z + size.z / 2 + 2); 
