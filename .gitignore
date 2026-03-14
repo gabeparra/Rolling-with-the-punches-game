@@ -18,6 +18,7 @@
 mono_crash.*.json
 
 # Visual Studio / Rider / MonoDevelop cache directories
+.vs/
 .vscode/
 .idea/
 *.swp

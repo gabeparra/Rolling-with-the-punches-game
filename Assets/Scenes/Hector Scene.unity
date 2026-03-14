@@ -515,7 +515,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300002, guid: 1213213946b39114083bc78376da0569, type: 3}
 --- !u!23 &155880249
@@ -1396,6 +1396,7 @@ MonoBehaviour:
   grassCount: 40
   nearMinZ: 3
   nearMaxZ: 10
+  roadHalfWidth: 5
   minScale: 0.8
   maxScale: 1.3
 --- !u!4 &364228847
@@ -2549,6 +2550,7 @@ MonoBehaviour:
   grassCount: 40
   nearMinZ: 3
   nearMaxZ: 10
+  roadHalfWidth: 5
   minScale: 0.8
   maxScale: 1.3
 --- !u!4 &1242861841
@@ -4422,6 +4424,10 @@ PrefabInstance:
       propertyPath: loot_targets_container
       value: 
       objectReference: {fileID: 1214398354}
+    - target: {fileID: 3157819034046831678, guid: ceaf46ee31ed3ba499a5780a8f293e67, type: 3}
+      propertyPath: m_Convex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4378478381922643097, guid: ceaf46ee31ed3ba499a5780a8f293e67, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5

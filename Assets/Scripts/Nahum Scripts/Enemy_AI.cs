@@ -165,6 +165,7 @@ public class Enemy_AI : MonoBehaviour
 
     private void OnDestroy()
     {
-        enemy_list.Remove(transform.parent.gameObject);
+        if (enemy_list != null && transform.parent != null)
+            enemy_list.Remove(transform.parent.gameObject);
     }
 }
