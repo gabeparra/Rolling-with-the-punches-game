@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 
@@ -31,6 +32,22 @@ public class SceneTransition : MonoBehaviour
         {SceneName.Hub, "HubScene"},
         {SceneName.Town1, "Town1"}
     };
+
+    public void OnEnable()
+    {
+        InputSystem.actions["Interact"].performed += OnInteract;
+    }
+
+    public void OnDisable()
+    {
+        InputSystem.actions["Interact"].performed -= OnInteract;
+    }
+
+    private void OnInteract(InputAction.CallbackContext context)
+    {
+        Debug.Log("interact press seen by " + gameObject);
+        if(canLoad) Load();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
