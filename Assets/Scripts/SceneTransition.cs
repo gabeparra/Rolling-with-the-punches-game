@@ -12,7 +12,12 @@ using UnityEngine.SceneManagement;
 
 public class SceneTransition : MonoBehaviour
 {
-    [SerializeField] private SceneName sceneName; //lets you choose from dropdown
+    [SerializeField][Tooltip("Control whether transition happens instantly or player must interact")]
+    private bool instant = true;
+    // whether the player is allowed to transition to the next scene
+    private bool canLoad = false;
+    [SerializeField][Tooltip("The scene that will be transitioned to")]
+    private SceneName sceneName; //lets you choose from dropdown
     private enum SceneName //what shows in the dropdown
     {
         Hub,
@@ -31,9 +36,29 @@ public class SceneTransition : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            string str = dict.GetValueOrDefault(sceneName, "HubScene");
-            SceneManager.LoadScene(str);
+            if(instant) Load();
+            else 
+            {
+                canLoad = true;
+                Debug.Log("canLoad = true");
+            }
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if(other.CompareTag("Player"))
+        {
+            canLoad = false;
+            Debug.Log("canLoad = false");
+        }
+    }
+
+    private void Load()
+    {
+        Debug.Log("Loading scene: " + sceneName);
+        string str = dict.GetValueOrDefault(sceneName, "HubScene");
+        SceneManager.LoadScene(str);
     }
 
     
