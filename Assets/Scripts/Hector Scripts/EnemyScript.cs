@@ -2,15 +2,24 @@ using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public int maxHealth = 10;
+    private int currentHealth;
+
     void Start()
     {
-        
+        currentHealth = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void TakeDamage(int amount)
     {
-        
+        currentHealth -= amount;
+        Debug.Log($"{gameObject.name} took {amount} damage. HP: {currentHealth}/{maxHealth}");
+        if (currentHealth <= 0) Die();
+    }
+
+    void Die()
+    {
+        Debug.Log($"{gameObject.name} defeated!");
+        Destroy(gameObject);
     }
 }
