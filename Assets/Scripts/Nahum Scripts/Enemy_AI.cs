@@ -36,7 +36,8 @@ public class Enemy_AI : MonoBehaviour
         if (loot_targets_container)
             loot_targets = loot_targets_container.GetComponentsInChildren<Transform>();
         InvokeRepeating("shoot",0,shootInterval);
-        head = transform.Find("Head") ? transform.Find("Head").gameObject : null;
+        if (head == null)
+            head = transform.Find("Head") ? transform.Find("Head").gameObject : null;
 
     }
 
@@ -90,7 +91,7 @@ public class Enemy_AI : MonoBehaviour
 
     void shoot()
     {
-        if (!canSeePlayer || state!=State.FIGHT) { return; }
+        if (!canSeePlayer || state!=State.FIGHT || head == null) { return; }
         GameObject bullet = Instantiate(bulletPrefab, head.transform.position + head.transform.forward * 2, head.transform.rotation);
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();

@@ -1,25 +1,36 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerShooting : MonoBehaviour
 {
     public GameObject bulletPrefab;
-    public int damage = 3; // Set weapon dmg here
+    public int damage = 3;
     public Transform firePoint;
     public float bulletSpeed = 100f;
     public AudioClip Gunshot;
-    private AudioSource audioSource;
+    public Rigidbody trainRigidbody;
+    public InputActionAsset inputActions;
 
-    // Drag your Train object here in the Inspector
-    public Rigidbody trainRigidbody; 
+    private AudioSource audioSource;
+    private InputAction attackAction;
 
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
+
+        var playerMap = inputActions.FindActionMap("Player");
+        attackAction = playerMap.FindAction("Attack");
+        attackAction.Enable();
+    }
+
+    void OnDestroy()
+    {
+        attackAction?.Disable();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (attackAction.WasPressedThisFrame())
         {
             ShootProjectile();
             audioSource.PlayOneShot(Gunshot);
@@ -31,11 +42,8 @@ public class PlayerShooting : MonoBehaviour
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-        // We calculate the 'Muzzle Velocity' + 'Train Velocity'
-        // This ensures the bullet doesn't 'drift' relative to the train
-        Vector3 trainVelocity = (trainRigidbody != null) ? trainRigidbody.linearVelocity : Vector3.zero;
-        
-        rb.linearVelocity = (firePoint.right * bulletSpeed) + trainVelocity;
+        // Train is stationary — no velocity offset needed
+        rb.linearVelocity = firePoint.right * bulletSpeed;
 
         Destroy(bullet, 2f);
     }
