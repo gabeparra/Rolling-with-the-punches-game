@@ -13,6 +13,7 @@
 *.VC.db
 *.csproj
 *.sln
+*.slnx
 
 # Mono metadata files
 mono_crash.*.json
@@ -20,6 +21,7 @@ mono_crash.*.json
 # Visual Studio / Rider / MonoDevelop cache directories
 .vs/
 .vscode/
+.vs
 .idea/
 *.swp
 *.swo
