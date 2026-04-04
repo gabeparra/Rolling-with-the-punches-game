@@ -12,6 +12,7 @@ public class PlayerShooting : MonoBehaviour
     public float reloadTime = 1f;
     private AudioSource audioSource;
     private bool _reloading = false;
+    private bool _triggerWasDown = false;
 
     void Start()
     {
@@ -20,12 +21,18 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !_reloading)
+        // Shoot -- Space, RB, or Right Trigger on Xbox
+        bool triggerDown = Input.GetAxis("GameShootTrigger") > 0.5f;
+        bool triggerJustPressed = triggerDown && !_triggerWasDown;
+        _triggerWasDown = triggerDown;
+
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("GameShoot") || triggerJustPressed) && !_reloading)
         {
             if (HUDManager.Instance != null && !HUDManager.Instance.HasAmmo()) { Debug.LogWarning("[PlayerShooting] No ammo"); return; }
             FireRaycast();
         }
-        if (Input.GetKeyDown(KeyCode.R) && !_reloading)
+        // Reload -- R or X button on Xbox
+        if ((Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("GameReload")) && !_reloading)
             StartCoroutine(Reload());
     }
 
