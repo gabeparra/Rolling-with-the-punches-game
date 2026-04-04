@@ -30,7 +30,7 @@ public class DevLevelSelect : MonoBehaviour
         float w = 200f, h = 40f, pad = 5f;
         float startX = 10f, startY = 10f;
 
-        GUI.Box(new Rect(startX - 5, startY - 5, w + 10, (h + pad) * 5 + 10), "");
+        GUI.Box(new Rect(startX - 5, startY - 5, w + 10, (h + pad) * 6 + 10), "");
 
         if (GUI.Button(new Rect(startX, startY, w, h), "Western (Hector Scene)"))
         {
@@ -56,6 +56,13 @@ public class DevLevelSelect : MonoBehaviour
         }
         startY += h + pad;
 
+        if (GUI.Button(new Rect(startX, startY, w, h), "Hub"))
+        {
+            SceneManager.LoadScene("HubScene");
+            showMenu = false;
+        }
+        startY += h + pad;
+
         if (GUI.Button(new Rect(startX, startY, w, h), "Main Menu"))
         {
             SceneManager.LoadScene("Menu Screen");
@@ -63,7 +70,7 @@ public class DevLevelSelect : MonoBehaviour
         }
         startY += h + pad;
 
-        if (GUI.Button(new Rect(startX, startY, w, h), "Close [F1]"))
+        if (GUI.Button(new Rect(startX, startY, w, h), "Close [L]"))
             showMenu = false;
     }
 }

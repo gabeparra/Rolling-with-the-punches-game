@@ -3,9 +3,9 @@ using UnityEngine;
 public class TrainPlayerController : MonoBehaviour
 {
     [Header("Movement")]
-    public float speed = 8f;
-    public float jumpForce = 6f;
-    public float rotationSpeed = 15f;       // How snappily the player turns (higher = snappier)
+    public float speed = 14f;
+    public float jumpForce = 12f;
+    public float rotationSpeed = 15f;
     public float groundCheckDistance = 0.2f;
     public LayerMask groundLayer;
 
@@ -43,30 +43,55 @@ public class TrainPlayerController : MonoBehaviour
 
         bool isMoving = moveDirection != Vector3.zero;
 
-        // Smooth rotation toward movement direction using Slerp
-        if (isMoving)
+        if (isMoving && !isDashing)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
 
-        // Drive walk animation -- only plays while moving
         if (animator != null)
             animator.SetBool("isMoving", isMoving);
 
-        // Jump -- E key
-        if (Input.GetKeyDown(KeyCode.E) && IsGrounded())
+        // Jump -- E key or A button on Xbox
+        if ((Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameJump")) && IsGrounded())
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+
+        // Dash -- Left Shift or B button on Xbox
+        if (dashCooldownTimer > 0f)
+            dashCooldownTimer -= Time.deltaTime;
+
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("GameDash")) && !isDashing && dashCooldownTimer <= 0f)
+        {
+            isDashing = true;
+            dashTimer = dashDuration;
+            dashDirection = isMoving ? moveDirection : transform.forward;
+            dashCooldownTimer = dashCooldown;
+        }
+
+        if (isDashing)
+        {
+            dashTimer -= Time.deltaTime;
+            if (dashTimer <= 0f)
+                isDashing = false;
+        }
     }
 
     void FixedUpdate()
     {
-        if (moveDirection.magnitude > 0)
+        if (isDashing)
+        {
+            rb.MovePosition(rb.position + dashDirection * dashSpeed * Time.fixedDeltaTime);
+        }
+        else if (moveDirection.magnitude > 0)
+        {
             rb.MovePosition(rb.position + moveDirection * speed * Time.fixedDeltaTime);
+        }
     }
 
     bool IsGrounded()
     {
-        return Physics.CheckSphere(transform.position, groundCheckDistance, groundLayer);
+        if (groundLayer != 0)
+            return Physics.CheckSphere(transform.position, groundCheckDistance, groundLayer);
+        return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + 0.1f);
     }
 }
