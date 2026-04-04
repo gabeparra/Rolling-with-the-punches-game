@@ -22,7 +22,7 @@ public class PlayerShooting : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && !_reloading)
         {
-            if (HUDManager.Instance != null && !HUDManager.Instance.HasAmmo()) return;
+            if (HUDManager.Instance != null && !HUDManager.Instance.HasAmmo()) { Debug.LogWarning("[PlayerShooting] No ammo"); return; }
             FireRaycast();
         }
         if (Input.GetKeyDown(KeyCode.R) && !_reloading)
@@ -39,9 +39,10 @@ public class PlayerShooting : MonoBehaviour
 
     void FireRaycast()
     {
-        if (firePoint == null) return;
+        if (firePoint == null) { Debug.LogWarning("[PlayerShooting] firePoint is null"); return; }
         if (HUDManager.Instance != null) HUDManager.Instance.SpendAmmo();
-        if (gunshotClip != null) audioSource.PlayOneShot(gunshotClip);
+        if (gunshotClip != null && audioSource != null) audioSource.PlayOneShot(gunshotClip);
+        Debug.Log("[PlayerShooting] Firing!");
 
         Vector3 origin = firePoint.position;
         Vector3 direction = transform.forward;

@@ -94,32 +94,27 @@ void Die()
 void shoot()
     {
         if (!canSeePlayer || state != State.FIGHT || !player) return;
+        if (bulletPrefab == null) { Debug.LogWarning("[Enemy_AI] bulletPrefab is null"); return; }
+        Debug.Log("[Enemy_AI] Shooting at player!");
 
         Vector3 origin = head.transform.position;
         Vector3 dirToPlayer = (player.transform.position - origin).normalized;
 
-        // Instant raycast damage
-        RaycastHit hit;
-        if (Physics.Raycast(origin, dirToPlayer, out hit, detection_range))
+        GameObject bullet = Instantiate(bulletPrefab, origin, Quaternion.LookRotation(dirToPlayer));
+        bullet.tag = "EnemyBullet";
+
+        if (bullet.GetComponent<BulletTracer>() == null)
+            bullet.AddComponent<BulletTracer>();
+
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        if (rb != null)
         {
-            PlayerHealth ph = hit.collider.GetComponentInParent<PlayerHealth>();
-            if (ph != null) ph.TakeDamage(1);
+            rb.isKinematic = false;
+            rb.useGravity = false;
+            rb.linearVelocity = dirToPlayer * shootForce;
         }
 
-        // Visual bullet -- spawned at origin, fired toward player
-        if (bulletPrefab != null)
-        {
-            GameObject bullet = Instantiate(bulletPrefab, origin, Quaternion.LookRotation(dirToPlayer));
-            bullet.tag = "EnemyBullet";
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                rb.isKinematic = false;
-                rb.useGravity = false;
-                rb.linearVelocity = dirToPlayer * shootForce;
-            }
-            Destroy(bullet, 1f);
-        }
+        Destroy(bullet, 3f);
     }
 
     // Update is called once per frame
