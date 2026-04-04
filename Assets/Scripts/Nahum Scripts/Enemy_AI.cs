@@ -33,8 +33,10 @@ void Start()
     {
         agent = GetComponent<NavMeshAgent>();
 
+        // Ensure enemy is always tagged correctly at runtime
         gameObject.tag = "Enemy";
 
+        // Find player by tag -- player must be tagged 'Player'
         if (!player)
         {
             GameObject found = GameObject.FindWithTag("Player");
@@ -44,6 +46,7 @@ void Start()
         if (loot_targets_container)
             loot_targets = loot_targets_container.GetComponentsInChildren<Transform>();
 
+        // Head fallback -- use self if no Head child
         head = transform.Find("Head") ? transform.Find("Head").gameObject : gameObject;
 
         InvokeRepeating("shoot", 0, shootInterval);

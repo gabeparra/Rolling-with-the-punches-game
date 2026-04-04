@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Purely visual tracer -- no Rigidbody, no physics.
+// Moves toward a pre-calculated hit point then self-destructs.
 public class BulletTracer : MonoBehaviour
 {
     private Vector3 _target;
