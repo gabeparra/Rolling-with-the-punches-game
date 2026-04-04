@@ -15,10 +15,10 @@ public class Enemy_AI : MonoBehaviour
     public List<GameObject> enemy_list;
     public GameObject player;
     const float detection_range = 50f;
-    public float shootInterval = .75f;
+    public float shootInterval = 3f;
     Vector3 shootOrigin;
     Vector3 shootDirection;
-    float shootForce = 80;
+    float shootForce = 15;
     bool canSeePlayer = false;
     
 
@@ -29,16 +29,24 @@ public class Enemy_AI : MonoBehaviour
     public State state = State.LOOT;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+void Start()
     {
-        //state = Random.Range(0,2) ==0? State.LOOT : State.FIGHT;
         agent = GetComponent<NavMeshAgent>();
+
+        gameObject.tag = "Enemy";
+
+        if (!player)
+        {
+            GameObject found = GameObject.FindWithTag("Player");
+            if (found != null) player = found;
+        }
+
         if (loot_targets_container)
             loot_targets = loot_targets_container.GetComponentsInChildren<Transform>();
-        InvokeRepeating("shoot",0,shootInterval);
-        if (head == null)
-            head = transform.Find("Head") ? transform.Find("Head").gameObject : null;
 
+        head = transform.Find("Head") ? transform.Find("Head").gameObject : gameObject;
+
+        InvokeRepeating("shoot", 0, shootInterval);
     }
 
     public void TakeDamage(int amount) // Method added by Hector to calculate damage taken by enemy
@@ -51,8 +59,9 @@ public class Enemy_AI : MonoBehaviour
         }
     }
 
-    void Die() // Method added by Hector to destroy enemy on death
+void Die()
     {
+        if (HUDManager.Instance != null) HUDManager.Instance.OnEnemyKilled();
         Destroy(gameObject);
     }
 
@@ -61,17 +70,7 @@ public class Enemy_AI : MonoBehaviour
         GameObject obj = collision.collider.gameObject;
         if (obj)
         {
-            Invoke("stopKnockback", 1f);
-            Debug.Log("OWW");
-        }
-        if (collision.gameObject.CompareTag("Bullet"))
-        {
-            Bullet bullet = collision.gameObject.GetComponent<Bullet>();
-            if (bullet != null)
-            {
-                TakeDamage(bullet.damage);
-            }
-        }
+   }
     }
 
     void stopKnockback()
@@ -89,76 +88,93 @@ public class Enemy_AI : MonoBehaviour
         Gizmos.DrawRay(shootOrigin, shootDirection * shootForce);
     }
 
-    void shoot()
+void shoot()
     {
-        if (!canSeePlayer || state!=State.FIGHT || head == null) { return; }
-        GameObject bullet = Instantiate(bulletPrefab, head.transform.position + head.transform.forward * 2, head.transform.rotation);
+        if (!canSeePlayer || state != State.FIGHT || !player) return;
 
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.AddForce(head.transform.forward * shootForce);
+        Vector3 origin = head.transform.position;
+        Vector3 dirToPlayer = (player.transform.position - origin).normalized;
 
-        Destroy(bullet, 1f);
+        // Instant raycast damage
+        RaycastHit hit;
+        if (Physics.Raycast(origin, dirToPlayer, out hit, detection_range))
+        {
+            PlayerHealth ph = hit.collider.GetComponentInParent<PlayerHealth>();
+            if (ph != null) ph.TakeDamage(1);
+        }
+
+        // Visual bullet -- spawned at origin, fired toward player
+        if (bulletPrefab != null)
+        {
+            GameObject bullet = Instantiate(bulletPrefab, origin, Quaternion.LookRotation(dirToPlayer));
+            bullet.tag = "EnemyBullet";
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = false;
+                rb.useGravity = false;
+                rb.linearVelocity = dirToPlayer * shootForce;
+            }
+            Destroy(bullet, 1f);
+        }
     }
 
     // Update is called once per frame
-    void Update()
+void Update()
     {
+        // Switch to FIGHT if player is within detection range
+        if (player != null)
+        {
+            float dist = Vector3.Distance(transform.position, player.transform.position);
+            if (dist <= detection_range)
+                state = State.FIGHT;
+            else
+                state = State.LOOT;
+        }
+
         if (state == State.LOOT)
         {
             doLootProtocol();
-            if (agent.velocity.magnitude!=0)
-            {
+            if (agent.velocity.magnitude != 0)
                 transform.rotation = Quaternion.LookRotation(new Vector3(agent.velocity.normalized.x, 0, agent.velocity.normalized.z), Vector3.up);
-            }
-            
         }
         else if (state == State.FIGHT)
         {
             doFightProtocol();
-
         }
 
-        //Rigidbody rb = GetComponent<Rigidbody>();
-        if (target==null)
-        {
+        if (target == null)
             agent.SetDestination(transform.position);
-        }
-        
     }
 
-    void doFightProtocol()
+void doFightProtocol()
     {
-        if (!player) { return; }
-        target = player.transform;
+        if (!player) return;
 
-        Ray ray = new Ray(transform.position, player.transform.position - transform.position);
+        Vector3 dirToPlayer = player.transform.position - transform.position;
+        float distToPlayer = dirToPlayer.magnitude;
 
-       
-        Debug.DrawRay(ray.origin, ray.direction * detection_range, Color.purple,0f);
-        //Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 0f);
+        // Always face the player
+        Vector3 flatDir = new Vector3(dirToPlayer.x, 0, dirToPlayer.z);
+        if (flatDir != Vector3.zero)
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(flatDir), 5f * Time.deltaTime);
 
+        // Check line of sight
+        Ray ray = new Ray(transform.position + Vector3.up * 0.5f, dirToPlayer.normalized);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, detection_range))
-        {
-            GameObject obj = hit.collider.gameObject;
-            //Debug.Log(obj);
-            //Debug.Log(player);
+            canSeePlayer = (hit.collider.gameObject == player || hit.collider.transform.IsChildOf(player.transform));
+        else
+            canSeePlayer = false;
 
-            canSeePlayer = obj.Equals(player);
-            if (canSeePlayer)
-            {
-                //Debug.Log("I CAN SEEE!!!");
-                target = null;
-                transform.rotation = Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(ray.direction),1f);
-            }
-        }
-
-        if (target!=null)
-        { 
-            agent.SetDestination(target.position);
-        }
-
-        
+        // Chase player if far, back off a little if too close
+        float preferredRange = 6f;
+        if (distToPlayer > preferredRange)
+            agent.SetDestination(player.transform.position);
+        else if (distToPlayer < preferredRange * 0.5f)
+            agent.SetDestination(transform.position - flatDir.normalized * 2f);
+        else
+            agent.SetDestination(transform.position); // Hold position
     }
 
     void doLootProtocol()

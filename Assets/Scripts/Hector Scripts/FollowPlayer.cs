@@ -22,11 +22,10 @@ public class FollowTrainScript : MonoBehaviour
     {
         if (trainTransform != null && playerTransform != null)
         {
-            // Train is stationary — follow player position for both axes
             Vector3 targetPos = new Vector3(
                 playerTransform.position.x + offset.x + leftOffset,
                 transform.position.y,
-                playerTransform.position.z + offset.z
+                trainTransform.position.z + offset.z
             );
             transform.position = Vector3.Lerp(transform.position, targetPos, smoothSpeed * Time.deltaTime);
         }
