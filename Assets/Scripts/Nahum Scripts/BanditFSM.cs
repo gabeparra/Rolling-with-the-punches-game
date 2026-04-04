@@ -31,9 +31,9 @@ public class BanditFSM : FSM
         //current_state.SetTarget(target);
     }
 
-    protected override void Start()
+    void Awake()
     {
-        base.Start();
+        parent = gameObject;
         agent = parent.GetComponent<NavMeshAgent>();
         target = parent.transform.position;
 
@@ -62,7 +62,11 @@ public class BanditFSM : FSM
 
         //print(loot_targets);
 
-        //SetCurrentState("attack");
+    }
+
+    protected override void Start()
+    {
+        base.Start();
     }
 
     public void TakeDamage(int amount) // Method added by Hector to calculate damage taken by enemy

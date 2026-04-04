@@ -31,12 +31,11 @@ public class LootState : State
 
     public void TryLoot()
     {
-        if (fsm.time_looting_threshold <= fsm.time_looting) {
-        
-            return;
-        }
+        if (fsm.time_looting_threshold <= fsm.time_looting) return;
+        if (fsm.loot_targets == null || fsm.loot_targets.Length == 0) return;
+
         bool has_loot_target = false;
-        for (int i =0; i<fsm.loot_targets.Length; i++)
+        for (int i = 0; i < fsm.loot_targets.Length; i++)
         {
             Vector3 pos = fsm.loot_targets[i].position;
             if (pos==fsm.target)
@@ -54,24 +53,21 @@ public class LootState : State
 
     public void SetLootTarget()
     {
-        Transform closest = null;
-
-        if (fsm.loot_targets == null || fsm.loot_targets.Length==0) {
+        if (fsm.loot_targets == null || fsm.loot_targets.Length == 0)
+        {
             fsm.target = parent.transform.position;
+            return;
         }
+
+        Transform closest = null;
         for (int i = 0; i < fsm.loot_targets.Length; i++)
         {
             Transform potential = fsm.loot_targets[i];
-            if (!closest)
-            {
+            if (potential == null) continue;
+            if (closest == null || Vector3.Distance(potential.position, parent.transform.position) < Vector3.Distance(closest.position, parent.transform.position))
                 closest = potential;
-            }
-            if (Vector3.Distance(closest.position, transform.position) > Vector3.Distance(potential.position, transform.position))
-            {
-                closest = potential;
-            }
-            print(potential);
         }
-        fsm.target = closest.position;
+
+        fsm.target = closest != null ? closest.position : parent.transform.position;
     }
 }

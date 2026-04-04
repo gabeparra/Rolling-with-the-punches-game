@@ -19,7 +19,7 @@ public class DevLevelSelect : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.L))
             showMenu = !showMenu;
     }
 

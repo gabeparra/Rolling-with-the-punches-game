@@ -155,7 +155,8 @@ public class AttackState : State
     {
         Vector3 epos = fsm.enemy_target.transform.position;
         float em = error_margin;
-        Vector3 esize = fsm.enemy_target.GetComponent<Renderer>().bounds.size;
+        Renderer rend = fsm.enemy_target.GetComponentInChildren<Renderer>();
+        Vector3 esize = rend != null ? rend.bounds.size : Vector3.one;
         
         // attack radius values
         float rf = 1.4f;
