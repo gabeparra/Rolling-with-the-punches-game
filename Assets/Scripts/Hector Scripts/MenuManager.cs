@@ -1,17 +1,29 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Required for switching scenes
+using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    // Make sure the name in quotes matches your Scene name EXACTLY
     public void PlayGame()
     {
-        SceneManager.LoadScene("Hector Scene"); 
+        LevelSelector.CurrentTheme = LevelSelector.Theme.Western;
+        SceneManager.LoadScene("Hector Scene");
+    }
+
+    public void PlaySnowyScene()
+    {
+        LevelSelector.CurrentTheme = LevelSelector.Theme.Snowy;
+        SceneManager.LoadScene("Snow scene");
+    }
+
+    public void PlayMountainScene()
+    {
+        LevelSelector.CurrentTheme = LevelSelector.Theme.Mountain;
+        SceneManager.LoadScene("Mountain scene");
     }
 
     public void QuitGame()
     {
         Application.Quit();
-        Debug.Log("The player has quit the game!"); // Confirms it works in the Editor
+        Debug.Log("The player has quit the game!");
     }
 }

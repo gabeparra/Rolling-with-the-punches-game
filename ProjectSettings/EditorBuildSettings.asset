@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Hector Scene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Snow scene.unity
+    guid: d98c4b8bd72201749ab7afb155e3d8e7
+  - enabled: 1
+    path: Assets/Scenes/Mountain scene.unity
+    guid: b0c6881f5020f8649801bb430d3e39d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

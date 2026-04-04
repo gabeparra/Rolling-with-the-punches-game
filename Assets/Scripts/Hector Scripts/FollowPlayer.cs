@@ -7,9 +7,9 @@ public class FollowTrainScript : MonoBehaviour
 
     public Vector3 offset;
     [Header("Camera Tuning")]
-    public float leftOffset = -3f;     
-    public float smoothSpeed = 8f;     
-    
+    public float leftOffset = -3f;
+    public float smoothSpeed = 8f;
+
     void Start()
     {
         if (offset == Vector3.zero && trainTransform != null)

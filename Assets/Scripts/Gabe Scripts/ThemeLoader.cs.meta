@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 57b9a501a40ccfd4b9a3eda92235ee5c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - westernSpawner: {instanceID: 0}
+  - snowySpawner: {instanceID: 0}
+  - mountainSpawner: {instanceID: 0}
+  - groundRenderer: {instanceID: 0}
+  - westernGroundMaterial: {fileID: 2100000, guid: 63f81a1e70559224c9866ac5eb6cb905, type: 2}
+  - snowyGroundMaterial: {instanceID: 0}
+  - mountainGroundMaterial: {fileID: 2100000, guid: c7475884d2ae8f14195fac11b5154f34, type: 2}
+  - westernSkybox: {instanceID: 0}
+  - snowySkybox: {instanceID: 0}
+  - mountainSkybox: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
