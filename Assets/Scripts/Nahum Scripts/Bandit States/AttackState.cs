@@ -45,6 +45,34 @@ public class AttackState : State
             reloading = true;
             Invoke("Reload",reload_time);
         }
+
+        if (!CanSeeEnemyTarget() && fsm.enemy_target!=null)
+        {
+            fsm.target = fsm.enemy_target.transform.position;
+            LookToTargetEnemy();
+        }
+        else
+        {
+            fsm.target = parent.transform.position;
+        }
+    }
+
+    public bool CanSeeEnemyTarget()
+    {
+        if (fsm.enemy_target==null) {return false;}
+        RaycastHit hit;
+        if (Physics.Raycast(direct_ray, out hit,float.PositiveInfinity))
+        {
+            GameObject obj = hit.collider.gameObject;
+            
+            bool canSeePlayer = obj.Equals(fsm.enemy_target);
+            if (canSeePlayer)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public override void StateFixedUpdate()
@@ -52,7 +80,7 @@ public class AttackState : State
         aim_ray.origin = parent.transform.position;
         aim_ray.direction = parent.transform.forward;
 
-        LookToTargetEnemy();
+        
         
         if (!IsAimedNearTarget())
         {

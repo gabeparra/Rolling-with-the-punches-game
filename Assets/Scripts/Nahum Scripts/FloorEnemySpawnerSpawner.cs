@@ -34,35 +34,24 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
 
         if (enemy_list.Count < 1) { return; }
 
-        int fighterCount = 0;
-        for (int i = 0; i < enemy_list.Count; i++)
-        {
-            Enemy_AI ai = enemy_list[i].GetComponent<Enemy_AI>();
-            if (ai != null && ai.state == Enemy_AI.State.FIGHT)
-            {
-                fighterCount++;
-            }
-        }
+        int fighterCount = getFighterCount();
 
         if (fighterCount < maxFighters)
         {
             GameObject enemy = enemy_list[Random.Range(0, enemy_list.Count)];
-            Enemy_AI ai = enemy.GetComponent<Enemy_AI>();
-            if (ai != null)
-            {
-                ai.state = Enemy_AI.State.FIGHT;
-            }
+            BanditFSM fsm = enemy.GetComponent<BanditFSM>();
+            fsm.SetCurrentState("attack");
         }
     }
 
-    int getFighterCOunt()
+    int getFighterCount()
     {
         int fighterCount = 0;
         for (int i = 0; i < enemy_list.Count; i++)
         {
             GameObject enemy = enemy_list[i];
-            Enemy_AI ai = enemy.GetComponent<Enemy_AI>();
-            if (ai.state == Enemy_AI.State.FIGHT)
+            BanditFSM fsm = enemy.GetComponent<BanditFSM>();
+            if (fsm.states["attack"] == fsm.current_state)
             {
                 fighterCount++;
             }
@@ -103,12 +92,12 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         {
             Debug.Log("spawning enemy");
             GameObject enemy = Instantiate(enemyPrefab, spawn_position, Quaternion.LookRotation(spawn_dir));
+            BanditFSM fsm = enemy.GetComponent<BanditFSM>();
             enemy.transform.localScale = Vector3.one; // Force it to scale -- change added by Hector to stop shrink on spawn
-            enemy.GetComponent<Enemy_AI>().state = Enemy_AI.State.LOOT;
+            fsm.SetCurrentState("loot");
             enemy_list.Add(enemy);
-            enemy.GetComponent<Enemy_AI>().player = player;
-            enemy.GetComponent<Enemy_AI>().enemy_list = enemy_list;
-            enemy.GetComponent<Enemy_AI>().loot_targets_container = loot_targets_container;
+            fsm.enemy_target = player;
+            fsm.loot_targets_container = loot_targets_container;
             enemies_spawned++;
         }
     }

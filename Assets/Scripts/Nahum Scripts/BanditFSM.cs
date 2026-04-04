@@ -5,14 +5,19 @@ using UnityEngine.AI;
 
 public class BanditFSM : FSM
 {
-    
+    public int health = 6; // Added by Hector to set enemy health value
     public Vector3 target;
     public GameObject floor;
   
     SearchState searchState;
 
+    LootState lootState;
+
     public GameObject loot_targets_container;
-    private Transform[] loot_targets;
+    public Transform[] loot_targets;
+
+    public int time_looting = 0;
+    public int time_looting_threshold = 5;
 
     public GameObject bullet_prefab;
 
@@ -20,7 +25,7 @@ public class BanditFSM : FSM
 
     NavMeshAgent agent;
 
-    protected override void SetCurrentState(String state)
+    public override void SetCurrentState(String state)
     {
         base.SetCurrentState(state);
         //current_state.SetTarget(target);
@@ -34,10 +39,12 @@ public class BanditFSM : FSM
 
 
         searchState = parent.AddComponent<SearchState>();
+        lootState = parent.AddComponent<LootState>();
+
 
         states = new()
         {
-        {"loot", parent.AddComponent<LootState>()},
+        {"loot", lootState},
         {"escape", parent.AddComponent<EscapeState>()},
         {"attack", parent.AddComponent<AttackState>()},
         {"search", searchState}
@@ -53,9 +60,24 @@ public class BanditFSM : FSM
             loot_targets = loot_targets_container.GetComponentsInChildren<Transform>();
         }
 
-        print(loot_targets);
+        //print(loot_targets);
 
-        SetCurrentState("attack");
+        //SetCurrentState("attack");
+    }
+
+    public void TakeDamage(int amount) // Method added by Hector to calculate damage taken by enemy
+    {
+        health -= amount;
+
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die() // Method added by Hector to destroy enemy on death
+    {
+        Destroy(parent);
     }
 
     protected override void Update()
@@ -64,7 +86,14 @@ public class BanditFSM : FSM
 
         if (current_state==null) {return;}
         current_state.StateUpdate();
-        
+
+        if (current_state==lootState)
+        {
+            if (time_looting >= time_looting_threshold)
+            {
+                SetCurrentState("attack");
+            }
+        }
     }
 
     protected override void FixedUpdate()

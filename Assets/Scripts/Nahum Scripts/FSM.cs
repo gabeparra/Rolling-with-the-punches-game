@@ -6,8 +6,8 @@ public class FSM : MonoBehaviour
 {
     public GameObject parent;
 
-    protected Dictionary<string, State> states = new();
-    protected State current_state;    
+    public Dictionary<string, State> states = new();
+    public State current_state;    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
@@ -35,7 +35,7 @@ public class FSM : MonoBehaviour
         }
     }
 
-    protected virtual void SetCurrentState(String state)
+    public virtual void SetCurrentState(String state)
     {
         ExitCurrentState();
         current_state = states[state];
