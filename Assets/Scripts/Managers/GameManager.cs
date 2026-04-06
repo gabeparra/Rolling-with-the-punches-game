@@ -4,7 +4,7 @@ public class GameManager : MonoBehaviour
 {
     /*got this from google so might not be best*/
     //public static property to access the single instance of this class
-    public static GameManager Instance{get; private set;}
+    private static GameManager Instance;
     private static SaveObject metaSave; //hold meta progression data while the game is open
 
     //awake runs before start
@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void Save()
+    public static void Save()
     {
         string json = JsonUtility.ToJson(metaSave);
         SaveSystem.Save(json);
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void Load()
+    public static void Load()
     {
         string json = SaveSystem.Load();
         if(json != null)
