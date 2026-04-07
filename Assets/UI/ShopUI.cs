@@ -26,10 +26,6 @@ public class ShopUI : MonoBehaviour
 
         _list.bindItem = (e, i) =>
         {
-            Upgrade u = upgrades[i];
-            e.Q<Label>("name").text = u.upgradeName;
-            e.Q<Label>("description").text = u.description;
-            e.Q<Button>("btn").text = u.cost.ToString();
         };
     }
 
