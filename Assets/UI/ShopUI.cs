@@ -52,6 +52,7 @@ public class ShopUI : MonoBehaviour
         }
 
         Debug.Log("button pressed: " + _str);
+        UpgradeManager.BuyUpgrade(_up);
     }
 
     //hide the UI (for when not in the shop)

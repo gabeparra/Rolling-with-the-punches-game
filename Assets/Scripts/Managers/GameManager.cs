@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     public static void Save()
     {
+        metaSave.purchasedUpgrades = UpgradeManager.GetAll();
         string json = JsonUtility.ToJson(metaSave);
         SaveSystem.Save(json);
 
@@ -43,6 +45,7 @@ public class GameManager : MonoBehaviour
         if(json != null)
         {
             metaSave = JsonUtility.FromJson<SaveObject>(json);
+            UpgradeManager.SetAll(metaSave.purchasedUpgrades);
             Debug.Log("Loaded!");
             Debug.Log(json);
         }
@@ -56,12 +59,29 @@ public class GameManager : MonoBehaviour
         
     }
 
+    public static bool UpdateCurrency(int difference)
+    {
+        int temp = metaSave.cashAmount + difference;
+
+        // don't apply the update if currency would be negative (can't afford something)
+        if(temp < 0)
+            return false;
+
+        metaSave.cashAmount = temp;
+        return true;
+    }
+
+    public static int getCurrency()
+    {
+        return metaSave.cashAmount;
+    }
+
     //TODO: fill out this class with more relevant data
     private class SaveObject
     {
         public int cashAmount = 0;
         //unlocked upgrades
-        //purchased upgrades (can possibly be combined with above?)
+        public List<UpgradeManager.UpgradeTracker> purchasedUpgrades = new();
         //train inventory??
         //items in bank??
     }
