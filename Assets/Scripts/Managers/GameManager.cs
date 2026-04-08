@@ -58,6 +58,18 @@ public class GameManager : MonoBehaviour
     //TODO: fill out this class with more relevant data
     private class SaveObject
     {
-        public int goldAmount = 5;
+        public int cashAmount = 0;
+        //unlocked upgrades
+        //purchased upgrades (can possibly be combined with above?)
+        //train inventory??
+        //items in bank??
+    }
+
+    private class RunData
+    {
+        public int goldAmount = 0;
+        public bool alive = true;
+        //current inventory
+        //current level
     }
 }
