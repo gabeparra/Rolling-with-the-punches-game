@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -71,5 +72,25 @@ public class GameManager : MonoBehaviour
         public bool alive = true;
         //current inventory
         //current level
+    }
+
+
+    /*testing detecting new scene loaded*/
+    private void OnEnable()
+    {
+        Debug.Log("gameManager onEnable");
+        SceneManager.activeSceneChanged += OnNewScene;
+    }
+
+    private void OnDisable()
+    {
+        Debug.Log("gameManager ondisable");
+        SceneManager.activeSceneChanged -= OnNewScene;
+    }
+
+    private void OnNewScene(Scene arg0, Scene arg1)
+    {
+        Debug.Log("scene1: " + arg0.name);
+        Debug.Log("scene2: " + arg1.name);
     }
 }
