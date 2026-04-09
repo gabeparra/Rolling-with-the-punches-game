@@ -6,7 +6,7 @@ public class UpgradeManager : MonoBehaviour
 {
     private static UpgradeManager instance;
 
-    public static Dictionary<string, int> purchasedUpgrades = new();
+    private static Dictionary<string, int> purchasedUpgrades = new();
 
     [Serializable]
     public struct UpgradeTracker
@@ -69,6 +69,11 @@ public class UpgradeManager : MonoBehaviour
         }
 
         return result;
+    }
+
+    public static int GetLevel(string upgradeName)
+    {
+        return purchasedUpgrades.GetValueOrDefault(upgradeName, 0);
     }
 
 }
