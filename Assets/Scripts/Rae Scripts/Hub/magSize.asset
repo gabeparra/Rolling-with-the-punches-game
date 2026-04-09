@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76175894cf1ed2e4dbf35a42fd247576, type: 3}
   m_Name: magSize
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
-  upgradeName: 
-  description: 
-  cost: 0
+  upgradeName: Magazine Size
+  description: Fit more rounds in your gun
+  cost: 100
+  maxLevel: 5

@@ -15,3 +15,4 @@ MonoBehaviour:
   upgradeName: Reload Speed
   description: player's gun reload speed
   cost: 20
+  maxLevel: 4

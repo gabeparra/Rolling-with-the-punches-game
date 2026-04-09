@@ -15,3 +15,4 @@ MonoBehaviour:
   upgradeName: Max Bombs
   description: increase number of bombs you can hold
   cost: 2
+  maxLevel: 0
