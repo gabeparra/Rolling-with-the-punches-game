@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
-    private float speed = 4;
     private Vector3 movementVector = Vector3.zero;
 
     //the default input mapping suddenly started working again... keep the temporary stuff available in case it breaks again
@@ -27,6 +26,9 @@ public class PlayerController : MonoBehaviour
         InputSystem.actions["Move"].canceled += OnMove;
         InputSystem.actions["Move"].Enable();
 
+        InputSystem.actions["Reload"].performed += OnReload;
+        InputSystem.actions["Reload"].Enable();
+
         InputSystem.actions["Save"].performed += OnSave;
         InputSystem.actions["Save"].Enable();
 
@@ -43,11 +45,19 @@ public class PlayerController : MonoBehaviour
         InputSystem.actions["Move"].canceled -= OnMove;
         InputSystem.actions["Move"].Disable();
 
+        InputSystem.actions["Reload"].performed -= OnReload;
+        InputSystem.actions["Reload"].Disable();
+
         InputSystem.actions["Save"].performed -= OnSave;
         InputSystem.actions["Save"].Disable();
 
         InputSystem.actions["Load"].performed -= OnLoad;
         InputSystem.actions["Load"].Disable();
+    }
+
+    private void OnReload(InputAction.CallbackContext ctx)
+    {
+        Debug.Log($"Reloaded {PlayerStats.magSize} rounds in {PlayerStats.reloadTime} seconds");
     }
 
     private void OnSave(InputAction.CallbackContext ctx)
@@ -78,7 +88,7 @@ public class PlayerController : MonoBehaviour
     
     private void FixedUpdate()
     {
-        rb.linearVelocity = movementVector * speed;
+        rb.linearVelocity = movementVector * PlayerStats.moveSpeed;
     }
 
 }
