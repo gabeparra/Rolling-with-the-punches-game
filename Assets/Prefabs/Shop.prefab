@@ -48,9 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6544908f183b93141bcccf4ef13c7df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopUI
-  up1: {fileID: 11400000, guid: 0ecdb86be86442847b5950928a5a49a8, type: 2}
-  up2: {fileID: 11400000, guid: ef5ae64086c79e447a46e2a5e2eb925d, type: 2}
-  up3: {fileID: 11400000, guid: 6840204fdcf77bb4b8c5793c060136b1, type: 2}
+  upgrades:
+  - {fileID: 11400000, guid: 0ecdb86be86442847b5950928a5a49a8, type: 2}
+  - {fileID: 11400000, guid: 3d5d6d57cc962434f989af3b10032625, type: 2}
 --- !u!65 &4393991503946728436
 BoxCollider:
   m_ObjectHideFlags: 0
