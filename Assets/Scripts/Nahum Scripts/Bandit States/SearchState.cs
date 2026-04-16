@@ -9,8 +9,7 @@ public class SearchState : State
 
     public void Start()
     {
-        at_target = fsm.target==parent.transform.position;
-        
+        at_target = Vector3.Distance(fsm.target, parent.transform.position) < 1f;
     }
 
     public override void StateEnter()
@@ -57,7 +56,7 @@ public class SearchState : State
 
     public override void StateFixedUpdate()
     {
-        at_target = fsm.target==parent.transform.position;
+        at_target = Vector3.Distance(fsm.target, parent.transform.position) < 1f;
     }
 
     

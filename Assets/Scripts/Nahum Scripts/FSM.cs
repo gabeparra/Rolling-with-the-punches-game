@@ -37,8 +37,13 @@ public class FSM : MonoBehaviour
 
     public virtual void SetCurrentState(String state)
     {
+        if (!states.TryGetValue(state, out State nextState))
+        {
+            Debug.LogError($"[FSM] State '{state}' not found! Available: {string.Join(", ", states.Keys)}");
+            return;
+        }
         ExitCurrentState();
-        current_state = states[state];
+        current_state = nextState;
         current_state.StateEnter();
     }
 }

@@ -1,11 +1,7 @@
 using UnityEngine;
 
-public class SnowyEnvironmentSpawner : MonoBehaviour
+public class SnowyEnvironmentSpawner : EnvironmentSpawner
 {
-    [Header("Track Settings")]
-    public float trackLength = 200f;
-    public float trackCenterZ = 0f;
-
     [Header("Background (far from track)")]
     public GameObject[] mountainPrefabs;
     public GameObject[] snowDriftPrefabs;
@@ -32,16 +28,10 @@ public class SnowyEnvironmentSpawner : MonoBehaviour
     public float nearMinZ = 3f;
     public float nearMaxZ = 10f;
 
-    [Header("Road Exclusion")]
-    public float roadHalfWidth = 12f;
-
-    [Header("Scale Variation")]
-    public float minScale = 0.8f;
-    public float maxScale = 1.3f;
-
     [Header("Snow Tint")]
     public bool tintObjects = true;
     public Color snowTint = new Color(0.85f, 0.88f, 0.95f);
+    public float tintStrength = 0.55f;
 
     void Awake()
     {
@@ -56,51 +46,27 @@ public class SnowyEnvironmentSpawner : MonoBehaviour
 
     void Start()
     {
-        SpawnLayer(mountainPrefabs, mountainCount, backgroundMinZ, backgroundMaxZ, true);
-        SpawnLayer(snowDriftPrefabs, snowDriftCount, backgroundMaxZ, backgroundMaxZ + 20f, false);
-        SpawnLayer(pineTreePrefabs, pineTreeCount, midMinZ, midMaxZ, true);
-        SpawnLayer(snowRockPrefabs, snowRockCount, midMinZ, midMaxZ, true);
-        SpawnLayer(logPrefabs, logCount, midMinZ, midMaxZ, true);
-        SpawnLayer(propPrefabs, propCount, nearMinZ, nearMaxZ, true);
-        SpawnLayer(snowPilePrefabs, snowPileCount, nearMinZ, nearMaxZ, false);
-    }
+        roadHalfWidth = 10f;
 
-    void SpawnLayer(GameObject[] prefabs, int count, float minZ, float maxZ, bool randomRotation)
-    {
-        if (prefabs == null || prefabs.Length == 0) return;
-
-        for (int i = 0; i < count; i++)
+        if (tintObjects)
         {
-            float x = Random.Range(-trackLength / 2f, trackLength / 2f);
-
-            float side = Random.value > 0.5f ? 1f : -1f;
-            float effectiveMinZ = Mathf.Max(minZ, roadHalfWidth);
-            float z = trackCenterZ + side * Random.Range(effectiveMinZ, maxZ);
-
-            Vector3 pos = new Vector3(x, 0f, z);
-            Quaternion rot = randomRotation
-                ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)
-                : Quaternion.identity;
-
-            GameObject obj = Instantiate(prefabs[Random.Range(0, prefabs.Length)], pos, rot, transform);
-
-            float scale = Random.Range(minScale, maxScale);
-            obj.transform.localScale *= scale;
-
-            if (tintObjects)
-                TintRenderers(obj);
+            SpawnLayerTinted(mountainPrefabs, mountainCount, backgroundMinZ, backgroundMaxZ, true, snowTint, tintStrength);
+            SpawnLayerTinted(snowDriftPrefabs, snowDriftCount, backgroundMaxZ, backgroundMaxZ + 20f, false, snowTint, tintStrength);
+            SpawnLayerTinted(pineTreePrefabs, pineTreeCount, midMinZ, midMaxZ, true, snowTint, tintStrength);
+            SpawnLayerTinted(snowRockPrefabs, snowRockCount, midMinZ, midMaxZ, true, snowTint, tintStrength);
+            SpawnLayerTinted(logPrefabs, logCount, midMinZ, midMaxZ, true, snowTint, tintStrength);
+            SpawnLayerTinted(propPrefabs, propCount, nearMinZ, nearMaxZ, true, snowTint, tintStrength);
+            SpawnLayerTinted(snowPilePrefabs, snowPileCount, nearMinZ, nearMaxZ, false, snowTint, tintStrength);
         }
-    }
-
-    void TintRenderers(GameObject obj)
-    {
-        foreach (var r in obj.GetComponentsInChildren<Renderer>())
+        else
         {
-            foreach (var mat in r.materials)
-            {
-                Color original = mat.color;
-                mat.color = Color.Lerp(original, snowTint, 0.55f);
-            }
+            SpawnLayer(mountainPrefabs, mountainCount, backgroundMinZ, backgroundMaxZ, true);
+            SpawnLayer(snowDriftPrefabs, snowDriftCount, backgroundMaxZ, backgroundMaxZ + 20f, false);
+            SpawnLayer(pineTreePrefabs, pineTreeCount, midMinZ, midMaxZ, true);
+            SpawnLayer(snowRockPrefabs, snowRockCount, midMinZ, midMaxZ, true);
+            SpawnLayer(logPrefabs, logCount, midMinZ, midMaxZ, true);
+            SpawnLayer(propPrefabs, propCount, nearMinZ, nearMaxZ, true);
+            SpawnLayer(snowPilePrefabs, snowPileCount, nearMinZ, nearMaxZ, false);
         }
     }
 }

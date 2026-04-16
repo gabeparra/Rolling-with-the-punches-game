@@ -5,22 +5,19 @@ public class TrackSpawner : MonoBehaviour
     public GameObject spawningTracks; // Drag your prefab here
     public Transform spawnPoint;      // Drag the child empty object here
     public int maxTracks = 10;
-    
+
     private static int currentTrackCount = 0;
     private bool hasSpawned = false;
 
-    void Start()
-    {
-    }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics() => currentTrackCount = 0;
 
-    void Update()
-    {
-    }
+    /// <summary>Call once per scene load to allow fresh track spawning.</summary>
+    public static void ResetCounter() => currentTrackCount = 0;
 
     private void OnTriggerEnter(Collider other)
     {
-        // Change "Train" to whatever your train object is named
-        if (other.gameObject.name == "Train Engine 2" && !hasSpawned)
+        if (other.CompareTag("Train") && !hasSpawned)
         {
             if (currentTrackCount < maxTracks)
             {

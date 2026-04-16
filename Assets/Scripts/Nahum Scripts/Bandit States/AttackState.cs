@@ -5,10 +5,10 @@ public class AttackState : State
     Vector3 target_pos;
     GameObject[] barricades;
 
-    Ray target_ray = new();
-    Ray aim_ray = new();
+    Ray target_ray;
+    Ray aim_ray;
 
-    Ray direct_ray = new();
+    Ray direct_ray;
 
     float error_margin = 1f;
 
@@ -16,7 +16,7 @@ public class AttackState : State
 
     float ray_distance = 20f;
 
-    float shoot_force = 8590f;
+    float bullet_speed = 8f;
 
     const int max_mag_size = 6;
     int mag_size = max_mag_size;
@@ -27,15 +27,31 @@ public class AttackState : State
 
     float reload_time = 2f;
 
-    public void Start()
-    {
-        InvokeRepeating("TryShoot",0f,shoot_interval);
-    }
+    LineRenderer laserLine;
 
     public override void StateEnter()
     {
         Debug.Log("entered fight state.");
+        direct_ray = new Ray(parent.transform.position, parent.transform.forward);
+        aim_ray = new Ray(parent.transform.position, parent.transform.forward);
+        target_ray = new Ray(parent.transform.position, parent.transform.forward);
         SetTargetRay();
+
+        // Start shoot timer on enter (cancelled in StateExit)
+        InvokeRepeating("TryShoot", 0f, shoot_interval);
+
+        // Create laser sight
+        laserLine = parent.GetComponent<LineRenderer>();
+        if (laserLine == null)
+            laserLine = parent.AddComponent<LineRenderer>();
+        laserLine.startWidth = 0.03f;
+        laserLine.endWidth = 0.03f;
+        laserLine.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+        laserLine.material.color = Color.red;
+        laserLine.startColor = Color.red;
+        laserLine.endColor = Color.red;
+        laserLine.positionCount = 2;
+        laserLine.enabled = true;
     }
     public override void StateUpdate()
     {
@@ -55,13 +71,22 @@ public class AttackState : State
         {
             fsm.target = parent.transform.position;
         }
+
+        // Update laser sight
+        if (laserLine != null && laserLine.enabled && fsm.enemy_target != null)
+        {
+            Vector3 origin = parent.transform.position + parent.transform.forward * 0.5f;
+            laserLine.SetPosition(0, origin);
+            laserLine.SetPosition(1, fsm.enemy_target.transform.position);
+        }
     }
 
     public bool CanSeeEnemyTarget()
     {
         if (fsm.enemy_target==null) {return false;}
+        Ray losRay = new Ray(parent.transform.position, fsm.enemy_target.transform.position - parent.transform.position);
         RaycastHit hit;
-        if (Physics.Raycast(direct_ray, out hit,float.PositiveInfinity))
+        if (Physics.Raycast(losRay, out hit,float.PositiveInfinity))
         {
             GameObject obj = hit.collider.gameObject;
             
@@ -73,6 +98,14 @@ public class AttackState : State
         }
 
         return false;
+    }
+
+    public override void StateExit()
+    {
+        if (laserLine != null) laserLine.enabled = false;
+        CancelInvoke("TryShoot");
+        CancelInvoke("Reload");
+        reloading = false;
     }
 
     public override void StateFixedUpdate()
@@ -134,14 +167,16 @@ public class AttackState : State
     {
         if (mag_size<=0) {return;}
         print("shot");
-        GameObject bullet = Instantiate(fsm.bullet_prefab, parent.transform.position + parent.transform.forward * .5f, parent.transform.rotation);
+        GameObject bullet = Instantiate(fsm.bullet_prefab, parent.transform.position + parent.transform.forward * 1.5f, parent.transform.rotation);
+        bullet.tag = "EnemyBullet";
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.AddForce(target_ray.direction * shoot_force);
+        rb.useGravity = false;
+        rb.linearVelocity = target_ray.direction.normalized * bullet_speed;
         mag_size = Mathf.Clamp(mag_size-1,0,max_mag_size);
         SetTargetRay();
 
-        Destroy(bullet, 2f);
+        Destroy(bullet, 4f);
     }
 
     public void LookToTargetEnemy()

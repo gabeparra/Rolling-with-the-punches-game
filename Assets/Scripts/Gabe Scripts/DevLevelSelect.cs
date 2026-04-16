@@ -43,7 +43,7 @@ public class DevLevelSelect : MonoBehaviour
         if (GUI.Button(new Rect(startX, startY, w, h), "Mountain"))
         {
             LevelSelector.CurrentTheme = LevelSelector.Theme.Mountain;
-            SceneManager.LoadScene("Mountain scene");
+            SceneManager.LoadScene("Hector Scene");
             showMenu = false;
         }
         startY += h + pad;
@@ -51,7 +51,7 @@ public class DevLevelSelect : MonoBehaviour
         if (GUI.Button(new Rect(startX, startY, w, h), "Snow"))
         {
             LevelSelector.CurrentTheme = LevelSelector.Theme.Snowy;
-            SceneManager.LoadScene("Snow scene");
+            SceneManager.LoadScene("Hector Scene");
             showMenu = false;
         }
         startY += h + pad;

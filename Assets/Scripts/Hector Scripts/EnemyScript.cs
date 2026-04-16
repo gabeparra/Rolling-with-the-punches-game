@@ -2,24 +2,16 @@ using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
 {
-    public int maxHealth = 10;
-    private int currentHealth;
-
-    void Start()
-    {
-        currentHealth = maxHealth;
-    }
+    public int health = 5;
 
     public void TakeDamage(int amount)
     {
-        currentHealth -= amount;
-        Debug.Log($"{gameObject.name} took {amount} damage. HP: {currentHealth}/{maxHealth}");
-        if (currentHealth <= 0) Die();
-    }
-
-    void Die()
-    {
-        Debug.Log($"{gameObject.name} defeated!");
-        Destroy(gameObject);
+        health -= amount;
+        if (health <= 0)
+        {
+            if (HUDManager.Instance != null)
+                HUDManager.Instance.OnEnemyKilled();
+            Destroy(gameObject);
+        }
     }
 }

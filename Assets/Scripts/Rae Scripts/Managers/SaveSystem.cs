@@ -1,30 +1,50 @@
+using System;
 using System.IO;
 using UnityEngine;
 
+// Original by Rae, persistentDataPath fix, auto-init, and try-catch added by Gabriel
 public static class SaveSystem
 {
-    private static readonly string SAVE_FOLDER = Application.dataPath + "/Saves/";
+    private static readonly string SAVE_FOLDER = Application.persistentDataPath + "/Saves/";
     private static readonly string SAVE_FILE = SAVE_FOLDER + "save.txt";
+    private static bool _initialized = false;
 
-    public static void Init()
+    private static void EnsureInitialized()
     {
-        //test if save folder exists
+        if (_initialized) return;
+        _initialized = true;
         if (!Directory.Exists(SAVE_FOLDER))
-        {
             Directory.CreateDirectory(SAVE_FOLDER);
-        }
     }
+
+    public static void Init() => EnsureInitialized();
 
     public static void Save(string saveString)
     {
-        File.WriteAllText(SAVE_FILE, saveString);
+        EnsureInitialized();
+        try
+        {
+            File.WriteAllText(SAVE_FILE, saveString);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SaveSystem] Failed to save: {e.Message}");
+        }
     }
 
     public static string Load()
     {
-        if(!File.Exists(SAVE_FILE))
+        EnsureInitialized();
+        try
+        {
+            if (!File.Exists(SAVE_FILE))
+                return null;
+            return File.ReadAllText(SAVE_FILE);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SaveSystem] Failed to load: {e.Message}");
             return null;
-
-        return File.ReadAllText(SAVE_FILE);
+        }
     }
 }

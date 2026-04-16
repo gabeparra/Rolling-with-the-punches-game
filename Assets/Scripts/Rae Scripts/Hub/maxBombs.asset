@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76175894cf1ed2e4dbf35a42fd247576, type: 3}
   m_Name: maxBombs
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
-  upgradeName: Max Bombs
-  description: increase number of bombs you can hold
-  cost: 2
+  id: max_ammo_1
+  upgradeName: Max Ammo
+  description: Increase maximum ammo capacity
+  cost: 50
+  type: 2
+  value: 2

@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class BanditFSM : FSM
 {
-    public int health = 6; // Added by Hector to set enemy health value
+    public int health = 2; // Added by Hector to set enemy health value
     public Vector3 target;
     public GameObject floor;
   
@@ -45,7 +45,6 @@ public class BanditFSM : FSM
         states = new()
         {
         {"loot", lootState},
-        {"escape", parent.AddComponent<EscapeState>()},
         {"attack", parent.AddComponent<AttackState>()},
         {"search", searchState}
         };
@@ -81,6 +80,15 @@ public class BanditFSM : FSM
 
     void Die() // Method added by Hector to destroy enemy on death
     {
+        CancelInvoke();
+        ExitCurrentState();
+        // Cancel invokes on all state components too
+        foreach (State state in states.Values)
+            if (state != null) state.CancelInvoke();
+
+        if (HUDManager.Instance != null) HUDManager.Instance.OnEnemyKilled();
+        EnemyDeathEffect deathEffect = GetComponent<EnemyDeathEffect>();
+        if (deathEffect != null) deathEffect.PlayDeathEffects();
         Destroy(parent);
     }
 
@@ -98,6 +106,7 @@ public class BanditFSM : FSM
                 SetCurrentState("attack");
             }
         }
+
     }
 
     protected override void FixedUpdate()
@@ -112,7 +121,7 @@ public class BanditFSM : FSM
 
     void FollowTarget()
     {
-        if (target!=parent.transform.position)
+        if (agent != null && agent.enabled && Vector3.Distance(target, parent.transform.position) > 0.5f)
         {
             agent.destination = target;
         }

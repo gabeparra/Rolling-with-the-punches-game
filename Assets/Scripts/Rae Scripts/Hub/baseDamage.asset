@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76175894cf1ed2e4dbf35a42fd247576, type: 3}
   m_Name: baseDamage
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
+  id: damage_1
   upgradeName: Base Damage
-  description: Increase base damage of your weapon
+  description: Double your bullet damage
   cost: 100
+  type: 1
+  value: 2

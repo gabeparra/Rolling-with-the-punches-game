@@ -7,7 +7,7 @@ public class Enemy_AI : MonoBehaviour
 {
     public GameObject head;
     public GameObject bulletPrefab;
-    public int health = 6; // Added by Hector to set enemy health value
+    public int health = 2; // Added by Hector to set enemy health value
     public GameObject loot_targets_container;
     private Transform target;
     private NavMeshAgent agent;
@@ -64,27 +64,16 @@ void Start()
 
 void Die()
     {
+        CancelInvoke();
         if (HUDManager.Instance != null) HUDManager.Instance.OnEnemyKilled();
+        EnemyDeathEffect deathEffect = GetComponent<EnemyDeathEffect>();
+        if (deathEffect != null) deathEffect.PlayDeathEffects();
         Destroy(gameObject);
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        GameObject obj = collision.collider.gameObject;
-        if (obj)
-        {
-   }
-    }
-
-    void stopKnockback()
-    {
-        GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-    }
-
-
     private void OnDrawGizmos()
     {
-        //head = transform.Find("Head") ? transform.Find("Head").gameObject : null;
+        if (head == null) return;
         shootOrigin = head.transform.position;
         shootDirection = head.transform.forward;
         Gizmos.color = Color.indianRed;
@@ -102,6 +91,7 @@ void shoot()
 
         GameObject bullet = Instantiate(bulletPrefab, origin, Quaternion.LookRotation(dirToPlayer));
         bullet.tag = "EnemyBullet";
+        bullet.layer = 8; // Bullet layer — avoids hitting train mesh
 
         if (bullet.GetComponent<BulletTracer>() == null)
             bullet.AddComponent<BulletTracer>();

@@ -1,24 +1,24 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
+    [SerializeField] private GameObject startButton;
+
+    void Start()
+    {
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (startButton != null && EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(startButton);
+    }
+
     public void PlayGame()
     {
-        LevelSelector.CurrentTheme = LevelSelector.Theme.Western;
-        SceneManager.LoadScene("Hector Scene");
-    }
-
-    public void PlaySnowyScene()
-    {
-        LevelSelector.CurrentTheme = LevelSelector.Theme.Snowy;
-        SceneManager.LoadScene("Snow scene");
-    }
-
-    public void PlayMountainScene()
-    {
-        LevelSelector.CurrentTheme = LevelSelector.Theme.Mountain;
-        SceneManager.LoadScene("Mountain scene");
+        SceneManager.LoadScene("HubScene");
     }
 
     public void QuitGame()

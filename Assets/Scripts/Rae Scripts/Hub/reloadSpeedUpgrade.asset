@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76175894cf1ed2e4dbf35a42fd247576, type: 3}
   m_Name: reloadSpeedUpgrade
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
+  id: reload_speed_1
   upgradeName: Reload Speed
   description: player's gun reload speed
   cost: 20
+  type: 0
+  value: 0.25

@@ -37,8 +37,9 @@ public class LootState : State
         bool has_loot_target = false;
         for (int i = 0; i < fsm.loot_targets.Length; i++)
         {
+            if (fsm.loot_targets[i] == null) continue;
             Vector3 pos = fsm.loot_targets[i].position;
-            if (pos==fsm.target)
+            if (Vector3.Distance(pos, fsm.target) < 1f)
             {
                 has_loot_target = true;
                 break;

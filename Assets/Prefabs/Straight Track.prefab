@@ -17,6 +17,10 @@ PrefabInstance:
       value: Dirt
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3b4c5e3654c28dc45a10b8198accd7b6, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 3b4c5e3654c28dc45a10b8198accd7b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.09
       objectReference: {fileID: 0}
