@@ -23,12 +23,13 @@ public class UpgradeManager : MonoBehaviour
 
     public static void BuyUpgrade(Upgrade upgrade)
     {
-        if(GameManager.UpdateCurrency(-upgrade.cost))
+        int cost = GetCost(upgrade);
+        if(GameManager.UpdateCurrency(-cost))
         {
             string _name = upgrade.upgradeName;
             purchasedUpgrades[_name] = purchasedUpgrades.GetValueOrDefault(_name, 0) + 1;
 
-            Debug.Log($"Purchased {_name} for {upgrade.cost}");
+            Debug.Log($"Purchased {_name} for {cost}");
             Debug.Log($"{_name} is now lvl {purchasedUpgrades[_name]}");
         }
 
@@ -74,6 +75,12 @@ public class UpgradeManager : MonoBehaviour
     public static int GetLevel(string upgradeName)
     {
         return purchasedUpgrades.GetValueOrDefault(upgradeName, 0);
+    }
+
+    public static int GetCost(Upgrade upgrade)
+    {
+        if(upgrade.prices.Length > 0) return upgrade.prices[0];
+        else return 0;
     }
 
 }

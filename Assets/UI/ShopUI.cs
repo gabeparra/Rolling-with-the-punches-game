@@ -26,8 +26,10 @@ public class ShopUI : MonoBehaviour
 
         _list.bindItem = (e, i) =>
         {
+            Upgrade _upgrade = _list.itemsSource[i] as Upgrade;
             Button _b = e.Q<Button>("btn"); //get reference to this element's puchase button
-            _b.dataSource = _list.itemsSource[i]; //explicitly assign the correct data source for this button (used in its onClick)
+            _b.dataSource = _upgrade; //explicitly assign the correct data source for this button (used in its onClick)
+            _b.text = UpgradeManager.GetCost(_upgrade).ToString();
             _b.RegisterCallback<ClickEvent>(OnClick, TrickleDown.TrickleDown); //register the onClick //TODO: do we wanta different TrickleDown??
 
             // all other data (upgrade info from SO) is automatically assigned to the element's parts (they are manually bound in ShopItem.uxml)
