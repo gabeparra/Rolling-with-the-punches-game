@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
   upgradeName: Base Damage
   description: Increase base damage of your weapon
-  cost: 100
+  prices: 02000000
+  maxLevel: 0

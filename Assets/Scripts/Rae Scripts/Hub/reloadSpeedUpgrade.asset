@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
   upgradeName: Reload Speed
   description: player's gun reload speed
-  cost: 20
+  prices: 01000000050000000a00000014000000
   maxLevel: 4

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
   upgradeName: Magazine Size
   description: Fit more rounds in your gun
-  cost: 100
+  prices: 02000000
   maxLevel: 5
