@@ -29,39 +29,9 @@ public class ShopUI : MonoBehaviour
             e.Q<Label>("description").text = u.description;
 
             Button buyBtn = e.Q<Button>("btn");
-            bool owned = GameManager.Instance != null && GameManager.Instance.HasUpgrade(u.id);
-            if (owned)
-            {
-                buyBtn.text = "OWNED";
-                buyBtn.SetEnabled(false);
-            }
-            else
-            {
-                buyBtn.text = u.cost.ToString() + "g";
-                buyBtn.SetEnabled(true);
-                buyBtn.clicked += () => TryBuy(u, buyBtn);
-            }
         };
     }
 
-    private void TryBuy(Upgrade u, Button buyBtn)
-    {
-        if (GameManager.Instance == null) return;
-        if (GameManager.Instance.HasUpgrade(u.id)) return;
-
-        if (GameManager.Instance.BuyUpgrade(u.id, u.cost))
-        {
-            buyBtn.text = "OWNED";
-            buyBtn.SetEnabled(false);
-            if (_goldLabel != null)
-                _goldLabel.text = "Gold: " + GameManager.Instance.Gold;
-            Debug.Log("Purchased upgrade: " + u.upgradeName);
-        }
-        else
-        {
-            Debug.Log("Not enough gold for: " + u.upgradeName);
-        }
-    }
 
     public void Hide()
     {

@@ -7,4 +7,5 @@ public class Upgrade : ScriptableObject
     public string description;
     public int cost;
     public int maxLevel;
+    public int id;
 }

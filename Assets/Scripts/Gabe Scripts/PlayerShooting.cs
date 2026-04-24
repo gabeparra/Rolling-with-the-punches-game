@@ -15,18 +15,6 @@ public class PlayerShooting : MonoBehaviour
     private bool _reloading = false;
     private bool _triggerWasDown = false;
 
-    void Start()
-    {
-        audioSource = GetComponent<AudioSource>();
-
-        // Apply upgrades
-        if (GameManager.Instance != null)
-        {
-            reloadTime *= GameManager.Instance.GetReloadMultiplier();
-            damage = Mathf.RoundToInt(damage * GameManager.Instance.GetDamageMultiplier());
-        }
-    }
-
     void Update()
     {
         // Shoot -- Space, RB, or Right Trigger on Xbox

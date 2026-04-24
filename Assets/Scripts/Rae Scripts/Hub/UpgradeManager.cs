@@ -21,20 +21,7 @@ public class UpgradeManager : MonoBehaviour
         }
     }
 
-    public static void BuyUpgrade(Upgrade upgrade)
-    {
-        if(GameManager.UpdateCurrency(-upgrade.cost))
-        {
-            string _name = upgrade.upgradeName;
-            purchasedUpgrades[_name] = purchasedUpgrades.GetValueOrDefault(_name, 0) + 1;
-
-            Debug.Log($"Purchased {_name} for {upgrade.cost}");
-            Debug.Log($"{_name} is now lvl {purchasedUpgrades[_name]}");
-        }
-
-        Debug.Log($"You have {GameManager.getCurrency()} cash");
-
-    }
+    
 
     private void Awake()
     {

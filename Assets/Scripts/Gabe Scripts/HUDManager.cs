@@ -49,8 +49,6 @@ public class HUDManager : MonoBehaviour
     {
         _hearts = heartIcons != null ? heartIcons.Length : 0;
         _maxAmmo = startingAmmo;
-        if (GameManager.Instance != null)
-            _maxAmmo += GameManager.Instance.GetMaxAmmoBonus();
         _ammo = _maxAmmo;
         _enemiesRemaining = totalEnemies;
 
