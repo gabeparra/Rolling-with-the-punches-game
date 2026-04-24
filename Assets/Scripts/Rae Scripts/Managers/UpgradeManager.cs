@@ -77,10 +77,52 @@ public class UpgradeManager : MonoBehaviour
         return purchasedUpgrades.GetValueOrDefault(upgradeName, 0);
     }
 
+    /// <summary>
+    /// use to get the cost to purchase the next level of the given upgrade
+    /// </summary>
+    /// <param name="upgrade">the upgrade to get the cost of</param>
+    /// <returns>The cost to purchase the next level of the upgrade. Returns -1 if there are no prices defined for the upgrade, or the player has reached or passed the upgrade's max level. If there more levels to purchase than defined prices, the remaining levels use the last defined price.</returns>
     public static int GetCost(Upgrade upgrade)
     {
-        if(upgrade.prices.Length > 0) return upgrade.prices[0];
-        else return 0;
+        int currentLevel = GetLevel(upgrade.upgradeName);
+        int maxLevel = upgrade.maxLevel;
+        int pricesLen = upgrade.prices.Length;
+
+        int result;
+
+        Debug.Log($"current level of {upgrade.upgradeName} is {currentLevel}. Its max level is {maxLevel}, and {pricesLen} prices are defined", upgrade);
+
+        //no prices defined, use -1
+        if (pricesLen < 0) 
+        {
+            result = -1;
+            Debug.Log($"No prices are defined for {upgrade.upgradeName}. returning {result}");
+            return result;
+        }
+
+        //we've reached/passed the max level, use -1
+        if(currentLevel >= maxLevel)
+        {
+            result = -1;
+            Debug.Log($"We've reached/passed the max level for {upgrade.upgradeName}. returning {result}");
+            return result;
+        }
+
+        //we've passed the last defined price, use the last one
+        if(currentLevel >= pricesLen)
+        {
+            //if final level is 6, the last upgrade price is stored in prices[5]. At that point, current level = 5, and pricesLen = 6
+            //that means generally, we've gone too far if current level = pricesLen
+            //the final level is stored in pricesLen-1
+            result = upgrade.prices[pricesLen - 1];
+            Debug.Log($"We've passed the last defined price for {upgrade.upgradeName}. The final price was {result}");
+            return result;
+        }
+
+        //nothing is wrong? use matching level
+        result = upgrade.prices[GetLevel(upgrade.upgradeName)];
+        Debug.Log($"All checks passed. The current price for {upgrade.upgradeName} should be {result}");
+        return result;
     }
 
 }

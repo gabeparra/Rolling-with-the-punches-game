@@ -55,6 +55,7 @@ public class ShopUI : MonoBehaviour
 
         Debug.Log("button pressed: " + _str);
         UpgradeManager.BuyUpgrade(_up);
+        _list.RefreshItems();
     }
 
     //hide the UI (for when not in the shop)
@@ -68,6 +69,7 @@ public class ShopUI : MonoBehaviour
     public void Show()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+        _list.RefreshItems();
         PlayerController.canMove = false;
     }
 

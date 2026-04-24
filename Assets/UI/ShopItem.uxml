@@ -12,10 +12,6 @@
                 </Bindings>
             </ui:Label>
         </ui:VisualElement>
-        <ui:Button text="cost" data-source-path="cost" name="btn">
-            <Bindings>
-                <ui:DataBinding property="text" binding-mode="ToTarget"/>
-            </Bindings>
-        </ui:Button>
+        <ui:Button text="cost" data-source-path="cost" name="btn" enabled="true" class="unity-button__image" style="min-width: 128px;"/>
     </ui:VisualElement>
 </ui:UXML>
