@@ -12,20 +12,24 @@ public class AttackState : State
 
     float error_margin = 1f;
 
+    public float shoot_interval = 1.5f;
+
+    public float shoot_force = 2000f;
+
+    int mag_size = 6;
+
+    bool reloading = false;
+
+    public int max_mag_size = 6;
+
+    public float reload_time = 2f;
+
     public float accuracy = .3f;
 
     float ray_distance = 20f;
 
-    float shoot_force = 8590f;
+    public Bandit bandit_data;
 
-    const int max_mag_size = 6;
-    int mag_size = max_mag_size;
-
-    float shoot_interval = .75f;
-
-    bool reloading = false;
-
-    float reload_time = 2f;
 
     public void Start()
     {

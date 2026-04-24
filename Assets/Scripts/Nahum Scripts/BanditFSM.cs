@@ -5,13 +5,15 @@ using UnityEngine.AI;
 
 public class BanditFSM : FSM
 {
-    public int health = 6; // Added by Hector to set enemy health value
+    public float health = 6f; // Added by Hector to set enemy health value
     public Vector3 target;
     public GameObject floor;
   
     SearchState searchState;
 
     LootState lootState;
+
+    public AttackState attackState;
 
     public GameObject loot_targets_container;
     public Transform[] loot_targets;
@@ -40,13 +42,14 @@ public class BanditFSM : FSM
 
         searchState = parent.AddComponent<SearchState>();
         lootState = parent.AddComponent<LootState>();
+        attackState = parent.AddComponent<AttackState>();
 
 
         states = new()
         {
         {"loot", lootState},
         {"escape", parent.AddComponent<EscapeState>()},
-        {"attack", parent.AddComponent<AttackState>()},
+        {"attack", attackState},
         {"search", searchState}
         };
 

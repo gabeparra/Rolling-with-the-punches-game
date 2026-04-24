@@ -7,15 +7,42 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
     public GameObject enemyPrefab;
     Vector3 spawn_position;
     Vector3 spawn_dir;
-    public bool active = false;
-    int max_enemies = 5;
+    public bool active = true;
+    public int max_enemies = 5;
     int enemies_spawned = 0;
     public GameObject loot_targets_container;
     Transform[] loot_targets;
     private List<GameObject> enemy_list = new List<GameObject>();
     public GameObject player;
-    float spawnInterval = 3f;
+    public float spawnInterval = 3f;
     int maxFighters = 2;
+
+    public int level = 1;
+
+    public float enemy_accuracy_level_increment = .15f;
+
+    public float base_enemy_accuracy = .3f;
+
+    public float max_health_level_increment = 2f;
+
+    public float reload_time_level_increment = -.15f;
+
+    public float shoot_interval_level_increment = -.15f;
+
+    public float base_shoot_interval = 1.5f;
+
+    public float base_reload_time = 2f;
+
+    public int base_max_health = 6;
+
+    public int base_max_mag_size = 6;
+
+    public int max_mag_size_level_increment = 1;
+
+    public float base_shoot_force = 2000f;
+
+    public float shoot_force_level_increment = 100f;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -98,6 +125,13 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
             enemy_list.Add(enemy);
             fsm.enemy_target = player;
             fsm.loot_targets_container = loot_targets_container;
+
+            fsm.attackState.accuracy = base_enemy_accuracy + (level - 1) * enemy_accuracy_level_increment;
+            fsm.attackState.shoot_interval = Mathf.Max(0.1f, base_shoot_interval + (level - 1) * shoot_interval_level_increment);
+            fsm.attackState.reload_time = Mathf.Max(0.1f, base_reload_time + (level - 1) * reload_time_level_increment);
+            fsm.health = base_max_health + (level - 1) * max_health_level_increment;
+            fsm.attackState.max_mag_size = base_max_mag_size + (level - 1) * max_mag_size_level_increment;
+            fsm.attackState.shoot_force = base_shoot_force + (level - 1) * shoot_force_level_increment;
             enemies_spawned++;
         }
     }
