@@ -14,6 +14,7 @@ public class ShopUI : MonoBehaviour
     private UIDocument uiDocument;
     private Button _btnClose;
     private ListView _list;
+    private Label _lblCurrency;
 
 
     void Awake()
@@ -23,6 +24,7 @@ public class ShopUI : MonoBehaviour
         _btnClose = uiDocument.rootVisualElement.Q("close") as Button;
         _list = uiDocument.rootVisualElement.Q("listView") as ListView;
         _list.itemsSource = upgrades;
+        _lblCurrency = uiDocument.rootVisualElement.Q("cash") as Label;
 
         Hide(); //hide shop UI until player actually goes to shop
 
@@ -71,7 +73,7 @@ public class ShopUI : MonoBehaviour
 
         Debug.Log("button pressed: " + _str);
         UpgradeManager.BuyUpgrade(_up);
-        _list.RefreshItems();
+        RefreshData();
     }
 
     //hide the UI (for when not in the shop)
@@ -85,8 +87,14 @@ public class ShopUI : MonoBehaviour
     public void Show()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
-        _list.RefreshItems();
+        RefreshData();
         PlayerController.canMove = false;
+    }
+
+    private void RefreshData()
+    {
+        _list.RefreshItems();
+        _lblCurrency.text = GameManager.getCurrency().ToString();
     }
 
     //automatically bind event
@@ -96,6 +104,8 @@ public class ShopUI : MonoBehaviour
         {
             _btnClose.clicked += Hide;
         }
+
+        RefreshData(); //have to wait until onEnable to contact GameManager
     }
 
     //automatically unbind event

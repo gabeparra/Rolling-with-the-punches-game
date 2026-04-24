@@ -3,6 +3,10 @@
         <ui:VisualElement style="flex-direction: row;">
             <ui:Button text="Close" name="close"/>
             <ui:Label text="Shop Item List"/>
+            <ui:VisualElement name="" style="flex-grow: 1; flex-direction: row;">
+                <ui:Image source="project://database/Assets/2D%20images/money.png?fileID=2800000&amp;guid=e7952a6c3f90e0545b7768d7b5ea1aa7&amp;type=3#money" style="max-width: 25px; max-height: 25px; align-self: center;"/>
+                <ui:Label name="cash" text="cashAmount"/>
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:ListView name="listView" binding-source-selection-mode="AutoAssign" item-template="project://database/Assets/UI/ShopItem.uxml?fileID=9197481963319205126&amp;guid=6183e6a4035dc53478d52af2fa7ae9b9&amp;type=3#ShopItem" virtualization-method="FixedHeight" fixed-item-height="68" data-source-type="Upgrade, Assembly-CSharp"/>
     </ui:VisualElement>
