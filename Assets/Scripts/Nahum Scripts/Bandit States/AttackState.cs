@@ -3,7 +3,7 @@ using UnityEngine;
 public class AttackState : State
 {
     Vector3 target_pos;
-    GameObject[] barricades;
+    // GameObject[] barricades;
 
     Ray target_ray = new();
     Ray aim_ray = new();
@@ -12,64 +12,63 @@ public class AttackState : State
 
     float error_margin = 1f;
 
-    public float shoot_interval = 1.5f;
-
-    public float shoot_force = 2000f;
-
-    int mag_size = 6;
-
-    bool reloading = false;
-
-    public int max_mag_size = 6;
-
-    public float reload_time = 2f;
-
-    public float accuracy = .3f;
-
     float ray_distance = 20f;
 
-    public Bandit bandit_data;
+    bool reloading = false;
 
 
     public void Start()
     {
-        InvokeRepeating("TryShoot",0f,shoot_interval);
+        
     }
 
     public override void StateEnter()
     {
-        Debug.Log("entered fight state.");
+        base.StateEnter();
+        InvokeRepeating("TryShoot",0f,bandit.shoot_interval);
+        Debug.Log("entered attack state.");
         SetTargetRay();
     }
+    
+
+    public override void StateExit()
+    {
+        base.StateExit();
+        CancelInvoke("TryShoot");
+        Debug.Log("exitted attack state.");
+    }
+
     public override void StateUpdate()
     {
-        if (mag_size==0 && !reloading)
+        if (bandit.mag_size==0 && !reloading)
         {
             print("reloading...");
             reloading = true;
-            Invoke("Reload",reload_time);
+            Invoke("Reload",bandit.reload_time);
         }
 
-        if (!CanSeeEnemyTarget() && fsm.enemy_target!=null)
+        if (!CanSeeEnemyTarget() && bandit.enemy_target!=null)
         {
-            fsm.target = fsm.enemy_target.transform.position;
+            bandit.target = bandit.enemy_target.transform;
             LookToTargetEnemy();
         }
         else
         {
-            fsm.target = parent.transform.position;
+            bandit.target = parent.transform;
         }
     }
 
+   
+
     public bool CanSeeEnemyTarget()
     {
-        if (fsm.enemy_target==null) {return false;}
+        if (bandit.enemy_target==null) {return false;}
         RaycastHit hit;
         if (Physics.Raycast(direct_ray, out hit,float.PositiveInfinity))
         {
             GameObject obj = hit.collider.gameObject;
             
-            bool canSeePlayer = obj.Equals(fsm.enemy_target);
+            bool canSeePlayer = obj.Equals(bandit.enemy_target);
             if (canSeePlayer)
             {
                 return true;
@@ -100,10 +99,10 @@ public class AttackState : State
 
     public void SetTargetRay()
     {
-        if (fsm.enemy_target)
+        if (bandit.enemy_target)
         {
             direct_ray.origin = parent.transform.position;
-            direct_ray.direction = fsm.enemy_target.transform.position - direct_ray.origin;
+            direct_ray.direction = bandit.enemy_target.transform.position - direct_ray.origin;
 
             target_ray.origin = parent.transform.position;
             //print(Vector3.Angle(target_ray.direction,direct_ray.direction));
@@ -116,7 +115,7 @@ public class AttackState : State
 
     public void Reload()
     {
-        mag_size = max_mag_size;
+        bandit.mag_size = bandit.max_mag_size;
         print("reloading done.");
         reloading = false;
     }
@@ -136,13 +135,13 @@ public class AttackState : State
 
     public void Shoot()
     {
-        if (mag_size<=0) {return;}
+        if (bandit.mag_size<=0) {return;}
         print("shot");
-        GameObject bullet = Instantiate(fsm.bullet_prefab, parent.transform.position + parent.transform.forward * .5f, parent.transform.rotation);
+        GameObject bullet = Instantiate(bandit.bullet_prefab, parent.transform.position + parent.transform.forward * .5f, parent.transform.rotation);
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.AddForce(target_ray.direction * shoot_force);
-        mag_size = Mathf.Clamp(mag_size-1,0,max_mag_size);
+        rb.AddForce(target_ray.direction * bandit.shoot_force);
+        bandit.mag_size = Mathf.Clamp(bandit.mag_size-1,0,bandit.max_mag_size);
         SetTargetRay();
 
         Destroy(bullet, 2f);
@@ -157,9 +156,9 @@ public class AttackState : State
 
     public Vector3 GetAimedAtPosition()
     {
-        Vector3 epos = fsm.enemy_target.transform.position;
+        Vector3 epos = bandit.enemy_target.transform.position;
         float em = error_margin;
-        Renderer rend = fsm.enemy_target.GetComponentInChildren<Renderer>();
+        Renderer rend = bandit.enemy_target.GetComponentInChildren<Renderer>();
         Vector3 esize = rend != null ? rend.bounds.size : Vector3.one;
         
         // attack radius values
@@ -168,10 +167,10 @@ public class AttackState : State
         float ary = esize.y * rf;
         float arz = esize.z * rf;
 
-        float rx = Random.Range(0f,1f) < accuracy ? Random.Range(epos.x - arx/2, epos.x + arx/2) 
+        float rx = Random.Range(0f,1f) < bandit.accuracy ? Random.Range(epos.x - arx/2, epos.x + arx/2) 
             : epos.x + ((Random.Range(0f,1f) < .5f? 1 : -1) * Random.Range( arx, arx + em));
         float ry = Random.Range(epos.y - ary/2, epos.y + ary/2) ;
-        float rz = Random.Range(0,1) < accuracy ? Random.Range(epos.z - arz/2, epos.z+arz/2) 
+        float rz = Random.Range(0,1) < bandit.accuracy ? Random.Range(epos.z - arz/2, epos.z+arz/2) 
             : epos.z + (Random.Range(0f,1f) < .5f? 1 : -1) * Random.Range(arz, arz + em);
 
         return new (rx,ry,rz);

@@ -9,7 +9,7 @@ public class SearchState : State
 
     public void Start()
     {
-        at_target = fsm.target==parent.transform.position;
+        at_target = bandit.target==parent.transform;
         
     }
 
@@ -51,13 +51,13 @@ public class SearchState : State
             float y = pos[1] + yl/2 + .1f;
             float z = pos[2] + rz;
 
-            fsm.target = new Vector3(x,y,z);
+            bandit.target.position = new Vector3(x,y,z);
         }
     }
 
     public override void StateFixedUpdate()
     {
-        at_target = fsm.target==parent.transform.position;
+        at_target = bandit.target==parent.transform;
     }
 
     

@@ -43,6 +43,11 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
 
     public float shoot_force_level_increment = 100f;
 
+    public float enemy_switch_to_looter_chance = .1f;
+
+
+    public Bandit.LootFollowType loot_follow_type = Bandit.LootFollowType.Random;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -115,23 +120,44 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         //float sz = Random.Range(transform.position.z - size.z / 2 - 2, transform.position.z + size.z / 2 + 2); 
         spawn_position = new Vector3(sx,sy,sz);
         spawn_dir = spawn_position + new Vector3(transform.position.x > sx ? 3*1.5f : -3*1.5f,1f,0);
+
         if (enemyPrefab)
         {
-            Debug.Log("spawning enemy");
+            
             GameObject enemy = Instantiate(enemyPrefab, spawn_position, Quaternion.LookRotation(spawn_dir));
-            BanditFSM fsm = enemy.GetComponent<BanditFSM>();
-            enemy.transform.localScale = Vector3.one; // Force it to scale -- change added by Hector to stop shrink on spawn
-            fsm.SetCurrentState("loot");
-            enemy_list.Add(enemy);
-            fsm.enemy_target = player;
-            fsm.loot_targets_container = loot_targets_container;
+            Bandit bandit = enemy.GetComponent<Bandit>();
 
-            fsm.attackState.accuracy = base_enemy_accuracy + (level - 1) * enemy_accuracy_level_increment;
-            fsm.attackState.shoot_interval = Mathf.Max(0.1f, base_shoot_interval + (level - 1) * shoot_interval_level_increment);
-            fsm.attackState.reload_time = Mathf.Max(0.1f, base_reload_time + (level - 1) * reload_time_level_increment);
-            fsm.health = base_max_health + (level - 1) * max_health_level_increment;
-            fsm.attackState.max_mag_size = base_max_mag_size + (level - 1) * max_mag_size_level_increment;
-            fsm.attackState.shoot_force = base_shoot_force + (level - 1) * shoot_force_level_increment;
+            enemy.transform.localScale = Vector3.one; // Force it to scale -- change added by Hector to stop shrink on spawn
+
+            bandit.defaultState = Bandit.State.Loot;
+            bandit.change_to_loot_state_chance = enemy_switch_to_looter_chance;
+            bandit.loot_follow_type = loot_follow_type;
+
+            bandit.enemy_target = player;
+            bandit.loot_targets_container = loot_targets_container;
+
+
+            bandit.accuracy_level_increment = enemy_accuracy_level_increment;
+            bandit.base_accuracy = base_enemy_accuracy;
+
+            bandit.base_shoot_interval = base_shoot_interval;
+            bandit.shoot_interval_level_increment = shoot_interval_level_increment;
+
+            bandit.base_reload_time = base_reload_time;
+            bandit.reload_time_level_increment = reload_time_level_increment;
+
+            bandit.health = base_max_health + (level - 1) * max_health_level_increment;
+
+            bandit.base_max_mag_size = base_max_mag_size;
+            bandit.max_mag_size_level_increment = max_mag_size_level_increment;
+
+            bandit.base_shoot_force = base_shoot_force;
+            bandit.shoot_force_level_increment = shoot_force_level_increment;
+
+            bandit.InitializeStats();
+
+            Debug.Log("spawned enemy");
+            enemy_list.Add(enemy);
             enemies_spawned++;
         }
     }

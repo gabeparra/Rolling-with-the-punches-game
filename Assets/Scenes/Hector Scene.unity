@@ -857,7 +857,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FloorEnemySpawnerSpawner
   enemyPrefab: {fileID: 5236417412942557832, guid: ceaf46ee31ed3ba499a5780a8f293e67, type: 3}
   active: 1
-  max_enemies: 5
+  max_enemies: 2
   loot_targets_container: {fileID: 1214398354}
   player: {fileID: 966560383}
   spawnInterval: 3
@@ -867,13 +867,15 @@ MonoBehaviour:
   max_health_level_increment: 2
   reload_time_level_increment: -0.15
   shoot_interval_level_increment: -0.15
-  base_shoot_interval: 1.5
+  base_shoot_interval: 2.5
   base_reload_time: 2
   base_max_health: 6
   base_max_mag_size: 6
   max_mag_size_level_increment: 1
   base_shoot_force: 2000
   shoot_force_level_increment: 100
+  enemy_switch_to_looter_chance: 0.1
+  loot_follow_type: 1
 --- !u!65 &122794043
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6592,23 +6594,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FloorEnemySpawnerSpawner
   enemyPrefab: {fileID: 5236417412942557832, guid: ceaf46ee31ed3ba499a5780a8f293e67, type: 3}
   active: 1
-  max_enemies: 5
+  max_enemies: 4
   loot_targets_container: {fileID: 1214398354}
   player: {fileID: 966560383}
-  spawnInterval: 3
-  level: 10
+  spawnInterval: 5
+  level: 1
   enemy_accuracy_level_increment: 0.15
   base_enemy_accuracy: 0.3
   max_health_level_increment: 2
   reload_time_level_increment: -0.15
   shoot_interval_level_increment: -0.15
-  base_shoot_interval: 0.3
+  base_shoot_interval: 2.5
   base_reload_time: 2
   base_max_health: 6
   base_max_mag_size: 6
   max_mag_size_level_increment: 1
   base_shoot_force: 2000
   shoot_force_level_increment: 100
+  enemy_switch_to_looter_chance: 0.1
+  loot_follow_type: 1
 --- !u!65 &1576950664
 BoxCollider:
   m_ObjectHideFlags: 0
