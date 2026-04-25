@@ -136,6 +136,10 @@ public class BanditFSM : FSM
         Rigidbody rb = parent.GetComponent<Rigidbody>();
         if (rb == null || rb.isKinematic) return;
 
+        // Don't override horizontal velocity while airborne — otherwise bandits
+        // slide sideways through the air after spawning above the deck.
+        if (Mathf.Abs(rb.linearVelocity.y) > 0.5f) return;
+
         Vector3 toTarget = bandit.target.position - parent.transform.position;
         toTarget.y = 0f;
         float dist = toTarget.magnitude;

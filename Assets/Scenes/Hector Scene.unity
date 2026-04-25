@@ -14134,6 +14134,14 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0.235
       objectReference: {fileID: 0}
+    - target: {fileID: 1866814682716282278, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
+      propertyPath: defaultState
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866814682716282278, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
+      propertyPath: max_looting_time
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 1880559730174664395, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.048058953
@@ -14294,7 +14302,8 @@ PrefabInstance:
     - {fileID: 6154379851397237327, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
     - {fileID: 2287750060301198869, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
     - {fileID: 2376298505219078126, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 736068160703306039, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 694269962939995985, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
       insertIndex: -1
