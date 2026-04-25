@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     /*got this from google so might not be best*/
     //public static property to access the single instance of this class
     private static GameManager Instance;
-    private static SaveObject metaSave; //hold meta progression data while the game is open
+    private static SaveObject metaSave = new(); //hold meta progression data while the game is open
     private static RunObject runSave = null; //hold run data (player health, current level)
     private static bool runCurrencyMode = false; //set to true while in a run (use the function to check this, to null-check the runSave)
 
