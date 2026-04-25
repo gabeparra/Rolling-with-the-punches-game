@@ -185,6 +185,7 @@ public class GameManager : MonoBehaviour
 
         int runGold = getCurrency(); //at the moment, currency is still set to runSave
         int amountToAdd = (int)(runGold * PlayerStats.currencyRate); //convert that gold to cash
+        if(!runSave.alive) amountToAdd /= 2; //reward the player less for returning dead
         //ensure currency mode is set to meta
         runSave = null;
         runCurrencyMode = false;
@@ -274,6 +275,7 @@ public class GameManager : MonoBehaviour
         if(arg1.name == "HubScene")
         {
             Debug.Log("We've entered the Hub");
+            EndRun();
         }
     }
 }
