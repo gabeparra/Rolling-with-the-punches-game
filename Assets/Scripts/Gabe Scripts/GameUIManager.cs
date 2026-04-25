@@ -88,8 +88,7 @@ public class GameUIManager : MonoBehaviour
                 RetryLevel();
             else if (_gameFinishedPanel.activeSelf)
             {
-                if (GameManager.Instance != null)
-                    GameManager.Instance.ResetProgression();
+                GameManager.ResetSave();
                 GoToMainMenu();
             }
         }
@@ -148,16 +147,15 @@ public class GameUIManager : MonoBehaviour
         _anyPanelOpen = true;
         Time.timeScale = 0f;
 
-        // Advance level progression
-        if (GameManager.Instance != null)
-            GameManager.Instance.AdvanceLevel();
+        // Advance level — returns false when at max (we just won the final level).
+        bool advanced = GameManager.Instance != null && GameManager.Instance.AdvanceLevel();
 
         if (_winGoldText != null) _winGoldText.text = "Gold: " + gold;
         if (_winKillsText != null) _winKillsText.text = "Kills: " + kills;
 
-        // If all levels complete, show game finished panel
-        if (GameManager.Instance != null && GameManager.Instance.IsGameFinished())
+        if (!advanced)
         {
+            // No further levels — game complete
             _gameFinishedPanel.SetActive(true);
             SelectButton(_gameFinishedFirstBtn);
             Cursor.lockState = CursorLockMode.None;
@@ -178,17 +176,16 @@ public class GameUIManager : MonoBehaviour
 
         int level = GameManager.Instance != null ? GameManager.Instance.GetCurrentLevel() : 1;
 
-        // Map currentLevel to theme.
-        // After AdvanceLevel: 1 = Snow, 2 = Mountain
-        // All levels use "Hector Scene" — ThemeLoader picks the right spawner/materials.
+        // Map currentLevel to theme. Rae's GameManager: level 1 = Western (start),
+        // 2 = Snow (after first AdvanceLevel), 3 = Mountain (after second).
         LevelSelector.Theme nextTheme;
 
         switch (level)
         {
-            case 1:
+            case 2:
                 nextTheme = LevelSelector.Theme.Snowy;
                 break;
-            case 2:
+            case 3:
                 nextTheme = LevelSelector.Theme.Mountain;
                 break;
             default:
@@ -286,8 +283,7 @@ public class GameUIManager : MonoBehaviour
         CreateStatLabel(panel.transform, "FinishedMsg", "You conquered the Wild West!", 10f);
 
         _gameFinishedFirstBtn = CreateButton(panel.transform, "MenuBtn_F", "Main Menu", -80f, () => {
-            if (GameManager.Instance != null)
-                GameManager.Instance.ResetProgression();
+            GameManager.ResetSave();
             GoToMainMenu();
         }).gameObject;
 

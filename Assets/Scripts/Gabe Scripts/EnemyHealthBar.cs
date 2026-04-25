@@ -3,17 +3,17 @@ using TMPro;
 
 public class EnemyHealthBar : MonoBehaviour
 {
-    private Enemy_AI _enemyAI;
-    private int _maxHealth;
+    private Bandit _bandit;
+    private float _maxHealth;
     private TextMeshPro _text;
     private Transform _cam;
 
     void Start()
     {
-        _enemyAI = GetComponentInParent<Enemy_AI>();
-        if (_enemyAI == null) { Destroy(this); return; }
+        _bandit = GetComponentInParent<Bandit>();
+        if (_bandit == null) { Destroy(this); return; }
 
-        _maxHealth = _enemyAI.health;
+        _maxHealth = _bandit.health;
 
         // Create floating text below the enemy
         var go = new GameObject("HPText");
@@ -37,7 +37,7 @@ public class EnemyHealthBar : MonoBehaviour
 
     void LateUpdate()
     {
-        if (_enemyAI == null) { Destroy(gameObject); return; }
+        if (_bandit == null) { Destroy(gameObject); return; }
 
         UpdateDisplay();
 
@@ -48,9 +48,9 @@ public class EnemyHealthBar : MonoBehaviour
 
     void UpdateDisplay()
     {
-        if (_text == null || _enemyAI == null) return;
-        int hp = _enemyAI.health;
-        _text.text = $"{hp}/{_maxHealth}";
-        _text.color = hp > _maxHealth / 2 ? Color.green : hp > 1 ? Color.yellow : Color.red;
+        if (_text == null || _bandit == null) return;
+        float hp = _bandit.health;
+        _text.text = $"{Mathf.Max(0, hp):0}/{_maxHealth:0}";
+        _text.color = hp > _maxHealth / 2f ? Color.green : hp > 1f ? Color.yellow : Color.red;
     }
 }

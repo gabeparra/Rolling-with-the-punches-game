@@ -16,12 +16,12 @@ public class FSM : MonoBehaviour
     }
 
     // Update is called once per frame
-    protected virtual void Update()
+    public virtual void DoUpdate()
     {
         
     }
 
-    protected virtual void FixedUpdate()
+    public virtual void DoFixedUpdate()
     {
         
     }
@@ -37,13 +37,9 @@ public class FSM : MonoBehaviour
 
     public virtual void SetCurrentState(String state)
     {
-        if (!states.TryGetValue(state, out State nextState))
-        {
-            Debug.LogError($"[FSM] State '{state}' not found! Available: {string.Join(", ", states.Keys)}");
-            return;
-        }
+        if (current_state == states[state]) {return;}
         ExitCurrentState();
-        current_state = nextState;
+        current_state = states[state];
         current_state.StateEnter();
     }
 }

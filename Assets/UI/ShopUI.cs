@@ -44,8 +44,8 @@ public class ShopUI : MonoBehaviour
         uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
         PlayerController.canMove = false;
         // Update gold display
-        if (_goldLabel != null && GameManager.Instance != null)
-            _goldLabel.text = "Gold: " + GameManager.Instance.Gold;
+        if (_goldLabel != null)
+            _goldLabel.text = "Gold: " + GameManager.getCurrency();
         // Refresh list to update owned states
         if (_list != null) _list.Rebuild();
     }

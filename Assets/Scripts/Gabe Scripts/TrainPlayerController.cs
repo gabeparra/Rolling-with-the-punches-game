@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class TrainPlayerController : MonoBehaviour
+public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMovement' class name -- Hector 4/24/26
 {
     [Header("Movement")]
     public float speed = 14f;
-    public float jumpForce = 12f;
-    public float rotationSpeed = 15f;
+    public float jumpForce = 5.5f;
+    public float rotationSpeed = 30f;
     public float groundCheckDistance = 0.2f;
     public LayerMask groundLayer;
     public float maxFallSpeed = 8f;
@@ -24,6 +25,9 @@ public class TrainPlayerController : MonoBehaviour
     private float dashTimer = 0f;
     private float dashCooldownTimer = 0f;
     private Vector3 dashDirection;
+
+    private int jumpsUsed = 0;
+    private const int maxJumps = 1;
 
     /// <summary>0 = ready, 1 = just used. Used by DashCooldownBar.</summary>
     public float DashCooldownNormalized => Mathf.Clamp01(dashCooldownTimer / dashCooldown);
@@ -49,7 +53,6 @@ public class TrainPlayerController : MonoBehaviour
     {
         input.x = Input.GetAxisRaw("Horizontal");
         input.y = Input.GetAxisRaw("Vertical");
-
         moveDirection = new Vector3(input.x, 0, input.y).normalized;
 
         bool isMoving = moveDirection != Vector3.zero;
@@ -63,15 +66,36 @@ public class TrainPlayerController : MonoBehaviour
         if (animator != null)
             animator.SetBool("isMoving", isMoving);
 
-        // Jump -- E key or A button on Xbox
-        if ((Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameJump")) && IsGrounded())
+        // Jump — E or A. One per ground-touch.
+        // Velocity gate: if we just jumped, vel.y is large positive; if falling,
+        // it's negative. Grounded only when y-velocity is near zero AND we're
+        // physically near a ground collider.
+        bool sphereGrounded = IsGrounded();
+        bool yStationary = Mathf.Abs(rb.linearVelocity.y) < 0.5f;
+        bool firmlyGrounded = sphereGrounded && yStationary;
+
+        if (firmlyGrounded) jumpsUsed = 0;
+
+        if ((Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameJump"))
+            && firmlyGrounded
+            && jumpsUsed < maxJumps)
+        {
+            Vector3 v = rb.linearVelocity;
+            v.y = 0f;
+            rb.linearVelocity = v;
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            jumpsUsed = maxJumps;
+        }
 
         // Dash -- Left Shift or B button on Xbox
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.deltaTime;
 
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("GameDash")) && !isDashing && dashCooldownTimer <= 0f)
+        bool dashPressed = Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("GameDash");
+        var sprintAction = InputSystem.actions != null ? InputSystem.actions.FindAction("Sprint") : null;
+        if (sprintAction != null && sprintAction.WasPressedThisFrame()) dashPressed = true;
+
+        if (dashPressed && !isDashing && dashCooldownTimer <= 0f)
         {
             isDashing = true;
             dashTimer = dashDuration;
@@ -125,11 +149,10 @@ public class TrainPlayerController : MonoBehaviour
 
     bool IsGrounded()
     {
-        // CheckSphere detects overlapping colliders — works even when the
-        // player has settled slightly into the surface (SphereCast misses that).
+        // Loose CheckSphere — may catch player's own collider or the train deck.
+        // Air-jumping is prevented by the y-velocity gate in Update, not by this check.
         Vector3 checkPos = transform.position + Vector3.down * groundCheckDistance;
         float radius = 0.3f;
-
         if (groundLayer != 0)
             return Physics.CheckSphere(checkPos, radius, groundLayer);
         return Physics.CheckSphere(checkPos, radius);

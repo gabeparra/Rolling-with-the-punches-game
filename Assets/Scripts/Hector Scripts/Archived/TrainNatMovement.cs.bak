@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TrainEngineConstant : MonoBehaviour
+public class TrainNatMovement : MonoBehaviour
 {
     public float trainSpeed = 10f;
     private Rigidbody rb;

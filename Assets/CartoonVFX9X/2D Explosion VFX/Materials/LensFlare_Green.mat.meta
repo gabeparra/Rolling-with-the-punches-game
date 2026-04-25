@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e5e388cf6f4107e46b679570c3e84413
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249785
+  packageName: 2D Explosion URP
+  packageVersion: 1.0
+  assetPath: Assets/CartoonVFX9X/2D Explosion VFX/Materials/LensFlare_Green.mat
+  uploadId: 570541

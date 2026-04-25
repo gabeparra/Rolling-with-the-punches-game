@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 55bbd3f11bcf0a14e86d10d37116f3cb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249785
+  packageName: 2D Explosion URP
+  packageVersion: 1.0
+  assetPath: Assets/CartoonVFX9X/2D Explosion VFX/Materials/Glow_White2.mat
+  uploadId: 570541

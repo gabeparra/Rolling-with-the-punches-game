@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0dc906ea3d5c8c7488d40462df7edd53
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249785
+  packageName: 2D Explosion URP
+  packageVersion: 1.0
+  assetPath: Assets/CartoonVFX9X/2D Explosion VFX/Materials/Shockwave_White.mat
+  uploadId: 570541

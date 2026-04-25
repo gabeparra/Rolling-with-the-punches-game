@@ -35,7 +35,7 @@ public class HubManager : MonoBehaviour
         Transform root = canvas.transform;
 
         // Gold display — top-right
-        int gold = GameManager.Instance != null ? GameManager.Instance.Gold : 0;
+        int gold = GameManager.getCurrency();
         _goldText = CreateLabel(root, "GoldDisplay", "Gold: " + gold, 28,
             new Vector2(0.95f, 0.95f), new Vector2(0.95f, 0.95f), new Vector2(200, 40));
         _goldText.alignment = TextAlignmentOptions.Right;
@@ -49,8 +49,8 @@ public class HubManager : MonoBehaviour
 
     void Update()
     {
-        if (_goldText != null && GameManager.Instance != null)
-            _goldText.text = "Gold: " + GameManager.Instance.Gold;
+        if (_goldText != null)
+            _goldText.text = "Gold: " + GameManager.getCurrency();
     }
 
     void OnDestroy()
