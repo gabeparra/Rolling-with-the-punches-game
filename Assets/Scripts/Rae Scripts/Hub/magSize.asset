@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: magSize
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
   upgradeName: Magazine Size
-  description: Fit more rounds in your gun
-  prices: 02000000
+  description: Fit another round in your gun
+  prices: 02000000050000000a0000001400000032000000
   maxLevel: 5
