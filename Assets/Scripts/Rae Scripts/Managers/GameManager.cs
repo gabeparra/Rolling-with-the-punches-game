@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour
     public void EndRun()
     {
         //make sure we were in a run before continuing
-        if(runSave != null) return;
+        if(runSave == null) return;
 
         int runGold = getCurrency(); //at the moment, currency is still set to runSave
         int amountToAdd = (int)(runGold * PlayerStats.currencyRate); //convert that gold to cash
