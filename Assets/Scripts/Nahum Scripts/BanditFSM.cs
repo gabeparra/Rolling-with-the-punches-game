@@ -121,10 +121,43 @@ public class BanditFSM : FSM
 
     void FollowTarget()
     {
-        // Spawner disables NavMeshAgent for train-deck enemies — guard against it.
         if (bandit == null || bandit.target == null) return;
+
+        // Prefer NavMeshAgent when on a navmesh.
         if (bandit.agent != null && bandit.agent.enabled && bandit.agent.isOnNavMesh)
+        {
             bandit.agent.destination = bandit.target.position;
+            return;
+        }
+
+        // Fallback: velocity-based movement (used by train-deck spawns where
+        // the spawner disables the agent because the NavMesh is on the ground
+        // far below the train).
+        Rigidbody rb = parent.GetComponent<Rigidbody>();
+        if (rb == null || rb.isKinematic) return;
+
+        Vector3 toTarget = bandit.target.position - parent.transform.position;
+        toTarget.y = 0f;
+        float dist = toTarget.magnitude;
+
+        const float arriveDist = 1f;
+        const float moveSpeed = 3.5f;
+
+        Vector3 vel = rb.linearVelocity;
+        if (dist > arriveDist)
+        {
+            Vector3 dir = toTarget / dist;
+            vel.x = dir.x * moveSpeed;
+            vel.z = dir.z * moveSpeed;
+            // Face the target (flat).
+            parent.transform.rotation = Quaternion.LookRotation(dir);
+        }
+        else
+        {
+            vel.x = 0f;
+            vel.z = 0f;
+        }
+        rb.linearVelocity = vel;
     }
 
     void OnDrawGizmos()

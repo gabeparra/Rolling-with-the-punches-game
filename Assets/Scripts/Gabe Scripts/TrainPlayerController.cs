@@ -6,7 +6,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
     [Header("Movement")]
     public float speed = 14f;
     public float jumpForce = 5.5f;
-    public float rotationSpeed = 15f;
+    public float rotationSpeed = 30f;
     public float groundCheckDistance = 0.2f;
     public LayerMask groundLayer;
     public float maxFallSpeed = 8f;
@@ -15,11 +15,6 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
     public float dashSpeed = 14f;
     public float dashDuration = 0.12f;
     public float dashCooldown = 1f;
-
-    [Header("Movement Mode")]
-    public int movementMode = 1; // 1 = original; 2 = world-locked WASD (buttes/engine); 3 = simple world-axis WASD (W=+Z, S=-Z, D=+X, A=-X), snap-rotate
-    public Vector3 buttesDirection = Vector3.forward;
-    public Vector3 engineDirection = Vector3.right;
 
     private Rigidbody rb;
     private Animator animator;
@@ -56,43 +51,16 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
 
     void Update()
     {
-        if (movementMode == 1)
-        {
-            // ---- MODE 1: original (Horizontal/Vertical axes, face movement direction) ----
-            input.x = Input.GetAxisRaw("Horizontal");
-            input.y = Input.GetAxisRaw("Vertical");
-            moveDirection = new Vector3(input.x, 0, input.y).normalized;
-        }
-        else if (movementMode == 2)
-        {
-            // ---- MODE 2: world-locked WASD (W=buttes, S=non-butte, D=engine, A=caboose) ----
-            Vector3 aim = Vector3.zero;
-            if (Input.GetKey(KeyCode.W)) aim += buttesDirection;
-            if (Input.GetKey(KeyCode.S)) aim -= buttesDirection;
-            if (Input.GetKey(KeyCode.D)) aim += engineDirection;
-            if (Input.GetKey(KeyCode.A)) aim -= engineDirection;
-            moveDirection = aim.sqrMagnitude > 0.01f ? aim.normalized : Vector3.zero;
-        }
-        else
-        {
-            // ---- MODE 3: simple world-axis WASD (W=+Z, S=-Z, D=+X, A=-X), snap-rotate to face direction ----
-            Vector3 aim = Vector3.zero;
-            if (Input.GetKey(KeyCode.W)) aim += Vector3.forward;
-            if (Input.GetKey(KeyCode.S)) aim -= Vector3.forward;
-            if (Input.GetKey(KeyCode.D)) aim += Vector3.right;
-            if (Input.GetKey(KeyCode.A)) aim -= Vector3.right;
-            moveDirection = aim.sqrMagnitude > 0.01f ? aim.normalized : Vector3.zero;
-        }
+        input.x = Input.GetAxisRaw("Horizontal");
+        input.y = Input.GetAxisRaw("Vertical");
+        moveDirection = new Vector3(input.x, 0, input.y).normalized;
 
         bool isMoving = moveDirection != Vector3.zero;
 
         if (isMoving && !isDashing)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            if (movementMode == 3)
-                transform.rotation = targetRotation; // snap-rotate so aim matches movement
-            else
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
 
         if (animator != null)

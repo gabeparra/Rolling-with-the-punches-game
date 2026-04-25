@@ -14355,7 +14355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TrainPlayerController
   speed: 10
   jumpForce: 6
-  rotationSpeed: 10
+  rotationSpeed: 30
   groundCheckDistance: 0.2
   groundLayer:
     serializedVersion: 2
@@ -14364,9 +14364,6 @@ MonoBehaviour:
   dashSpeed: 14
   dashDuration: 0.12
   dashCooldown: 1
-  movementMode: 3
-  buttesDirection: {x: 0, y: 0, z: 1}
-  engineDirection: {x: 1, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

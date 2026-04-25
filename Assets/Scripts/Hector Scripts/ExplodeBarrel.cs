@@ -55,9 +55,7 @@ public class ExplodeBarrel : MonoBehaviour
         foreach (Collider victim in victims)
         {
             bool isPlayer = victim.CompareTag("Player") || victim.GetComponentInParent<TrainPlayerController>() != null;
-            bool isEnemy = victim.GetComponentInParent<BanditFSM>() != null
-                        || victim.GetComponentInParent<Enemy_AI>() != null
-                        || victim.GetComponentInParent<EnemyScript>() != null;
+            bool isEnemy = victim.GetComponentInParent<Bandit>() != null;
             if (!isPlayer && !isEnemy) continue;
 
             Rigidbody rb = victim.GetComponentInParent<Rigidbody>();
