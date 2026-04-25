@@ -93,7 +93,7 @@ public class BanditFSM : FSM
         {
             if (GameManager.getCurrency()<=0)
             {
-                // SetCurrentState("attack");
+                 SetCurrentState("attack");
             }
         }
 
@@ -105,6 +105,8 @@ public class BanditFSM : FSM
                 SetCurrentState("attack");
             }
         }
+
+        bandit.agent.destination = bandit.target.position;
 
         current_state.StateUpdate();
     }
