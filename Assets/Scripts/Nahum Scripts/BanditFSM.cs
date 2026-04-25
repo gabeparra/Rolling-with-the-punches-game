@@ -1,66 +1,79 @@
-using System;
+// using System;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class BanditFSM : FSM
 {
-    public int health = 2; // Added by Hector to set enemy health value
-    public Vector3 target;
-    public GameObject floor;
-  
-    SearchState searchState;
+    public Bandit bandit;
+
+    // SearchState searchState;
 
     LootState lootState;
 
-    public GameObject loot_targets_container;
-    public Transform[] loot_targets;
+    AttackState attackState;
 
-    public int time_looting = 0;
-    public int time_looting_threshold = 5;
+    IdleState idleState;
 
-    public GameObject bullet_prefab;
 
-    public GameObject enemy_target;
-
-    NavMeshAgent agent;
-
-    public override void SetCurrentState(String state)
+    public override void SetCurrentState(string state)
     {
         base.SetCurrentState(state);
         //current_state.SetTarget(target);
     }
 
+    public void Init(Bandit bandit)
+    {
+        this.bandit = bandit;
+        foreach (State state in states.Values)
+        {
+            state.Init(bandit, this, parent);
+        }
+    }
+
     void Awake()
     {
         parent = gameObject;
-        agent = parent.GetComponent<NavMeshAgent>();
-        target = parent.transform.position;
+ 
 
+        // searchState = parent.AddComponent<SearchState>();
+        // {"escape", parent.AddComponent<EscapeState>()},
 
-        searchState = parent.AddComponent<SearchState>();
         lootState = parent.AddComponent<LootState>();
-
+        attackState = parent.AddComponent<AttackState>();
+        idleState = parent.AddComponent<IdleState>();
 
         states = new()
         {
         {"loot", lootState},
-        {"attack", parent.AddComponent<AttackState>()},
-        {"search", searchState}
+        {"attack", attackState},
+        {"idle", idleState}
         };
 
         foreach (State state in states.Values)
         {
-            state.Init(this, parent);
+            state.Init(bandit, this, parent);
         }
+        
+        InvokeRepeating("TryRandomSwitchToLooter",0,1f);
 
-        if (loot_targets_container)
+    }
+
+    void TryRandomSwitchToLooter()
+    {
+        if (current_state!=attackState) {return;}
+
+        float r = Random.Range(0,.9f);
+        if (r <= bandit.change_to_loot_state_chance)
         {
-            loot_targets = loot_targets_container.GetComponentsInChildren<Transform>();
+            SetCurrentState("loot");
+            print("randomly changed to looter: " + r);
         }
-
-        //print(loot_targets);
-
+        else
+        {
+            print("failed to switch: " + r);
+        }
     }
 
     protected override void Start()
@@ -68,48 +81,35 @@ public class BanditFSM : FSM
         base.Start();
     }
 
-    public void TakeDamage(int amount) // Method added by Hector to calculate damage taken by enemy
+
+    public override void DoUpdate()
     {
-        health -= amount;
-
-        if (health <= 0)
-        {
-            Die();
-        }
-    }
-
-    void Die() // Method added by Hector to destroy enemy on death
-    {
-        CancelInvoke();
-        ExitCurrentState();
-        // Cancel invokes on all state components too
-        foreach (State state in states.Values)
-            if (state != null) state.CancelInvoke();
-
-        if (HUDManager.Instance != null) HUDManager.Instance.OnEnemyKilled();
-        EnemyDeathEffect deathEffect = GetComponent<EnemyDeathEffect>();
-        if (deathEffect != null) deathEffect.PlayDeathEffects();
-        Destroy(parent);
-    }
-
-    protected override void Update()
-    {
-        searchState.floor = floor;
+        // searchState.floor = floor;
 
         if (current_state==null) {return;}
-        current_state.StateUpdate();
 
+        // Revert to attack after no more good can be taken
         if (current_state==lootState)
         {
-            if (time_looting >= time_looting_threshold)
+            if (GameManager.Instance != null && GameManager.Instance.Gold <= 0)
+            {
+                // SetCurrentState("attack");
+            }
+        }
+
+        // Revert to attack after spent enough time looting
+        if (current_state==lootState)
+        {
+            if (bandit.time_looted >= bandit.max_looting_time)
             {
                 SetCurrentState("attack");
             }
         }
 
+        current_state.StateUpdate();
     }
 
-    protected override void FixedUpdate()
+    public override void DoFixedUpdate()
     {
         FollowTarget();
 
@@ -121,20 +121,20 @@ public class BanditFSM : FSM
 
     void FollowTarget()
     {
-        if (agent != null && agent.enabled && Vector3.Distance(target, parent.transform.position) > 0.5f)
-        {
-            agent.destination = target;
-        }
+        // Spawner disables NavMeshAgent for train-deck enemies — guard against it.
+        if (bandit == null || bandit.target == null) return;
+        if (bandit.agent != null && bandit.agent.enabled && bandit.agent.isOnNavMesh)
+            bandit.agent.destination = bandit.target.position;
     }
 
     void OnDrawGizmos()
     {   
         const float marker_size = .5f;
-        if (target!=null)
+        if (bandit.target!=null)
         {
             // Draw Where Target is
             Gizmos.color = Color.violetRed;
-            Gizmos.DrawCube(target,marker_size * (new Vector3(1,1,1)));
+            Gizmos.DrawCube(bandit.target.position,marker_size * new Vector3(1,1,1));
         }
 
         if (current_state!=null)

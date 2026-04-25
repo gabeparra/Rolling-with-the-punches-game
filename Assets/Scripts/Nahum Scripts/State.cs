@@ -3,11 +3,15 @@ using UnityEngine;
 public abstract class State : MonoBehaviour
 {
     protected BanditFSM fsm = null;
+
+    protected Bandit bandit;
+
     protected GameObject parent;
 
-    public void Init(BanditFSM fsm, GameObject parent) {
+    public void Init(Bandit bandit, BanditFSM fsm, GameObject parent) {
         this.fsm = fsm;
         this.parent = parent;
+        this.bandit = fsm.bandit;
     }
     public virtual void StateEnter()
     {

@@ -41,6 +41,38 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    public float GetReloadMultiplier()
+    {
+        float mult = 1f;
+        foreach (var upgrade in allUpgrades)
+        {
+            if (upgrade != null && upgrade.type == Upgrade.UpgradeType.ReloadSpeed && HasUpgrade(upgrade.upgradeName))
+                mult -= upgrade.value;
+        }
+        return Mathf.Max(0.25f, mult);
+    }
+
+    public float GetDamageMultiplier()
+    {
+        foreach (var upgrade in allUpgrades)
+        {
+            if (upgrade != null && upgrade.type == Upgrade.UpgradeType.Damage && HasUpgrade(upgrade.upgradeName))
+                return upgrade.value;
+        }
+        return 1f;
+    }
+
+    public int GetMaxAmmoBonus()
+    {
+        int bonus = 0;
+        foreach (var upgrade in allUpgrades)
+        {
+            if (upgrade != null && upgrade.type == Upgrade.UpgradeType.MaxAmmo && HasUpgrade(upgrade.upgradeName))
+                bonus += Mathf.RoundToInt(upgrade.value);
+        }
+        return bonus;
+    }
+
     // --- Level Progression ---
     // 0 = Western (Hector Scene), 1 = Snow, 2 = Mountain
     public const int MaxLevel = 3;

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d973df6929e5d614bb7b8e33b171d7c1
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249785
+  packageName: 2D Explosion URP
+  packageVersion: 1.0
+  assetPath: Assets/CartoonVFX9X/2D Explosion VFX/Materials/Smoke4_White_Sheet_Alpha.mat
+  uploadId: 570541

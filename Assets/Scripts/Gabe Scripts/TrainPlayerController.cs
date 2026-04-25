@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class TrainPlayerController : MonoBehaviour
+public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMovement' class name -- Hector 4/24/26
 {
     [Header("Movement")]
     public float speed = 14f;
-    public float jumpForce = 12f;
+    public float jumpForce = 5.5f;
     public float rotationSpeed = 15f;
     public float groundCheckDistance = 0.2f;
     public LayerMask groundLayer;
@@ -15,6 +16,11 @@ public class TrainPlayerController : MonoBehaviour
     public float dashDuration = 0.12f;
     public float dashCooldown = 1f;
 
+    [Header("Movement Mode")]
+    public int movementMode = 1; // 1 = original; 2 = world-locked WASD (buttes/engine); 3 = simple world-axis WASD (W=+Z, S=-Z, D=+X, A=-X), snap-rotate
+    public Vector3 buttesDirection = Vector3.forward;
+    public Vector3 engineDirection = Vector3.right;
+
     private Rigidbody rb;
     private Animator animator;
     private Vector2 input;
@@ -24,6 +30,9 @@ public class TrainPlayerController : MonoBehaviour
     private float dashTimer = 0f;
     private float dashCooldownTimer = 0f;
     private Vector3 dashDirection;
+
+    private int jumpsUsed = 0;
+    private const int maxJumps = 1;
 
     /// <summary>0 = ready, 1 = just used. Used by DashCooldownBar.</summary>
     public float DashCooldownNormalized => Mathf.Clamp01(dashCooldownTimer / dashCooldown);
@@ -47,31 +56,78 @@ public class TrainPlayerController : MonoBehaviour
 
     void Update()
     {
-        input.x = Input.GetAxisRaw("Horizontal");
-        input.y = Input.GetAxisRaw("Vertical");
-
-        moveDirection = new Vector3(input.x, 0, input.y).normalized;
+        if (movementMode == 1)
+        {
+            // ---- MODE 1: original (Horizontal/Vertical axes, face movement direction) ----
+            input.x = Input.GetAxisRaw("Horizontal");
+            input.y = Input.GetAxisRaw("Vertical");
+            moveDirection = new Vector3(input.x, 0, input.y).normalized;
+        }
+        else if (movementMode == 2)
+        {
+            // ---- MODE 2: world-locked WASD (W=buttes, S=non-butte, D=engine, A=caboose) ----
+            Vector3 aim = Vector3.zero;
+            if (Input.GetKey(KeyCode.W)) aim += buttesDirection;
+            if (Input.GetKey(KeyCode.S)) aim -= buttesDirection;
+            if (Input.GetKey(KeyCode.D)) aim += engineDirection;
+            if (Input.GetKey(KeyCode.A)) aim -= engineDirection;
+            moveDirection = aim.sqrMagnitude > 0.01f ? aim.normalized : Vector3.zero;
+        }
+        else
+        {
+            // ---- MODE 3: simple world-axis WASD (W=+Z, S=-Z, D=+X, A=-X), snap-rotate to face direction ----
+            Vector3 aim = Vector3.zero;
+            if (Input.GetKey(KeyCode.W)) aim += Vector3.forward;
+            if (Input.GetKey(KeyCode.S)) aim -= Vector3.forward;
+            if (Input.GetKey(KeyCode.D)) aim += Vector3.right;
+            if (Input.GetKey(KeyCode.A)) aim -= Vector3.right;
+            moveDirection = aim.sqrMagnitude > 0.01f ? aim.normalized : Vector3.zero;
+        }
 
         bool isMoving = moveDirection != Vector3.zero;
 
         if (isMoving && !isDashing)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            if (movementMode == 3)
+                transform.rotation = targetRotation; // snap-rotate so aim matches movement
+            else
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
 
         if (animator != null)
             animator.SetBool("isMoving", isMoving);
 
-        // Jump -- E key or A button on Xbox
-        if ((Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameJump")) && IsGrounded())
+        // Jump — E or A. One per ground-touch.
+        // Velocity gate: if we just jumped, vel.y is large positive; if falling,
+        // it's negative. Grounded only when y-velocity is near zero AND we're
+        // physically near a ground collider.
+        bool sphereGrounded = IsGrounded();
+        bool yStationary = Mathf.Abs(rb.linearVelocity.y) < 0.5f;
+        bool firmlyGrounded = sphereGrounded && yStationary;
+
+        if (firmlyGrounded) jumpsUsed = 0;
+
+        if ((Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameJump"))
+            && firmlyGrounded
+            && jumpsUsed < maxJumps)
+        {
+            Vector3 v = rb.linearVelocity;
+            v.y = 0f;
+            rb.linearVelocity = v;
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            jumpsUsed = maxJumps;
+        }
 
         // Dash -- Left Shift or B button on Xbox
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.deltaTime;
 
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("GameDash")) && !isDashing && dashCooldownTimer <= 0f)
+        bool dashPressed = Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("GameDash");
+        var sprintAction = InputSystem.actions != null ? InputSystem.actions.FindAction("Sprint") : null;
+        if (sprintAction != null && sprintAction.WasPressedThisFrame()) dashPressed = true;
+
+        if (dashPressed && !isDashing && dashCooldownTimer <= 0f)
         {
             isDashing = true;
             dashTimer = dashDuration;
@@ -125,11 +181,10 @@ public class TrainPlayerController : MonoBehaviour
 
     bool IsGrounded()
     {
-        // CheckSphere detects overlapping colliders — works even when the
-        // player has settled slightly into the surface (SphereCast misses that).
+        // Loose CheckSphere — may catch player's own collider or the train deck.
+        // Air-jumping is prevented by the y-velocity gate in Update, not by this check.
         Vector3 checkPos = transform.position + Vector3.down * groundCheckDistance;
         float radius = 0.3f;
-
         if (groundLayer != 0)
             return Physics.CheckSphere(checkPos, radius, groundLayer);
         return Physics.CheckSphere(checkPos, radius);

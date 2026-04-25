@@ -68,8 +68,10 @@ public class HUDManager : MonoBehaviour
         _hearts--;
 
         // Losing a heart permanently reduces max ammo by 1
+        /*
         _maxAmmo = Mathf.Max(1, _maxAmmo - 1);
         if (_ammo > _maxAmmo) _ammo = _maxAmmo;
+        */
 
         DrawHearts();
         DrawAmmo();
@@ -123,19 +125,38 @@ public class HUDManager : MonoBehaviour
 
     public void OnEnemyKilled()
     {
-        _gold += 5;
+        _gold += 50;
         _totalKills++;
         _enemiesRemaining = Mathf.Max(0, _enemiesRemaining - 1);
 
         // Persist gold immediately so it survives death/win
         if (GameManager.Instance != null)
-            GameManager.Instance.AddGold(5);
+            GameManager.Instance.AddGold(50);
 
         DrawGold();
         DrawEnemies();
 
         if (_enemiesRemaining <= 0 && GameUIManager.Instance != null)
             GameUIManager.Instance.ShowWin(_gold, _totalKills);
+    }
+
+    /// <summary>Bandit escaped with stolen gold — counts toward remaining but no kill reward.</summary>
+    public void OnEnemyEscaped()
+    {
+        _enemiesRemaining = Mathf.Max(0, _enemiesRemaining - 1);
+        DrawEnemies();
+        if (_enemiesRemaining <= 0 && GameUIManager.Instance != null)
+            GameUIManager.Instance.ShowWin(_gold, _totalKills);
+    }
+
+    /// <summary>Subtract gold from the player (clamped at 0). Used when bandits escape with loot.</summary>
+    public void LoseGold(int amount)
+    {
+        if (amount <= 0) return;
+        _gold = Mathf.Max(0, _gold - amount);
+        if (GameManager.Instance != null)
+            GameManager.Instance.AddGold(-amount);
+        DrawGold();
     }
 
     public void DrawEnemies()

@@ -66,17 +66,19 @@ public class PlayerShooting : MonoBehaviour
             // Check if this hit is on an enemy
             Enemy_AI enemyAI = hit.collider.GetComponentInParent<Enemy_AI>();
             EnemyScript enemyScript = hit.collider.GetComponentInParent<EnemyScript>();
-            BanditFSM banditFSM = hit.collider.GetComponentInParent<BanditFSM>();
+            Bandit bandit = hit.collider.GetComponentInParent<Bandit>();
+            ExplodeBarrel explodeBarrel = hit.collider.GetComponentInParent<ExplodeBarrel>();
 
             // Skip train parts (wheels, cabin, etc.) that aren't enemies —
             // the train has 27 child meshes with colliders that block bullets
-            if (hit.collider.transform.IsChildOf(root) && enemyAI == null && enemyScript == null && banditFSM == null)
+            if (hit.collider.transform.IsChildOf(root) && enemyAI == null && enemyScript == null && bandit == null && explodeBarrel == null)
                 continue;
 
             hitPoint = hit.point;
             if (enemyAI != null) enemyAI.TakeDamage(damage);
             else if (enemyScript != null) enemyScript.TakeDamage(damage);
-            if (banditFSM != null) banditFSM.TakeDamage(damage);
+            if (bandit != null) bandit.TakeDamage(damage);
+            if (explodeBarrel != null) explodeBarrel.TakeDamage(damage);
             break;
         }
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class WallMovement : MonoBehaviour
+public class MoveButteWall : MonoBehaviour
 {
     public float speed = 5.0f;
     public float lifeSpan = 20.0f;

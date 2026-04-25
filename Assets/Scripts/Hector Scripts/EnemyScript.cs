@@ -1,5 +1,7 @@
 using UnityEngine;
-
+/*
+    Temporary script for enemy testing within branch -- likely to get cut
+*/
 public class EnemyScript : MonoBehaviour
 {
     public int health = 5;

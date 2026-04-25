@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e70e7df91e1acc64fb138728fa8fefdc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249785
+  packageName: 2D Explosion URP
+  packageVersion: 1.0
+  assetPath: Assets/CartoonVFX9X/2D Explosion VFX/Materials/Light.mat
+  uploadId: 570541
