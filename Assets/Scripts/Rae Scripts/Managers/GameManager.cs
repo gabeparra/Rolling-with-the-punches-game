@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 {
     /*got this from google so might not be best*/
     //public static property to access the single instance of this class
-    private static GameManager Instance;
+    public static GameManager Instance;
     private static SaveObject metaSave = new(); //hold meta progression data while the game is open
     private static RunObject runSave = null; //hold run data (player health, current level)
     private static bool runCurrencyMode = false; //set to true while in a run (use the function to check this, to null-check the runSave)
@@ -32,6 +32,22 @@ public class GameManager : MonoBehaviour
 
         //TODO: check if we're in a run (look for file) and try to resume it
 
+        // If GameManager is created directly inside a level scene (e.g.
+        // pressing Play in editor on a level scene without going through Hub),
+        // start a run so currency operations hit run gold, not meta cash.
+        if (Instance == this && IsLevelScene(SceneManager.GetActiveScene().name))
+            StartRun();
+    }
+
+    /// <summary>
+    /// Returns true if the given scene name is a gameplay-level scene (not the Hub or Menu).
+    /// </summary>
+    private static bool IsLevelScene(string sceneName)
+    {
+        if (string.IsNullOrEmpty(sceneName)) return false;
+        if (sceneName == "HubScene") return false;
+        if (sceneName == "Menu Screen" || sceneName == "MenuScreen") return false;
+        return true;
     }
 
     /// <summary>
@@ -276,6 +292,15 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("We've entered the Hub");
             EndRun();
+            return;
+        }
+
+        // Entering a gameplay scene — start a run if we don't have one yet so
+        // bandit-loot drains run gold (not meta cash) and the HUD shows run gold.
+        if (IsLevelScene(arg1.name) && runSave == null)
+        {
+            Debug.Log("We've entered a level — starting run");
+            StartRun();
         }
     }
 }

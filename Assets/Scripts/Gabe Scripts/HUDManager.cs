@@ -52,9 +52,8 @@ public class HUDManager : MonoBehaviour
         _ammo = _maxAmmo;
         _enemiesRemaining = totalEnemies;
 
-        // Load persistent gold from GameManager
-        if (GameManager.Instance != null)
-            _gold = GameManager.Instance.Gold;
+        // Load currency from GameManager (returns run gold during a run, meta cash in hub)
+        _gold = GameManager.getCurrency();
 
         DrawHearts();
         DrawAmmo();
@@ -130,8 +129,7 @@ public class HUDManager : MonoBehaviour
         _enemiesRemaining = Mathf.Max(0, _enemiesRemaining - 1);
 
         // Persist gold immediately so it survives death/win
-        if (GameManager.Instance != null)
-            GameManager.Instance.AddGold(50);
+        GameManager.UpdateCurrency(50);
 
         DrawGold();
         DrawEnemies();
@@ -154,8 +152,7 @@ public class HUDManager : MonoBehaviour
     {
         if (amount <= 0) return;
         _gold = Mathf.Max(0, _gold - amount);
-        if (GameManager.Instance != null)
-            GameManager.Instance.AddGold(-amount);
+        GameManager.UpdateCurrency(-amount);
         DrawGold();
     }
 

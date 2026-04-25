@@ -91,7 +91,7 @@ public class BanditFSM : FSM
         // Revert to attack after no more good can be taken
         if (current_state==lootState)
         {
-            if (GameManager.Instance != null && GameManager.Instance.Gold <= 0)
+            if (GameManager.getCurrency() <= 0)
             {
                 // SetCurrentState("attack");
             }

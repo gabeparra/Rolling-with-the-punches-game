@@ -48,7 +48,7 @@ public class GoldCrateDisplay : MonoBehaviour
 
     private int GetGold()
     {
-        return GameManager.Instance != null ? GameManager.Instance.Gold : 0;
+        return GameManager.getCurrency();
     }
 
     private int ComputeTier(int gold)

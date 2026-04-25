@@ -54,11 +54,11 @@ public class LootState : State
         if (has_loot_target && Vector3.Distance(bandit.target.position,parent.transform.position) < 1)
         {
             bandit.time_looted+=1;
-            int currency = GameManager.Instance != null ? GameManager.Instance.Gold : 0;
+            int currency = GameManager.getCurrency();
             int taking = Mathf.FloorToInt(currency * bandit.loot_take_percentage);
             // HUDManager.LoseGold updates both the HUD and the GameManager save.
             if (HUDManager.Instance != null) HUDManager.Instance.LoseGold(taking);
-            else if (GameManager.Instance != null) GameManager.Instance.AddGold(-taking);
+            else GameManager.UpdateCurrency(-taking);
             print("time looted: " + bandit.time_looted);
             print("took: " + taking);
         }

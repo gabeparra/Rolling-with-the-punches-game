@@ -57,15 +57,13 @@ public class PlayerController : MonoBehaviour
     private void OnSave(InputAction.CallbackContext ctx)
     {
         Debug.Log("save");
-        if (GameManager.Instance != null)
-            GameManager.Instance.Save();
+        GameManager.Save();
     }
 
     private void OnLoad(InputAction.CallbackContext ctx)
     {
         Debug.Log("load");
-        if (GameManager.Instance != null)
-            GameManager.Instance.Load();
+        GameManager.Load();
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
