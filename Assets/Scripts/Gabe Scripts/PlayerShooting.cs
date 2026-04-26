@@ -17,12 +17,12 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
-        // Shoot -- Space, RB, or Right Trigger on Xbox
+        // Shoot -- Left mouse click, RB, or Right Trigger on Xbox
         bool triggerDown = Input.GetAxis("GameShootTrigger") > 0.5f;
         bool triggerJustPressed = triggerDown && !_triggerWasDown;
         _triggerWasDown = triggerDown;
 
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("GameShoot") || triggerJustPressed) && !_reloading)
+        if ((Input.GetMouseButtonDown(0) || Input.GetButtonDown("GameShoot") || triggerJustPressed) && !_reloading)
         {
             if (HUDManager.Instance != null && !HUDManager.Instance.HasAmmo()) { Debug.LogWarning("[PlayerShooting] No ammo"); return; }
             FireRaycast();

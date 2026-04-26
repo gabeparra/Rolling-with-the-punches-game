@@ -14,6 +14,10 @@ public class AttackState : State
 
     float ray_distance = 20f;
 
+    // Stop and shoot when within this distance of the player AND has LOS;
+    // otherwise walk closer.
+    const float engagement_range = 12f;
+
     bool reloading = false;
 
 
@@ -47,14 +51,26 @@ public class AttackState : State
             Invoke("Reload",bandit.reload_time);
         }
 
-        if (!CanSeeEnemyTarget() && bandit.enemy_target!=null)
+        // Always face the player while attacking — was only rotating when LOS was
+        // blocked, so bandits kept facing the chest they walked from.
+        if (bandit.enemy_target != null) LookToTargetEnemy();
+
+        if (bandit.enemy_target == null)
         {
-            bandit.target = bandit.enemy_target.transform;
-            LookToTargetEnemy();
+            bandit.target = parent.transform;
+            return;
+        }
+
+        // In range AND has LOS → stop and shoot. Otherwise close the gap.
+        float dist = Vector3.Distance(parent.transform.position, bandit.enemy_target.transform.position);
+        bool inRange = dist <= engagement_range;
+        if (inRange && CanSeeEnemyTarget())
+        {
+            bandit.target = parent.transform;
         }
         else
         {
-            bandit.target = parent.transform;
+            bandit.target = bandit.enemy_target.transform;
         }
     }
 
@@ -63,18 +79,17 @@ public class AttackState : State
     public bool CanSeeEnemyTarget()
     {
         if (bandit.enemy_target==null) {return false;}
+        // Raycast from chest height — feet-level origin was hitting the bandit's
+        // own capsule or the train deck before the player.
+        Vector3 origin = parent.transform.position + Vector3.up * 1f;
+        Vector3 dir = bandit.enemy_target.transform.position - origin;
         RaycastHit hit;
-        if (Physics.Raycast(direct_ray, out hit,float.PositiveInfinity))
+        if (Physics.Raycast(origin, dir.normalized, out hit, dir.magnitude + 1f))
         {
             GameObject obj = hit.collider.gameObject;
-            
-            bool canSeePlayer = obj.Equals(bandit.enemy_target);
-            if (canSeePlayer)
-            {
-                return true;
-            }
+            // Match the player root or any of its children (capsule on root, mesh as child).
+            return obj == bandit.enemy_target || obj.transform.IsChildOf(bandit.enemy_target.transform);
         }
-
         return false;
     }
 
@@ -101,15 +116,13 @@ public class AttackState : State
     {
         if (bandit.enemy_target)
         {
-            direct_ray.origin = parent.transform.position;
+            // Chest-height origin so the LOS raycast doesn't self-hit the bandit's feet.
+            Vector3 origin = parent.transform.position + Vector3.up * 1f;
+            direct_ray.origin = origin;
             direct_ray.direction = bandit.enemy_target.transform.position - direct_ray.origin;
 
-            target_ray.origin = parent.transform.position;
-            //print(Vector3.Angle(target_ray.direction,direct_ray.direction));
-            
+            target_ray.origin = origin;
             target_ray.direction = GetAimedAtPosition() - target_ray.origin;
-
-            
         }
     }
 
@@ -122,7 +135,9 @@ public class AttackState : State
 
     public bool IsAimedNearTarget()
     {
-        return !(Vector3.Angle(target_ray.direction,direct_ray.direction) > 12f);
+        // Widened from 12° to 20° so bandits don't sit silent for long when accuracy
+        // randomness puts shots just outside the previous threshold.
+        return !(Vector3.Angle(target_ray.direction,direct_ray.direction) > 20f);
     }
 
     public void TryShoot()
@@ -136,11 +151,31 @@ public class AttackState : State
     public void Shoot()
     {
         if (bandit.mag_size<=0) {return;}
+        if (bandit.bullet_prefab == null) { Debug.LogWarning($"[{parent.name}] bullet_prefab not assigned"); return; }
         print("shot");
-        GameObject bullet = Instantiate(bandit.bullet_prefab, parent.transform.position + parent.transform.forward * .5f, parent.transform.rotation);
+        // Spawn bullet well clear of the bandit's own capsule.
+        Vector3 spawnPos = parent.transform.position + Vector3.up * 1f + parent.transform.forward * 1f;
+        GameObject bullet = Instantiate(bandit.bullet_prefab, spawnPos, parent.transform.rotation);
+        bullet.tag = "EnemyBullet";
+
+        // Make sure the bullet has the damage handler — the prefab is just a
+        // mesh+collider+rigidbody by default, no script.
+        if (bullet.GetComponent<Bullet>() == null)
+            bullet.AddComponent<Bullet>();
+
+        // Ignore collision between the bullet and the firing bandit's capsule
+        // so bullet doesn't self-destruct on spawn.
+        Collider bulletCol = bullet.GetComponent<Collider>();
+        Collider banditCol = parent.GetComponent<Collider>();
+        if (bulletCol != null && banditCol != null)
+            Physics.IgnoreCollision(bulletCol, banditCol);
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.AddForce(target_ray.direction * bandit.shoot_force);
+        if (rb != null)
+        {
+            rb.useGravity = false;
+            rb.linearVelocity = target_ray.direction.normalized * 15f; // direct velocity, predictable speed
+        }
         bandit.mag_size = Mathf.Clamp(bandit.mag_size-1,0,bandit.max_mag_size);
         SetTargetRay();
 
@@ -149,9 +184,13 @@ public class AttackState : State
 
     public void LookToTargetEnemy()
     {
-        float f = 5f;
-        Quaternion direct_rotation = Quaternion.LookRotation(direct_ray.direction);
-        parent.transform.rotation = Quaternion.Slerp(parent.transform.rotation, direct_rotation, f * Time.deltaTime);
+        if (bandit.enemy_target == null) return;
+        // Use a freshly-computed direction, not the (potentially stale) direct_ray.
+        Vector3 dir = bandit.enemy_target.transform.position - parent.transform.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 0.01f) return;
+        Quaternion direct_rotation = Quaternion.LookRotation(dir.normalized);
+        parent.transform.rotation = Quaternion.Slerp(parent.transform.rotation, direct_rotation, 5f * Time.deltaTime);
     }
 
     public Vector3 GetAimedAtPosition()

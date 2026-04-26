@@ -15474,6 +15474,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 457379641904200108, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 694269962939995985, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.25
@@ -15546,6 +15550,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3690568258724988044, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 4206299561429640291, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.048058953
@@ -15602,6 +15610,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Train Engine
       objectReference: {fileID: 0}
+    - target: {fileID: 5657001662205052379, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 6126644332872343908, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.25
@@ -15657,6 +15669,10 @@ PrefabInstance:
     - target: {fileID: 8538721822764222005, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
       propertyPath: m_LocalPosition.z
       value: -3.4429998
+      objectReference: {fileID: 0}
+    - target: {fileID: 8625902093858081486, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
+      propertyPath: m_TagString
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6154379851397237327, guid: f58b2f115a52b1949b0204b443612cf9, type: 3}
@@ -15730,6 +15746,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   maxFallSpeed: 8
+  acceleration: 80
+  deceleration: 120
+  coyoteTime: 0.1
+  jumpBufferTime: 0.15
+  fallGravityMultiplier: 1.8
   dashSpeed: 14
   dashDuration: 0.12
   dashCooldown: 1

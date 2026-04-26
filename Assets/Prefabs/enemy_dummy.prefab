@@ -1488,7 +1488,7 @@ GameObject:
   - component: {fileID: 1282498913718802930}
   - component: {fileID: 8634686211946690269}
   - component: {fileID: 6589951404828784153}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: enemy_dummy
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1643,8 +1643,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bandit
   health: 2
   defaultState: 0
+  change_to_loot_state_chance: 0.15
   time_looted: 0
   max_looting_time: Infinity
+  loot_follow_type: 1
+  loot_take_percentage: 0.2
   bullet_prefab: {fileID: 2806259705992299404, guid: 8e2e420051156894284f843b5f357277, type: 3}
   enemy_target: {fileID: 0}
   loot_targets_container: {fileID: 0}
@@ -1669,6 +1672,7 @@ MonoBehaviour:
   accuracy_level_increment: 0.15
   base_accuracy: 0.25
   accuracy: 0.3
+  deathClip: {fileID: 0}
 --- !u!1 &5522595536955711008
 GameObject:
   m_ObjectHideFlags: 0
