@@ -51,11 +51,15 @@ public class LootState : State
             }
         }
 
-        if (has_loot_target && Vector3.Distance(bandit.target.position,parent.transform.position) < 1)
+        if (has_loot_target && Vector3.Distance(bandit.target.position,parent.transform.position) < 1.5f)
         {
             bandit.time_looted+=1;
             int currency = GameManager.getCurrency();
             int taking = Mathf.FloorToInt(currency * bandit.loot_take_percentage);
+            // FloorToInt rounds 20%-of-small-numbers to zero, so gold never
+            // reaches 0 and the gold-zero attack switch never fires. Mop up
+            // the remainder when the percentage rounds to nothing.
+            if (taking <= 0 && currency > 0) taking = currency;
             // HUDManager.LoseGold updates both the HUD and the GameManager save.
             if (HUDManager.Instance != null) HUDManager.Instance.LoseGold(taking);
             else GameManager.UpdateCurrency(-taking);

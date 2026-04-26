@@ -103,9 +103,12 @@ public class Bandit : MonoBehaviour
         
     }
 
+    public AudioClip deathClip;
+
     public void InitializeStats()
     {
         max_mag_size = base_max_mag_size + (level-1) * max_mag_size_level_increment;
+        mag_size = max_mag_size; // Start with a full mag so the first shot doesn't wait for reload.
         accuracy = base_accuracy + (level-1) * accuracy_level_increment;
         reload_time = base_reload_time + (level-1) * reload_time_level_increment;
         shoot_force = base_shoot_force + (level-1) * shoot_force_level_increment;
@@ -176,6 +179,9 @@ public class Bandit : MonoBehaviour
     void Die() // Method added by Hector to destroy enemy on death
     {
         if (HUDManager.Instance != null) HUDManager.Instance.OnEnemyKilled();
+        // Play death sound at the bandit's position (independent of the destroyed gameObject)
+        if (deathClip != null)
+            AudioSource.PlayClipAtPoint(deathClip, parent.transform.position, 1f);
         Destroy(parent);
     }
 

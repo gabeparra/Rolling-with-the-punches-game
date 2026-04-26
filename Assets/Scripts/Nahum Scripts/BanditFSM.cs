@@ -93,7 +93,7 @@ public class BanditFSM : FSM
         {
             if (GameManager.getCurrency() <= 0)
             {
-                // SetCurrentState("attack");
+                SetCurrentState("attack");
             }
         }
 
@@ -144,7 +144,7 @@ public class BanditFSM : FSM
         toTarget.y = 0f;
         float dist = toTarget.magnitude;
 
-        const float arriveDist = 1f;
+        const float arriveDist = 0.5f;
         const float moveSpeed = 3.5f;
 
         Vector3 vel = rb.linearVelocity;

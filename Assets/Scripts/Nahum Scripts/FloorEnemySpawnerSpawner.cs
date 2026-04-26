@@ -173,6 +173,15 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
 
+        // Bandit ↔ player collision causes the player to get bumped through
+        // the train deck. Ignore it physically so bandits can't push the player.
+        Collider banditCol = enemy.GetComponent<Collider>();
+        if (banditCol != null && player != null)
+        {
+            Collider playerCol = player.GetComponent<Collider>();
+            if (playerCol != null) Physics.IgnoreCollision(banditCol, playerCol);
+        }
+
         // Configure bandit stats via the Bandit stats component (Nahum's design).
         Bandit bandit = enemy.GetComponent<Bandit>();
         if (bandit != null)
