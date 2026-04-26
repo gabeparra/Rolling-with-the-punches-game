@@ -79,9 +79,48 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
 
         bool isMoving = moveDirection.sqrMagnitude > 0.01f;
 
-        if (isMoving && !isDashing)
+        // Aim by mouse — independent of movement direction. Cast ray from camera
+        // through cursor onto a horizontal plane at the player's height, then
+        // rotate the player to face the hit point. Falls back to controller right
+        // stick (Look action) if no mouse delta and the right stick is pushed.
+        if (!isDashing)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection.normalized);
+            Vector3 aimDir = transform.forward;
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+                Plane aimPlane = new Plane(Vector3.up, transform.position);
+                if (aimPlane.Raycast(ray, out float dist))
+                {
+                    Vector3 hitPoint = ray.GetPoint(dist);
+                    Vector3 toMouse = hitPoint - transform.position;
+                    toMouse.y = 0f;
+                    if (toMouse.sqrMagnitude > 0.01f)
+                        aimDir = toMouse.normalized;
+                }
+            }
+
+            // Right-stick override (controller). Reads camera-relative so pushing
+            // up on the stick aims away from the camera.
+            var lookAction = InputSystem.actions != null ? InputSystem.actions.FindAction("Look") : null;
+            if (lookAction != null)
+            {
+                Vector2 stick = lookAction.ReadValue<Vector2>();
+                if (stick.sqrMagnitude > 0.25f) // deadzone for right stick
+                {
+                    Vector3 stickWorld = new Vector3(stick.x, 0f, stick.y);
+                    if (cam != null)
+                    {
+                        Vector3 camFwd = cam.transform.forward; camFwd.y = 0f; camFwd.Normalize();
+                        Vector3 camRight = cam.transform.right; camRight.y = 0f; camRight.Normalize();
+                        stickWorld = camRight * stick.x + camFwd * stick.y;
+                    }
+                    aimDir = stickWorld.normalized;
+                }
+            }
+
+            Quaternion targetRotation = Quaternion.LookRotation(aimDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
 
@@ -111,7 +150,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         }
 
         // --- Jump input buffering ---
-        bool jumpPressed = Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameJump");
+        bool jumpPressed = Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("GameJump");
         if (jumpPressed) jumpBufferTimer = jumpBufferTime;
         else jumpBufferTimer -= Time.deltaTime;
 
