@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76175894cf1ed2e4dbf35a42fd247576, type: 3}
-  m_Name: baseDamage
+  m_Name: magSize
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
-  upgradeName: Base Damage
-  description: Increase base damage of your weapon
-  prices: 0a000000140000001e000000
-  maxLevel: 3
+  upgradeName: Magazine Size
+  description: Fit another round in your gun
+  prices: 02000000050000000a0000001400000032000000
+  maxLevel: 5

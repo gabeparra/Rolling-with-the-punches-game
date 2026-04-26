@@ -10,11 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76175894cf1ed2e4dbf35a42fd247576, type: 3}
-  m_Name: maxBombs
+  m_Name: moveSpeed
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
-  id: max_ammo_1
-  upgradeName: Max Ammo
-  description: Increase maximum ammo capacity
-  cost: 50
-  type: 2
-  value: 2
+  upgradeName: Move Speed
+  description: Boost your movement speed
+  prices: 050000000a0000000f000000
+  maxLevel: 3
