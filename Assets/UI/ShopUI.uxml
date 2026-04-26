@@ -3,7 +3,7 @@
         <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; padding: 4px;">
             <ui:Button text="Close" name="close"/>
             <ui:Label text="Shop" style="font-size: 18px; -unity-font-style: bold;"/>
-            <ui:Label text="Gold: 0" name="goldLabel" style="font-size: 16px; color: rgb(255, 215, 0);"/>
+            <ui:Label text="Cash: 0" name="cash" style="font-size: 16px; color: rgb(255, 215, 0);"/>
         </ui:VisualElement>
         <ui:ListView name="listView" binding-source-selection-mode="AutoAssign" item-template="project://database/Assets/UI/ShopItem.uxml?fileID=9197481963319205126&amp;guid=6183e6a4035dc53478d52af2fa7ae9b9&amp;type=3#ShopItem" virtualization-method="FixedHeight" fixed-item-height="68" data-source-type="Upgrade, Assembly-CSharp"/>
     </ui:VisualElement>
