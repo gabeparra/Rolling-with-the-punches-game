@@ -212,6 +212,7 @@ public class GameUIManager : MonoBehaviour
         Time.timeScale = 1f;
         IsPaused = false;
         GameManager.EndRun();
+        LevelSelector.CurrentTheme = LevelSelector.Theme.Western;
         SceneManager.LoadScene("Hector Scene");
     }
 
