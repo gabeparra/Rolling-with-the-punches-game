@@ -211,6 +211,7 @@ public class GameUIManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         IsPaused = false;
+        GameManager.EndRun();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
