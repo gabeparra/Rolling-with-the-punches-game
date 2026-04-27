@@ -113,7 +113,7 @@ public class GameUIManager : MonoBehaviour
             _anyPanelOpen = false;
             IsPaused = false;
             Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = true;
         }
         else

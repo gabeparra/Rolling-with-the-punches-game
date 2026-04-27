@@ -312,6 +312,7 @@ public class GameManager : MonoBehaviour
 
         if(arg1.name == "HubScene")
         {
+            Cursor.lockState = CursorLockMode.None;
             Debug.Log("We've entered the Hub");
             EndRun();
             return;
@@ -321,6 +322,7 @@ public class GameManager : MonoBehaviour
         // bandit-loot drains run gold (not meta cash) and the HUD shows run gold.
         if (IsLevelScene(arg1.name) && runSave == null)
         {
+            Cursor.lockState = CursorLockMode.Confined;
             Debug.Log("We've entered a level — starting run");
             StartRun();
         }
