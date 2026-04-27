@@ -85,7 +85,7 @@ public class GameUIManager : MonoBehaviour
         if (_anyPanelOpen && !IsPaused && ConfirmPressed())
         {
             if (_gameOverPanel.activeSelf)
-                RetryLevel();
+                RetryRun();
             else if (_gameFinishedPanel.activeSelf)
             {
                 GameManager.EndRun();
@@ -207,12 +207,12 @@ public class GameUIManager : MonoBehaviour
 
     // ── Scene loading helpers ──────────────────────────────────
 
-    private void RetryLevel()
+    private void RetryRun()
     {
         Time.timeScale = 1f;
         IsPaused = false;
         GameManager.EndRun();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("Hector Scene");
     }
 
     private void GoToHub()
@@ -255,7 +255,7 @@ public class GameUIManager : MonoBehaviour
         _goGoldText = CreateStatLabel(panel.transform, "GOGold", "Gold: 0", 10f);
         _goKillsText = CreateStatLabel(panel.transform, "GOKills", "Kills: 0", -30f);
 
-        _gameOverFirstBtn = CreateButton(panel.transform, "RetryBtn", "Retry", -100f, () => RetryLevel()).gameObject;
+        _gameOverFirstBtn = CreateButton(panel.transform, "RetryBtn", "New Run", -100f, () => RetryRun()).gameObject;
         CreateButton(panel.transform, "HubBtn_GO", "Return to Hub", -170f, () => GoToHub());
 
         panel.SetActive(false);
