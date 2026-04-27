@@ -4,58 +4,112 @@ using UnityEngine;
 
 public class ShopUI : MonoBehaviour
 {
+    //list of upgrades available in shop
     [SerializeField]
     private List<Upgrade> upgrades = new();
+
+    //icon to use for cash (you shouldn't have to mess with this. this is just easier than importing it through code)
+    [SerializeField]
+    private Background cashIcon;
 
     private UIDocument uiDocument;
     private Button _btnClose;
     private ListView _list;
-    private Label _goldLabel;
+    private Label _lblCurrency;
 
     void Awake()
     {
+        //initialize references to UI objects
         uiDocument = GetComponent<UIDocument>();
         _btnClose = uiDocument.rootVisualElement.Q("close") as Button;
         _list = uiDocument.rootVisualElement.Q("listView") as ListView;
-        _goldLabel = uiDocument.rootVisualElement.Q<Label>("goldLabel");
+        _lblCurrency = uiDocument.rootVisualElement.Q<Label>("cash");
         _list.itemsSource = upgrades;
 
-        Hide();
+        Hide(); //hide shop UI until player actually goes to shop
 
         _list.bindItem = (e, i) =>
         {
             Upgrade u = upgrades[i];
-            e.Q<Label>("name").text = u.upgradeName;
-            e.Q<Label>("description").text = u.description;
+            Button buyBtn = e.Q<Button>("btn"); //get reference to this element's puchase button
+            buyBtn.dataSource = u; //explicitly assign the correct data source for this button (used in its onClick)
+            buyBtn.RegisterCallback<ClickEvent>(OnClick, TrickleDown.TrickleDown); //register the onClick //TODO: do we wanta different TrickleDown??
 
-            Button buyBtn = e.Q<Button>("btn");
+            // all other data (upgrade info from SO) is automatically assigned to the element's parts (they are manually bound in ShopItem.uxml)
+
+            //Section for refreshing button text
+            int cost = UpgradeManager.GetCost(u);
+            if(cost > 0)
+            {
+                buyBtn.text = cost.ToString(); //initialize with the current price
+                buyBtn.iconImage = cashIcon;
+                buyBtn.SetEnabled(true);
+            }
+            else
+            {
+                buyBtn.text = " - ";
+                buyBtn.SetEnabled(false);
+                buyBtn.iconImage = null;
+            }
         };
     }
 
+    private void OnClick(ClickEvent evt)
+    {
+        string _str;
+        Button _btn = evt.target as Button;
+        Upgrade _up;
+        var data = _btn.GetHierarchicalDataSourceContext().dataSource;
+        if(data == null)
+        {
+            Debug.Log("data source null :(");
+            return;
+        }
+        else
+        {
+            _up = data as Upgrade;
+            _str = _up.upgradeName;
+        }
 
+        Debug.Log("button pressed: " + _str);
+        UpgradeManager.BuyUpgrade(_up);
+        RefreshData();
+    }
+
+
+    // hide the UI (for when not in the shop)
     public void Hide()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.None;
+        //save upon closing, but be sure to only do this if the GameManager has initialized (to avoid accidentally resetting savefile)
+        if(GameManager.Ready())
+            GameManager.Save();
         PlayerController.canMove = true;
     }
 
     public void Show()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+        RefreshData();
         PlayerController.canMove = false;
-        // Update gold display
-        if (_goldLabel != null)
-            _goldLabel.text = "Gold: " + GameManager.getCurrency();
-        // Refresh list to update owned states
-        if (_list != null) _list.Rebuild();
     }
 
+    private void RefreshData()
+    {
+        _list.RefreshItems();
+        _lblCurrency.text = $"Cash: {GameManager.getCurrency()}";
+    }
+
+    //automatically bind event
     void OnEnable()
     {
         if (_btnClose != null)
             _btnClose.clicked += Hide;
+        
+        RefreshData(); //have to wait until OnEnable to contact GameManager
     }
 
+    //automatically unbind event
     void OnDisable()
     {
         if (_btnClose != null)

@@ -88,7 +88,7 @@ public class GameUIManager : MonoBehaviour
                 RetryLevel();
             else if (_gameFinishedPanel.activeSelf)
             {
-                GameManager.ResetSave();
+                GameManager.EndRun();
                 GoToMainMenu();
             }
         }
@@ -148,7 +148,7 @@ public class GameUIManager : MonoBehaviour
         Time.timeScale = 0f;
 
         // Advance level — returns false when at max (we just won the final level).
-        bool advanced = GameManager.Instance != null && GameManager.Instance.AdvanceLevel();
+        bool advanced = GameManager.Instance != null && GameManager.AdvanceLevel();
 
         if (_winGoldText != null) _winGoldText.text = "Gold: " + gold;
         if (_winKillsText != null) _winKillsText.text = "Kills: " + kills;
@@ -174,7 +174,7 @@ public class GameUIManager : MonoBehaviour
         // Wait 2.5 seconds (real time, since timeScale is 0)
         yield return new WaitForSecondsRealtime(2.5f);
 
-        int level = GameManager.Instance != null ? GameManager.Instance.GetCurrentLevel() : 1;
+        int level = GameManager.Instance != null ? GameManager.GetCurrentLevel() : 1;
 
         // Map currentLevel to theme. Rae's GameManager: level 1 = Western (start),
         // 2 = Snow (after first AdvanceLevel), 3 = Mountain (after second).
@@ -211,6 +211,7 @@ public class GameUIManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         IsPaused = false;
+        GameManager.EndRun();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -283,7 +284,7 @@ public class GameUIManager : MonoBehaviour
         CreateStatLabel(panel.transform, "FinishedMsg", "You conquered the Wild West!", 10f);
 
         _gameFinishedFirstBtn = CreateButton(panel.transform, "MenuBtn_F", "Main Menu", -80f, () => {
-            GameManager.ResetSave();
+            GameManager.EndRun();
             GoToMainMenu();
         }).gameObject;
 

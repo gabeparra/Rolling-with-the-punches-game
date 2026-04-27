@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     private static SaveObject metaSave = new(); //hold meta progression data while the game is open
     private static RunObject runSave = null; //hold run data (player health, current level)
     private static bool runCurrencyMode = false; //set to true while in a run (use the function to check this, to null-check the runSave)
+    private static bool isReady = false; //sets itself to true once GameManager ready to use
 
     //awake runs before start
     private void Awake()
@@ -19,6 +20,7 @@ public class GameManager : MonoBehaviour
         if(Instance != null && Instance != this)
         {
             Destroy(this.gameObject); //this object is a duplicate; delete it
+            return;
         }
         else //this is the object we want to use as our singleton
         {
@@ -26,9 +28,12 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(this.gameObject);
         }
 
+        Debug.Log("THIS SHOULD NEVER BE SEEN MORE THAN ONCE");
+
         //initialize save system and load player's data
         SaveSystem.Init();
         Load();
+        isReady = true;
 
         //TODO: check if we're in a run (look for file) and try to resume it
 
@@ -37,6 +42,11 @@ public class GameManager : MonoBehaviour
         // start a run so currency operations hit run gold, not meta cash.
         if (Instance == this && IsLevelScene(SceneManager.GetActiveScene().name))
             StartRun();
+    }
+
+    public static bool Ready()
+    {
+        return isReady;
     }
 
     /// <summary>
@@ -119,6 +129,7 @@ public class GameManager : MonoBehaviour
 
     public static int getCurrency()
     {
+        //Debug.Log($"Currency mode set to gold? {getCurrencyMode()}");
         if(getCurrencyMode())
             return runSave.goldAmount;
         return metaSave.cashAmount;
@@ -183,8 +194,9 @@ public class GameManager : MonoBehaviour
     /// starts a new run by setting runSave to a new RunObject then returning its seed
     /// </summary>
     /// <returns>The seed of the new run</returns>
-    public int StartRun()
+    public static int StartRun()
     {
+        Debug.Log("starting a new run");
         runSave = new();
         runCurrencyMode = true;
         return runSave.seed;
@@ -194,10 +206,15 @@ public class GameManager : MonoBehaviour
     /// ends the current run by setting runSave to null (this is how checks for whether we're in a run are done).
     /// Also converts gold to cash, based on player's conversion rate (upgradable)
     /// </summary>
-    public void EndRun()
+    public static void EndRun()
     {
+        Debug.Log("Ending a run");
         //make sure we were in a run before continuing
-        if(runSave == null) return;
+        if(runSave == null)
+        {
+            Debug.Log("But we weren't in one");
+            return;
+        }
 
         int runGold = getCurrency(); //at the moment, currency is still set to runSave
         int amountToAdd = (int)(runGold * PlayerStats.currencyRate); //convert that gold to cash
@@ -205,17 +222,19 @@ public class GameManager : MonoBehaviour
         //ensure currency mode is set to meta
         runSave = null;
         runCurrencyMode = false;
+        Debug.Log($"The following should read false: {getCurrencyMode()}");
+        Debug.Log($"{getCurrency()} + {amountToAdd} should equal what you see in shop");
         UpdateCurrency(amountToAdd); //add the converted gold to the meta save
 
     }
 
-    public int GetCurrentLevel()
+    public static int GetCurrentLevel()
     {
         if (runSave == null) return 0;
         return runSave.currentLevel;
     }
 
-    public int GetMaxLevel()
+    public static int GetMaxLevel()
     {
         if(runSave == null) return 0;
         return runSave.maxLevel;
@@ -225,7 +244,7 @@ public class GameManager : MonoBehaviour
     /// tell the run to increment the level. Fails if not in a run or would exceed the run's maxLevel
     /// </summary>
     /// <returns>true if successful</returns>
-    public bool AdvanceLevel()
+    public static bool AdvanceLevel()
     {
         //not in a run, failure
         if(runSave == null) return false;
@@ -241,7 +260,7 @@ public class GameManager : MonoBehaviour
     /// use to get the run's seed
     /// </summary>
     /// <returns>The run's seed, or 0 if not in a run</returns>
-    public int GetRunSeed()
+    public static int GetRunSeed()
     {
         if(runSave == null) return 0;
         return runSave.seed;
@@ -251,7 +270,7 @@ public class GameManager : MonoBehaviour
     /// tells you whether the player is alive. Assumes false if not in a run
     /// </summary>
     /// <returns></returns>
-    public bool GetPlayerAlive()
+    public static bool GetPlayerAlive()
     {
         if(runSave == null) return false;
         return runSave.alive;
@@ -262,7 +281,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="isAlive">whether the player is alive</param>
     /// <returns>true if successful. false if not in a run</returns>
-    public bool SetPlayerAlive(bool isAlive)
+    public static bool SetPlayerAlive(bool isAlive)
     {
         if(runSave == null) return false;
         runSave.alive = isAlive;
@@ -274,18 +293,21 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         Debug.Log("gameManager onEnable");
-        SceneManager.activeSceneChanged += OnNewScene;
+        SceneManager.sceneLoaded += OnNewScene;
     }
 
     private void OnDisable()
     {
-        Debug.Log("gameManager ondisable");
-        SceneManager.activeSceneChanged -= OnNewScene;
+        if(Instance == this) //should only continue if we're disabling the actual instance of GameManager
+        {
+            Debug.Log("gameManager ondisable");
+            SceneManager.sceneLoaded -= OnNewScene;
+        }
     }
 
-    private void OnNewScene(Scene arg0, Scene arg1)
+    private static void OnNewScene(Scene arg1, LoadSceneMode loadMode)
     {
-        Debug.Log("scene1: " + arg0.name);
+        //Debug.Log("scene1: " + arg0.name);
         Debug.Log("scene2: " + arg1.name);
 
         if(arg1.name == "HubScene")

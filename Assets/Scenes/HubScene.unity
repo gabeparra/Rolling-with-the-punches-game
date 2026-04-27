@@ -804,6 +804,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: upgrades.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: 'upgrades.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 0ecdb86be86442847b5950928a5a49a8, type: 2}
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: 'upgrades.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 5f0b4d7516aa1594abb17724a5a5dfdf, type: 2}
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: 'upgrades.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 3d5d6d57cc962434f989af3b10032625, type: 2}
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: 'upgrades.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: a1422a09dde93ba44890fe57bc627480, type: 2}
     - target: {fileID: 3666056308472865606, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.75
@@ -861,6 +881,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 700636361097023533, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 4143559415429941089, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4648548846335853895, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
       propertyPath: m_Name
       value: Player
