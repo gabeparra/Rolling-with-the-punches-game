@@ -88,7 +88,7 @@ public class GameUIManager : MonoBehaviour
                 RetryLevel();
             else if (_gameFinishedPanel.activeSelf)
             {
-                GameManager.ResetSave();
+                GameManager.EndRun();
                 GoToMainMenu();
             }
         }
@@ -283,7 +283,7 @@ public class GameUIManager : MonoBehaviour
         CreateStatLabel(panel.transform, "FinishedMsg", "You conquered the Wild West!", 10f);
 
         _gameFinishedFirstBtn = CreateButton(panel.transform, "MenuBtn_F", "Main Menu", -80f, () => {
-            GameManager.ResetSave();
+            GameManager.EndRun();
             GoToMainMenu();
         }).gameObject;
 
