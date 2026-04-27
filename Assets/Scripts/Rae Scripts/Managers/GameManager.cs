@@ -129,7 +129,7 @@ public class GameManager : MonoBehaviour
 
     public static int getCurrency()
     {
-        Debug.Log($"Currency mode set to gold? {getCurrencyMode()}");
+        //Debug.Log($"Currency mode set to gold? {getCurrencyMode()}");
         if(getCurrencyMode())
             return runSave.goldAmount;
         return metaSave.cashAmount;
