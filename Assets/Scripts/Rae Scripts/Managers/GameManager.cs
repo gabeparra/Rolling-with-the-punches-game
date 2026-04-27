@@ -19,12 +19,15 @@ public class GameManager : MonoBehaviour
         if(Instance != null && Instance != this)
         {
             Destroy(this.gameObject); //this object is a duplicate; delete it
+            return;
         }
         else //this is the object we want to use as our singleton
         {
             Instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
+
+        Debug.Log("THIS SHOULD NEVER BE SEEN MORE THAN ONCE");
 
         //initialize save system and load player's data
         SaveSystem.Init();
