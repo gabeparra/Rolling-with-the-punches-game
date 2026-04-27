@@ -18,7 +18,7 @@ public class LevelGate : MonoBehaviour
     public void UpdateGate()
     {
         if (GameManager.Instance == null) return;
-        int current = GameManager.Instance.GetCurrentLevel();
+        int current = GameManager.GetCurrentLevel();
         gameObject.SetActive(current == requiredLevel);
     }
 }

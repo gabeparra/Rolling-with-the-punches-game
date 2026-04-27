@@ -119,6 +119,7 @@ public class GameManager : MonoBehaviour
 
     public static int getCurrency()
     {
+        Debug.Log($"Currency mode set to gold? {getCurrencyMode()}");
         if(getCurrencyMode())
             return runSave.goldAmount;
         return metaSave.cashAmount;
@@ -183,7 +184,7 @@ public class GameManager : MonoBehaviour
     /// starts a new run by setting runSave to a new RunObject then returning its seed
     /// </summary>
     /// <returns>The seed of the new run</returns>
-    public int StartRun()
+    public static int StartRun()
     {
         runSave = new();
         runCurrencyMode = true;
@@ -194,7 +195,7 @@ public class GameManager : MonoBehaviour
     /// ends the current run by setting runSave to null (this is how checks for whether we're in a run are done).
     /// Also converts gold to cash, based on player's conversion rate (upgradable)
     /// </summary>
-    public void EndRun()
+    public static void EndRun()
     {
         //make sure we were in a run before continuing
         if(runSave == null) return;
@@ -209,13 +210,13 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public int GetCurrentLevel()
+    public static int GetCurrentLevel()
     {
         if (runSave == null) return 0;
         return runSave.currentLevel;
     }
 
-    public int GetMaxLevel()
+    public static int GetMaxLevel()
     {
         if(runSave == null) return 0;
         return runSave.maxLevel;
@@ -225,7 +226,7 @@ public class GameManager : MonoBehaviour
     /// tell the run to increment the level. Fails if not in a run or would exceed the run's maxLevel
     /// </summary>
     /// <returns>true if successful</returns>
-    public bool AdvanceLevel()
+    public static bool AdvanceLevel()
     {
         //not in a run, failure
         if(runSave == null) return false;
@@ -241,7 +242,7 @@ public class GameManager : MonoBehaviour
     /// use to get the run's seed
     /// </summary>
     /// <returns>The run's seed, or 0 if not in a run</returns>
-    public int GetRunSeed()
+    public static int GetRunSeed()
     {
         if(runSave == null) return 0;
         return runSave.seed;
@@ -251,7 +252,7 @@ public class GameManager : MonoBehaviour
     /// tells you whether the player is alive. Assumes false if not in a run
     /// </summary>
     /// <returns></returns>
-    public bool GetPlayerAlive()
+    public static bool GetPlayerAlive()
     {
         if(runSave == null) return false;
         return runSave.alive;
@@ -262,7 +263,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="isAlive">whether the player is alive</param>
     /// <returns>true if successful. false if not in a run</returns>
-    public bool SetPlayerAlive(bool isAlive)
+    public static bool SetPlayerAlive(bool isAlive)
     {
         if(runSave == null) return false;
         runSave.alive = isAlive;
@@ -283,7 +284,7 @@ public class GameManager : MonoBehaviour
         SceneManager.activeSceneChanged -= OnNewScene;
     }
 
-    private void OnNewScene(Scene arg0, Scene arg1)
+    private static void OnNewScene(Scene arg0, Scene arg1)
     {
         Debug.Log("scene1: " + arg0.name);
         Debug.Log("scene2: " + arg1.name);
