@@ -81,6 +81,9 @@ public class ShopUI : MonoBehaviour
     public void Hide()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.None;
+        //save upon closing, but be sure to only do this if the GameManager has initialized (to avoid accidentally resetting savefile)
+        if(GameManager.Ready())
+            GameManager.Save();
         PlayerController.canMove = true;
     }
 

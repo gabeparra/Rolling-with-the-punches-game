@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     private static SaveObject metaSave = new(); //hold meta progression data while the game is open
     private static RunObject runSave = null; //hold run data (player health, current level)
     private static bool runCurrencyMode = false; //set to true while in a run (use the function to check this, to null-check the runSave)
+    private static bool isReady = false; //sets itself to true once GameManager ready to use
 
     //awake runs before start
     private void Awake()
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
         //initialize save system and load player's data
         SaveSystem.Init();
         Load();
+        isReady = true;
 
         //TODO: check if we're in a run (look for file) and try to resume it
 
@@ -40,6 +42,11 @@ public class GameManager : MonoBehaviour
         // start a run so currency operations hit run gold, not meta cash.
         if (Instance == this && IsLevelScene(SceneManager.GetActiveScene().name))
             StartRun();
+    }
+
+    public static bool Ready()
+    {
+        return isReady;
     }
 
     /// <summary>
