@@ -19,5 +19,5 @@ public static class PlayerStats
     public static float dashTime => DASH_TIME_BASE + (0.01f * UpgradeManager.GetLevel("Dash Distance"));
     public static int maxJumps => MAX_JUMP_BASE + UpgradeManager.GetLevel("Max Jumps");
     public static float currencyRate => CURRENCY_RATE_BASE + UpgradeManager.GetLevel("Gold-Cash Conversion Rate");
-    public static int goldPerKill = GOLD_PER_KILL_BASE + UpgradeManager.GetLevel("Gold Per Kill");
+    public static int goldPerKill => GOLD_PER_KILL_BASE + UpgradeManager.GetLevel("Gold Per Kill");
 }
