@@ -186,6 +186,7 @@ public class GameManager : MonoBehaviour
     /// <returns>The seed of the new run</returns>
     public static int StartRun()
     {
+        Debug.Log("starting a new run");
         runSave = new();
         runCurrencyMode = true;
         return runSave.seed;
@@ -197,8 +198,13 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static void EndRun()
     {
+        Debug.Log("Ending a run");
         //make sure we were in a run before continuing
-        if(runSave == null) return;
+        if(runSave == null)
+        {
+            Debug.Log("But we weren't in one");
+            return;
+        }
 
         int runGold = getCurrency(); //at the moment, currency is still set to runSave
         int amountToAdd = (int)(runGold * PlayerStats.currencyRate); //convert that gold to cash
@@ -206,6 +212,8 @@ public class GameManager : MonoBehaviour
         //ensure currency mode is set to meta
         runSave = null;
         runCurrencyMode = false;
+        Debug.Log($"The following should read false: {getCurrencyMode()}");
+        Debug.Log($"{getCurrency()} + {amountToAdd} should equal what you see in shop");
         UpdateCurrency(amountToAdd); //add the converted gold to the meta save
 
     }
@@ -275,18 +283,21 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         Debug.Log("gameManager onEnable");
-        SceneManager.activeSceneChanged += OnNewScene;
+        SceneManager.sceneLoaded += OnNewScene;
     }
 
     private void OnDisable()
     {
-        Debug.Log("gameManager ondisable");
-        SceneManager.activeSceneChanged -= OnNewScene;
+        if(Instance == this) //should only continue if we're disabling the actual instance of GameManager
+        {
+            Debug.Log("gameManager ondisable");
+            SceneManager.sceneLoaded -= OnNewScene;
+        }
     }
 
-    private static void OnNewScene(Scene arg0, Scene arg1)
+    private static void OnNewScene(Scene arg1, LoadSceneMode loadMode)
     {
-        Debug.Log("scene1: " + arg0.name);
+        //Debug.Log("scene1: " + arg0.name);
         Debug.Log("scene2: " + arg1.name);
 
         if(arg1.name == "HubScene")
