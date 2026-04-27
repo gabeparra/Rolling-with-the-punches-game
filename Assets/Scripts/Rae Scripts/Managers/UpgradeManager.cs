@@ -41,7 +41,10 @@ public class UpgradeManager : MonoBehaviour
     {
         //check whether an instance already exists
         if(instance != null && instance != this)
+        {
             Destroy(this.gameObject); //this is a duplicate. destroy it
+            return;
+        }
         else //this is the object we want to use
         {
             instance = this;

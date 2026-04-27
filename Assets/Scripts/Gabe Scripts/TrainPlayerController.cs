@@ -1,7 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+//<<<<<<< HEAD
 public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMovement' class name -- Hector 4/24/26
+//=======
+//public class PlayerMovement : MonoBehaviour
+//>>>>>>> 5ea8deb (Adding comments to my scripts. Still have more to comment. Added comments to the following scripts: BulletTracer.cs, CusorImage.cs, EnemyScript.cs, and partially through HudManager script. I also deleted several scripts that were redundant or no longer in use such as CanvasDebugger and GoldManager scripts. Several classes also renamed to reflect their proper class names.)
 {
     [Header("Movement")]
     public float speed = 14f;

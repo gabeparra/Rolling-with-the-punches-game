@@ -3,10 +3,12 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
-    [SerializeField] private float speed = 4f;
+    private Animator animator;
+    //[SerializeField] private float speed = 4f;
     private Vector3 movementVector = Vector3.zero;
 
     //the default input mapping suddenly started working again... keep the temporary stuff available in case it breaks again
@@ -20,6 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         //input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
         canMove = true;
     }
 
@@ -81,7 +84,11 @@ public class PlayerController : MonoBehaviour
     
     private void FixedUpdate()
     {
-        rb.linearVelocity = movementVector * speed;
+        rb.linearVelocity = movementVector * PlayerStats.moveSpeed;
+        //control whether to play walking animation
+        if(animator != null) animator.SetBool("isMoving", movementVector.magnitude > 0.01f);
+        //control facing direction
+        if(movementVector.magnitude > 0.01f) transform.rotation = Quaternion.LookRotation(movementVector);
     }
 
 }

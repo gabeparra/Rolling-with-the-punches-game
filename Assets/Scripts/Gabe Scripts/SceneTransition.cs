@@ -82,8 +82,8 @@ public class SceneTransition : MonoBehaviour
     private void Load()
     {
         LevelSelector.CurrentTheme = theme;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         string str = dict.GetValueOrDefault(sceneName, "HubScene");
         SceneManager.LoadScene(str);
     }
