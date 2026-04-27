@@ -43,6 +43,7 @@ public class ShopUI : MonoBehaviour
             {
                 buyBtn.text = cost.ToString(); //initialize with the current price
                 buyBtn.iconImage = cashIcon;
+                buyBtn.SetEnabled(true);
             }
             else
             {
