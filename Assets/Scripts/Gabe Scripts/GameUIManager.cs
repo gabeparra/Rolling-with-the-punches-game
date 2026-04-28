@@ -85,7 +85,7 @@ public class GameUIManager : MonoBehaviour
         if (_anyPanelOpen && !IsPaused && ConfirmPressed())
         {
             if (_gameOverPanel.activeSelf)
-                RetryRun();
+                GoToHub();
             else if (_gameFinishedPanel.activeSelf)
             {
                 GameManager.EndRun();
@@ -207,15 +207,6 @@ public class GameUIManager : MonoBehaviour
 
     // ── Scene loading helpers ──────────────────────────────────
 
-    private void RetryRun()
-    {
-        Time.timeScale = 1f;
-        IsPaused = false;
-        GameManager.EndRun();
-        LevelSelector.CurrentTheme = LevelSelector.Theme.Western;
-        SceneManager.LoadScene("Hector Scene");
-    }
-
     private void GoToHub()
     {
         Time.timeScale = 1f;
@@ -256,8 +247,7 @@ public class GameUIManager : MonoBehaviour
         _goGoldText = CreateStatLabel(panel.transform, "GOGold", "Gold: 0", 10f);
         _goKillsText = CreateStatLabel(panel.transform, "GOKills", "Kills: 0", -30f);
 
-        _gameOverFirstBtn = CreateButton(panel.transform, "RetryBtn", "New Run", -100f, () => RetryRun()).gameObject;
-        CreateButton(panel.transform, "HubBtn_GO", "Return to Hub", -170f, () => GoToHub());
+        _gameOverFirstBtn = CreateButton(panel.transform, "HubBtn_GO", "Return to Hub", -100f, () => GoToHub()).gameObject;
 
         panel.SetActive(false);
         return panel;
