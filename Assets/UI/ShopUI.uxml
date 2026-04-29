@@ -2,13 +2,13 @@
     <ui:VisualElement style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/UI%20board%20Large%20stone.png?fileID=2800000&amp;guid=7066e0747291df44fa5c2bf93bee3a6e&amp;type=3#UI board Large stone&quot;); -unity-background-scale-mode: scale-to-fit; align-items: center;">
         <ui:VisualElement style="flex-grow: 1; width: 1500px;">
             <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; padding: 4px; height: 189px;">
-                <ui:Button name="close" style="background-image: url(&quot;project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/Close%20Button.png?fileID=2800000&amp;guid=11277a3f23988ec47908362d708edaa8&amp;type=3#Close Button&quot;); -unity-background-scale-mode: scale-to-fit; background-color: rgba(70, 70, 70, 0); aspect-ratio: 1; height: 143px; width: 143px;"/>
-                <ui:Image source="project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/IRONY%20TITLE%20%20Large.png?fileID=2800000&amp;guid=054411784c3fdf74d9db120b4a792a71&amp;type=3#IRONY TITLE  Large" style="height: 164px; width: 780px; align-items: center; justify-content: center; flex-grow: 0; top: -25px;">
-                    <ui:Label text="Upgrades" style="font-size: 90px; -unity-font-style: bold;"/>
-                </ui:Image>
                 <ui:Image source="project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/UI%20board%20Small%20%20parchment.png?fileID=2800000&amp;guid=a454050719005b444b59a84eaafba779&amp;type=3#UI board Small  parchment" style="height: 129px; width: 349px; align-items: flex-start; justify-content: center;">
                     <ui:Label text="Cash: 0" name="cash" style="font-size: 50px; color: rgb(27, 27, 27); left: 35px;"/>
                 </ui:Image>
+                <ui:Image source="project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/IRONY%20TITLE%20%20Large.png?fileID=2800000&amp;guid=054411784c3fdf74d9db120b4a792a71&amp;type=3#IRONY TITLE  Large" style="height: 164px; width: 780px; align-items: center; justify-content: center; flex-grow: 0; top: -25px;">
+                    <ui:Label text="Upgrades" style="font-size: 90px; -unity-font-style: bold;"/>
+                </ui:Image>
+                <ui:Button name="close" style="background-image: url(&quot;project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/Close%20Button.png?fileID=2800000&amp;guid=11277a3f23988ec47908362d708edaa8&amp;type=3#Close Button&quot;); -unity-background-scale-mode: scale-to-fit; background-color: rgba(70, 70, 70, 0); aspect-ratio: 1; height: 143px; width: 143px;"/>
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 0; height: 825px; background-image: url(&quot;project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/UI%20board%20Large%20%20parchment.png?fileID=2800000&amp;guid=43a7d98bd4222b64e933596512dc09ad&amp;type=3#UI board Large  parchment&quot;); -unity-background-scale-mode: stretch-to-fill; justify-content: center; align-items: center;">
                 <ui:VisualElement style="flex-grow: 0; width: 1358px; height: 676px;">
