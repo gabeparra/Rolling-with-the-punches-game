@@ -69,7 +69,7 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         }
 
         InvokeRepeating("spawn", 2f, spawnInterval);
-        InvokeRepeating("ensureFighters", 0f, spawnInterval * 2);
+        InvokeRepeating("ensureFighters", 0f, spawnInterval); //TODO: tweak as needed before submission
 
         if (HUDManager.Instance != null)
             HUDManager.Instance.SetTotalEnemies(max_enemies);
