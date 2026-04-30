@@ -84,14 +84,14 @@ public class ShopUI : MonoBehaviour
         //save upon closing, but be sure to only do this if the GameManager has initialized (to avoid accidentally resetting savefile)
         if(GameManager.Ready())
             GameManager.Save();
-        PlayerController.canMove = true;
+        TrainPlayerController.canMove = true;
     }
 
     public void Show()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
         RefreshData();
-        PlayerController.canMove = false;
+        TrainPlayerController.canMove = false;
     }
 
     private void RefreshData()

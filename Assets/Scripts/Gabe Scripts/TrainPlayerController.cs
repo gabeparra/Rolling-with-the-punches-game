@@ -7,6 +7,14 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
 //public class PlayerMovement : MonoBehaviour
 //>>>>>>> 5ea8deb (Adding comments to my scripts. Still have more to comment. Added comments to the following scripts: BulletTracer.cs, CusorImage.cs, EnemyScript.cs, and partially through HudManager script. I also deleted several scripts that were redundant or no longer in use such as CanvasDebugger and GoldManager scripts. Several classes also renamed to reflect their proper class names.)
 {
+    [Header("Needed for Hub")]
+    [Tooltip("Minor changes necessary while in the hub")]
+    [SerializeField] private bool hubMode = false;
+    public static bool canMove = true;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics() => canMove = true;
+
     [Header("Movement")]
     public float speed = 14f;
     public float jumpForce = 5.5f;
@@ -62,7 +70,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
                          RigidbodyConstraints.FreezeRotationZ;
 
         // Keep player at consistent world scale under the non-uniform train parent
-        if (GetComponent<MaintainWorldScale>() == null)
+        if (!hubMode && GetComponent<MaintainWorldScale>() == null)
         {
             var scaler = gameObject.AddComponent<MaintainWorldScale>();
             scaler.targetScale = 0.75f;
@@ -76,7 +84,11 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         // Vector input from controller can have magnitude < 1 (analog stick).
         // Clamp magnitude so diagonal isn't faster than cardinal.
         Vector3 raw = new Vector3(input.x, 0, input.y);
-        moveDirection = raw.sqrMagnitude > 1f ? raw.normalized : raw;
+        if(canMove)
+        {
+            moveDirection = raw.sqrMagnitude > 1f ? raw.normalized : raw;
+        }
+        else moveDirection = Vector3.zero;
 
         bool isMoving = moveDirection.sqrMagnitude > 0.01f;
 
@@ -156,7 +168,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         else jumpBufferTimer -= Time.deltaTime;
 
         // Jump fires if buffer is active AND we're within coyote window AND have a jump available.
-        if (jumpBufferTimer > 0f && coyoteTimer > 0f && jumpsUsed < PlayerStats.maxJumps)
+        if (jumpBufferTimer > 0f && coyoteTimer > 0f && jumpsUsed < PlayerStats.maxJumps && canMove)
         {
             Vector3 v = rb.linearVelocity;
             v.y = 0f;
@@ -175,7 +187,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         var sprintAction = InputSystem.actions != null ? InputSystem.actions.FindAction("Sprint") : null;
         if (sprintAction != null && sprintAction.WasPressedThisFrame()) dashPressed = true;
 
-        if (dashPressed && !isDashing && dashCooldownTimer <= 0f)
+        if (dashPressed && !isDashing && dashCooldownTimer <= 0f && canMove)
         {
             isDashing = true;
             dashTimer = PlayerStats.dashTime;
@@ -199,7 +211,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
 
     void FixedUpdate()
     {
-        if (isDashing)
+        if (isDashing && canMove)
         {
             // Dash overrides movement entirely.
             rb.linearVelocity = new Vector3(
