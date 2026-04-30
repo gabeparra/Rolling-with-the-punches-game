@@ -6781,7 +6781,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
       propertyPath: upgrades.Array.size
-      value: 4
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
       propertyPath: 'upgrades.Array.data[0]'
@@ -6790,15 +6790,31 @@ PrefabInstance:
     - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
       propertyPath: 'upgrades.Array.data[1]'
       value: 
-      objectReference: {fileID: 11400000, guid: 5f0b4d7516aa1594abb17724a5a5dfdf, type: 2}
+      objectReference: {fileID: 11400000, guid: e821b0e0a757d3041a901aeb8a7d630a, type: 2}
     - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
       propertyPath: 'upgrades.Array.data[2]'
       value: 
-      objectReference: {fileID: 11400000, guid: 3d5d6d57cc962434f989af3b10032625, type: 2}
+      objectReference: {fileID: 11400000, guid: af3a4de4affc5c048813e9fc13797250, type: 2}
     - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
       propertyPath: 'upgrades.Array.data[3]'
       value: 
+      objectReference: {fileID: 11400000, guid: a91fee3a0bfe8de4e829f2349f740737, type: 2}
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: 'upgrades.Array.data[4]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 5f0b4d7516aa1594abb17724a5a5dfdf, type: 2}
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: 'upgrades.Array.data[5]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 3d5d6d57cc962434f989af3b10032625, type: 2}
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: 'upgrades.Array.data[6]'
+      value: 
       objectReference: {fileID: 11400000, guid: a1422a09dde93ba44890fe57bc627480, type: 2}
+    - target: {fileID: 3350640967232117434, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: 'upgrades.Array.data[7]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 90fe5ff616b12ec4f96ae4b08136a8e2, type: 2}
     - target: {fileID: 3666056308472865606, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5
