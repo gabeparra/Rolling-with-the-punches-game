@@ -18,7 +18,7 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
     int maxFighters = 2;
 
     // ---- Leveled stats (Nahum's enemy stat config) ----
-    public int level = 1;
+    private int level = 1;
 
     public float enemy_accuracy_level_increment = .15f;
     public float base_enemy_accuracy = .3f;
@@ -118,7 +118,15 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         return fighterCount;
     }
 
-    void Update() { }
+    void Update()
+    {
+        if(GameManager.Ready())
+        {
+            int temp = GameManager.GetCurrentLevel();
+            if(temp == 0) temp = 1;
+            this.level = temp;
+        }
+    }
 
     private void OnDrawGizmos()
     {
