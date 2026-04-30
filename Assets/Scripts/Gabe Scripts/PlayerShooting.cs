@@ -10,7 +10,6 @@ public class PlayerShooting : MonoBehaviour
     public float maxRange = 50f;
     public AudioClip gunshotClip;
     public AudioClip reloadClip;
-    public float reloadTime = 1f;
     private AudioSource audioSource;
     private bool _reloading = false;
     private bool _triggerWasDown = false;
@@ -36,7 +35,7 @@ public class PlayerShooting : MonoBehaviour
     {
         _reloading = true;
         if (reloadClip != null && audioSource != null) audioSource.PlayOneShot(reloadClip);
-        yield return new WaitForSeconds(reloadTime);
+        yield return new WaitForSeconds(PlayerStats.reloadTime);
         if (HUDManager.Instance != null) HUDManager.Instance.ReloadAmmo();
         _reloading = false;
     }
