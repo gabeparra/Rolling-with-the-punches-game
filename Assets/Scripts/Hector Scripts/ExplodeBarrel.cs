@@ -31,7 +31,6 @@ public class ExplodeBarrel : MonoBehaviour
         }
     }
 
-    /// <summary>Hitscan entry point. PlayerShooting calls this on a raycast hit.</summary>
     public void TakeDamage(int amount)
     {
         if (_hasExploded) return;

@@ -1,14 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Tracks the Player's world X position at a fixed offset, optionally drifting
-/// in -+ over time at `leadSpeed` units/sec to outpace the train. Y and Z stay
-/// locked to whatever this object had at Awake. Pair with a looping in-place
-/// gallop/canter animation for the bandits-jumped-off illusion.
-///
-/// Horse-only: the only external reference is a read-only lookup of the
-/// GameObject tagged "Player" at Awake. No other systems are modified.
-/// </summary>
 public class HorseSlideX : MonoBehaviour
 {
     [Header("Tracking")]

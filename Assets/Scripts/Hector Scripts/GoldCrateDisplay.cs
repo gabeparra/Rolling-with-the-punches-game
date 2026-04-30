@@ -1,23 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Visually swaps between Gold Crate variant children based on the player's
-/// current gold (read from GameManager). Tier breakpoints default to every
-/// 100 gold: Empty for &lt;100, One Bar for 100-199, ... Six Bars for 600+.
-/// Reverses automatically when gold is spent. Read-only — does not modify gold.
-///
-/// Setup:
-///  - Place this component on an empty wrapper GameObject (e.g. Crate 1).
-///  - Add the 7 Gold Crate prefab variants as children of that wrapper.
-///  - Assign each child to the variants[] slots in tier order:
-///      0 = Gold Crate Empty
-///      1 = Gold Crate One Bar
-///      2 = Gold Crate Two Bars
-///      3 = Gold Crate Three Bars
-///      4 = Gold Crate Four Bars
-///      5 = Gold Crate Five Bars
-///      6 = Gold Crate Six Bars
-/// </summary>
 public class GoldCrateDisplay : MonoBehaviour
 {
     [Header("Variants (tier order: Empty, OneBar, TwoBars, ... SixBars)")]
@@ -28,14 +10,10 @@ public class GoldCrateDisplay : MonoBehaviour
     [Tooltip("Gold required per tier step. 100 means Empty<100, OneBar 100-199, etc.")]
     [SerializeField] private int goldPerTier = 100;
 
-    // -1 forces the first ApplyTier to write through, even if the computed
-    // tier happens to be 0 (which is the array's default int value).
     private int _currentTier = -1;
 
     void Start()
     {
-        // Snap to the correct variant immediately on scene load, even if
-        // GameManager isn't ready yet (will fall back to tier 0 = Empty).
         ApplyTier(ComputeTier(GetGold()), force: true);
     }
 

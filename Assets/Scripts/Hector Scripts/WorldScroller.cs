@@ -40,10 +40,6 @@ public class WorldScroller : MonoBehaviour
             return;
         }
 
-        // Move world backward, then sync physics so child trigger colliders
-        // are recognized at their new positions (fires OnTriggerEnter on tracks).
-        // SyncTransforms is needed since we move via Transform, not Rigidbody.
-        // Already guarded by the stopped check above.
         transform.position += Vector3.left * step;
         Physics.SyncTransforms();
     }
