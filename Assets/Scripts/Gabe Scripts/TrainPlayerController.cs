@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 //<<<<<<< HEAD
 public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMovement' class name -- Hector 4/24/26
@@ -9,7 +10,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
 {
     [Header("Needed for Hub")]
     [Tooltip("Minor changes necessary while in the hub")]
-    [SerializeField] private bool hubMode = false;
+    private bool hubMode = false;
     public static bool canMove = true;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -62,6 +63,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
 
     void Start()
     {
+        hubMode = SceneManager.GetActiveScene().name == "HubScene";
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
 
@@ -74,6 +76,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         {
             var scaler = gameObject.AddComponent<MaintainWorldScale>();
             scaler.targetScale = 0.75f;
+            Debug.Log("scaler created");
         }
     }
 
@@ -251,6 +254,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
             v.y = -maxFallSpeed;
             rb.linearVelocity = v;
         }
+        //Debug.Log($"Current velocity:{rb.linearVelocity.magnitude}");
     }
 
     bool IsGrounded()
