@@ -105,7 +105,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
             // Right-stick override (controller). Reads camera-relative so pushing
             // up on the stick aims away from the camera.
             var lookAction = InputSystem.actions != null ? InputSystem.actions.FindAction("Look") : null;
-            if (lookAction != null)
+            if (lookAction != null && Gamepad.current != null)
             {
                 Vector2 stick = lookAction.ReadValue<Vector2>();
                 if (stick.sqrMagnitude > 0.25f) // deadzone for right stick
