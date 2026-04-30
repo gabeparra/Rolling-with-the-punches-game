@@ -6911,6 +6911,10 @@ PrefabInstance:
       propertyPath: hubMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3408995133512763338, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
+      propertyPath: m_Height
+      value: 1.65
+      objectReference: {fileID: 0}
     - target: {fileID: 4143559415429941089, guid: 7fdbea8afee37bd4fb852dfecf817b61, type: 3}
       propertyPath: m_LocalPosition.y
       value: 1
