@@ -31,8 +31,6 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
 
     [Header("Dash")]
     public float dashSpeed = 14f;
-    public float dashDuration = 0.12f;
-    public float dashCooldown = 1f;
 
     private Rigidbody rb;
     private Animator animator;
@@ -45,7 +43,6 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
     private Vector3 dashDirection;
 
     private int jumpsUsed = 0;
-    private const int maxJumps = 1;
 
     private float coyoteTimer = 0f;
     private float jumpBufferTimer = 0f;
@@ -53,7 +50,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
     private const int requiredGroundedFrames = 1; // groundLayer is set, so IsGrounded is reliable — no buffer needed
 
     /// <summary>0 = ready, 1 = just used. Used by DashCooldownBar.</summary>
-    public float DashCooldownNormalized => Mathf.Clamp01(dashCooldownTimer / dashCooldown);
+    public float DashCooldownNormalized => Mathf.Clamp01(dashCooldownTimer / PlayerStats.dashCooldown);
 
     void Start()
     {
@@ -159,13 +156,13 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         else jumpBufferTimer -= Time.deltaTime;
 
         // Jump fires if buffer is active AND we're within coyote window AND have a jump available.
-        if (jumpBufferTimer > 0f && coyoteTimer > 0f && jumpsUsed < maxJumps)
+        if (jumpBufferTimer > 0f && coyoteTimer > 0f && jumpsUsed < PlayerStats.maxJumps)
         {
             Vector3 v = rb.linearVelocity;
             v.y = 0f;
             rb.linearVelocity = v;
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            jumpsUsed = maxJumps;
+            jumpsUsed++;
             jumpBufferTimer = 0f; // consume buffer
             coyoteTimer = 0f;     // consume coyote
         }
@@ -181,11 +178,11 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         if (dashPressed && !isDashing && dashCooldownTimer <= 0f)
         {
             isDashing = true;
-            dashTimer = dashDuration;
+            dashTimer = PlayerStats.dashTime;
             Vector3 dir = isMoving ? moveDirection.normalized : transform.forward;
             dir.y = 0f;
             dashDirection = dir.normalized;
-            dashCooldownTimer = dashCooldown;
+            dashCooldownTimer = PlayerStats.dashCooldown;
             Vector3 v = rb.linearVelocity;
             v.y = 0f;
             rb.linearVelocity = v;
