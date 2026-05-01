@@ -25,7 +25,7 @@ public class ShopTrigger : MonoBehaviour
 
     private void OnInteract(InputAction.CallbackContext context)
     {
-        if(canInteract) Interact();
+        if(canInteract && TrainPlayerController.canMove) Interact();
     }
 
     private void Interact()

@@ -17,6 +17,8 @@ public class ShopUI : MonoBehaviour
     private ListView _list;
     private Label _lblCurrency;
 
+    public static bool isOpen = false;
+
     void Awake()
     {
         //initialize references to UI objects
@@ -89,6 +91,7 @@ public class ShopUI : MonoBehaviour
     public void Hide()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.None;
+        isOpen = false;
         //save upon closing, but be sure to only do this if the GameManager has initialized (to avoid accidentally resetting savefile)
         if(GameManager.Ready())
             GameManager.Save();
@@ -98,6 +101,7 @@ public class ShopUI : MonoBehaviour
     public void Show()
     {
         uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+        isOpen = true;
         RefreshData();
         TrainPlayerController.canMove = false;
     }

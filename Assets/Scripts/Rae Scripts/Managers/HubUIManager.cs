@@ -78,7 +78,13 @@ public class HubUIManager : MonoBehaviour
     private void OnToggle(InputAction.CallbackContext context)
     {
         if(menuOpen) Hide();
-        else Show();
+        else if(ShopUI.isOpen) //focus on closing the shop first
+        {
+            ShopUI shopUI = FindAnyObjectByType<ShopUI>();
+            if(shopUI != null) shopUI.Hide();
+            return;
+        }
+        else Show(); //there is not another menu to focus on first
     }
 
     private void OnEnable()
