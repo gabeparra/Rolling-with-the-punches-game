@@ -88,6 +88,7 @@ public class GameUIManager : MonoBehaviour
                 RetryRun();
             else if (_gameFinishedPanel.activeSelf)
             {
+                GameManager.SetPlayerAlive(false);
                 GameManager.EndRun();
                 GoToMainMenu();
             }
@@ -240,8 +241,16 @@ public class GameUIManager : MonoBehaviour
 
         float btnY = -30f;
         _pauseFirstBtn = CreateButton(panel.transform, "ResumeBtn", "Resume", btnY, () => TogglePause()).gameObject;
-        CreateButton(panel.transform, "HubBtn_P", "Return to Hub", btnY - 70f, () => GoToHub());
-        CreateButton(panel.transform, "MenuBtn_P", "Main Menu", btnY - 140f, () => GoToMainMenu());
+        CreateButton(panel.transform, "HubBtn_P", "Return to Hub", btnY - 70f, () => {
+            GameManager.SetPlayerAlive(false);
+            GoToHub();
+        });
+        CreateButton(panel.transform, "MenuBtn_P", "Main Menu", btnY - 140f, () => {
+            GameManager.SetPlayerAlive(false);
+            GameManager.EndRun();
+            GoToMainMenu();
+        });
+        //TODO: add button to quit game
 
         panel.SetActive(false);
         return panel;
@@ -257,7 +266,10 @@ public class GameUIManager : MonoBehaviour
         _goKillsText = CreateStatLabel(panel.transform, "GOKills", "Kills: 0", -30f);
 
         _gameOverFirstBtn = CreateButton(panel.transform, "RetryBtn", "New Run", -100f, () => RetryRun()).gameObject;
-        CreateButton(panel.transform, "HubBtn_GO", "Return to Hub", -170f, () => GoToHub());
+        CreateButton(panel.transform, "HubBtn_GO", "Return to Hub", -170f, () => {
+            GameManager.SetPlayerAlive(false);
+            GoToHub();
+        });
 
         panel.SetActive(false);
         return panel;
