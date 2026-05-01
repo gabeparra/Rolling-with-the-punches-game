@@ -581,7 +581,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aef3d6082c8aa645aae703cf752e5cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrainPlayerController
-  hubMode: 0
   speed: 14
   jumpForce: 5.5
   rotationSpeed: 30
