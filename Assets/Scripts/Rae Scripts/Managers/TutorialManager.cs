@@ -14,8 +14,22 @@ public class TutorialManager : MonoBehaviour
     private Button btn_next;
     private Button btn_close;
 
-    private string[] title = {"Welcome to the Wild West!"};
-    private string[] content = {"You've just been hired as a train conductor for a freight company based in a sprouting canyonside boomtown. For some reason the freight company is having a hard time keeping the position filled. You've heard reports of bandit raids along the railroad.\nSurely it won't be that bad... Right?"};
+    private string[] title = {
+        "Welcome to the Wild West!", //exposition
+        "Get to Work!", //explain how to start a run
+        "Bandits!", //explain goal of bandits
+        "Get Shooting!", //explain controls
+        "Payday!", //explain payment and getting upgrades
+        "Gold Rush!", //final summary on game loop
+    };
+    private string[] content = {
+        "You've just been hired as a train conductor for a freight company based in a sprouting canyonside boomtown. For some reason the freight company is having a hard time keeping the position filled. You've heard reports of bandit raids along the railroad.\nSurely it won't be that bad... Right?",
+        "Head to the train station to start your first trip as a conductor.\nYou'll be back...",
+        "Your new employers issued you a revolver for self defense. If any stowaways are on board, you won't be allowed to approach the next station.\nLooks like you'll have to do some dirty work",
+        "Move with WASD, aim with your mouse, shoot with left click, jump with space, and dash with shift.\nYou can also use a controller in many areas.",
+        "Get your share of the payment from your trip. The company will still compensate you for your troubles even if your trip is unsuccessful. However, they still must punsh you somehow, so you recieve half the payment you would have otherwise.\nHead to the Supply Post to spend your cash on upgrades to make your job easier.",
+        "After your shopping spree, head back to work. Do your best to fulfill the contract, come back here to get more upgrades, and keep that cycle going.\nGo for a high score and strike it rich!",
+    };
 
     private int currentPage = 0;
     private int maxPage = 3;
