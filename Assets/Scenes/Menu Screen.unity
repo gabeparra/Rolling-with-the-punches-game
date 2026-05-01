@@ -223,6 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b620f5f4b323e45836c670a2806026, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuManager
+  startButton: {fileID: 0}
 --- !u!4 &51995453
 Transform:
   m_ObjectHideFlags: 0
@@ -269,6 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CursorImage
   cursorTexture: {fileID: 2800000, guid: f24d8340dae50354dbeaa5baf15006e7, type: 3}
   hotspot: {x: 16, y: 16}
+  autoCenterHotspot: 1
 --- !u!4 &501391940
 Transform:
   m_ObjectHideFlags: 0
@@ -571,7 +573,6 @@ GameObject:
   - component: {fileID: 878871351}
   - component: {fileID: 878871350}
   - component: {fileID: 878871349}
-  - component: {fileID: 878871352}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
