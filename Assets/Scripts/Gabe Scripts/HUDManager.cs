@@ -25,7 +25,6 @@ public class HUDManager : MonoBehaviour
     private int _enemiesRemaining;
     private int _totalKills = 0;
 
-    public int Gold => _gold;
     public int TotalKills => _totalKills;
 
     // BUG-26 fix: shared reload guard with PlayerHealth
