@@ -15,6 +15,9 @@ public class HubUIManager : MonoBehaviour
     private Button btn_resetTut;
     private Button btn_quit;
 
+    [SerializeField]
+    private bool hideMenuButton = true;
+
     private bool menuOpen = false;
 
     private void Awake()
@@ -40,6 +43,9 @@ public class HubUIManager : MonoBehaviour
         btn_quit = uiDocument.rootVisualElement.Q("btn_quit") as Button;
 
         Hide(); //hide until needed
+
+        //disable mainMenu button til it's fixed
+        if(hideMenuButton) btn_menu.style.display = DisplayStyle.None;
 
         btn_continue.RegisterCallback<ClickEvent>(OnContinue, TrickleDown.NoTrickleDown); //register the onClick //TODO: do we wanta different TrickleDown??
         btn_menu.RegisterCallback<ClickEvent>(OnMenu, TrickleDown.NoTrickleDown); //register the onClick //TODO: do we wanta different TrickleDown??
