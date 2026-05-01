@@ -72,7 +72,7 @@ public class HUDManager : MonoBehaviour
         */
 
         DrawHearts();
-        DrawAmmo();
+        //DrawAmmo();
 
         if (GameManager.getPlayerHealth() <= 0)
         {
