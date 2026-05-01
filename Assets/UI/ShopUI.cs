@@ -53,6 +53,11 @@ public class ShopUI : MonoBehaviour
                 buyBtn.SetEnabled(false);
                 buyBtn.iconImage = null;
             }
+
+            //section for refreshing progress bar
+            ProgressBar bar = e.Q<ProgressBar>("progress");
+            bar.highValue = u.maxLevel;
+            bar.value = UpgradeManager.GetLevel(u.upgradeName);
         };
     }
 

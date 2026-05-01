@@ -1,7 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/shopUIbtn.uss?fileID=7433441132597879392&amp;guid=b18cf12f04cc68d4581df13092d92917&amp;type=3#shopUIbtn"/>
-    <ui:VisualElement data-source-type="Upgrade, Assembly-CSharp" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; align-content: center; width: 1345px; align-self: center;">
-        <ui:VisualElement style="flex-grow: 1;">
+    <ui:VisualElement data-source-type="Upgrade, Assembly-CSharp" style="flex-grow: 0; flex-direction: row; justify-content: space-between; align-items: center; align-content: center; width: 100%; align-self: center; height: 240px; padding-left: 40px; padding-right: 40px;">
+        <ui:VisualElement style="flex-grow: 1; max-width: 1100px;">
             <ui:Label text="upgradeName" data-source-path="upgradeName" name="name" style="-unity-text-align: upper-left; font-size: 80px;">
                 <Bindings>
                     <ui:DataBinding property="text" binding-mode="ToTarget"/>
@@ -13,6 +13,9 @@
                 </Bindings>
             </ui:Label>
         </ui:VisualElement>
-        <ui:Button text="cost" data-source-path="cost" name="btn" enabled="true" class="unity-button__image" style="background-image: url(&quot;project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/TextBTN_Medium.png?fileID=2800000&amp;guid=efee20b64d1e73942a29ba61ce3379c3&amp;type=3#TextBTN_Medium&quot;); -unity-text-outline-color: rgb(0, 0, 0); -unity-background-scale-mode: scale-to-fit; background-color: rgba(188, 188, 188, 0); min-width: 250px; min-height: 100px; font-size: 54px; -unity-text-align: upper-center; -unity-text-outline-width: 2px; color: rgb(255, 255, 255);"/>
+        <ui:VisualElement style="flex-grow: 0; align-items: center; flex-shrink: 1;">
+            <ui:Button text="cost" data-source-path="cost" name="btn" enabled="true" class="unity-button__image" style="background-image: url(&quot;project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/TextBTN_Medium.png?fileID=2800000&amp;guid=efee20b64d1e73942a29ba61ce3379c3&amp;type=3#TextBTN_Medium&quot;); -unity-text-outline-color: rgb(0, 0, 0); -unity-background-scale-mode: scale-to-fit; background-color: rgba(188, 188, 188, 0); min-width: 250px; min-height: 100px; font-size: 54px; -unity-text-align: upper-center; -unity-text-outline-width: 2px; color: rgb(255, 255, 255); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;"/>
+            <ui:ProgressBar value="22" title="" name="progress" style="align-self: center; width: 100%; flex-shrink: 0; flex-grow: 0; align-items: stretch;"/>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
