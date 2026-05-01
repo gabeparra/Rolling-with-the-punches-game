@@ -1,0 +1,19 @@
+:root {
+}
+
+Button.menu {
+    background-image: url("project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/TextBTN_Big.png?fileID=2800000&guid=2be7b70e984b51444aca9c12ae4723a7&type=3#TextBTN_Big");
+    -unity-background-scale-mode: scale-to-fit;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
+    aspect-ratio: 3.017857;
+    height: 19%;
+    font-size: 28px;
+    padding-bottom: 27px;
+    -unity-text-outline-width: 0.75px;
+    -unity-text-outline-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+}
