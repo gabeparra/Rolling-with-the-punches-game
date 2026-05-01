@@ -12,7 +12,6 @@ public class HUDManager : MonoBehaviour
 
     [Header("Ammo")]
     public TextMeshProUGUI ammoText;
-    public int startingAmmo = 6;
 
     [Header("Enemies")]
     public TextMeshProUGUI waveText;
@@ -23,7 +22,6 @@ public class HUDManager : MonoBehaviour
     public TextMeshProUGUI goldText;
 
     private int _ammo;
-    private int _maxAmmo;
     private int _enemiesRemaining;
     private int _totalKills = 0;
 
@@ -45,8 +43,7 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
-        _maxAmmo = startingAmmo;
-        _ammo = _maxAmmo;
+        _ammo = PlayerStats.magSize;
         _enemiesRemaining = totalEnemies;
 
         DrawAll();
@@ -104,13 +101,13 @@ public class HUDManager : MonoBehaviour
 
     public void ReloadAmmo()
     {
-        _ammo = _maxAmmo;
+        _ammo = PlayerStats.magSize;
         DrawAmmo();
     }
 
     void DrawAmmo()
     {
-        if (ammoText != null) ammoText.text = _ammo + "/" + _maxAmmo;
+        if (ammoText != null) ammoText.text = _ammo + "/" + PlayerStats.magSize;
     }
 
     /// <summary>Set the total enemy count (call from spawner at runtime).</summary>
