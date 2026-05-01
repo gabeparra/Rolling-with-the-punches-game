@@ -69,11 +69,12 @@ public class HubUIManager : MonoBehaviour
     {
         SceneManager.LoadScene("HubScene");
     }
-
+    
+    ///now just allows reopening the tutorial. The difference is not being required to get to the last page to close it
     private void OnResetTut(ClickEvent evt)
     {
-        GameManager.SetTutorial(false);
-        SceneManager.LoadScene("HubScene");
+        Hide();
+        TutorialManager.FreeView();
     }
 
     private void OnQuit(ClickEvent evt)
@@ -84,7 +85,15 @@ public class HubUIManager : MonoBehaviour
     private void OnToggle(InputAction.CallbackContext context)
     {
         if(menuOpen) Hide();
-        else if(ShopUI.isOpen) //focus on closing the shop first
+
+        else if(TutorialManager.isOpen) //focus on trying to close tutorial
+        {
+            if(TutorialManager.canClose) //see if we're able to close it
+                TutorialManager.Instance.OnFinishTutorial(null);
+            return; // regardless of if we can close it, we're done here
+        }
+
+        else if(ShopUI.isOpen) //focus on closing the shop
         {
             ShopUI shopUI = FindAnyObjectByType<ShopUI>();
             if(shopUI != null) shopUI.Hide();

@@ -7,7 +7,7 @@
                 <ui:Button text="Continue" name="btn_continue" class="menu" style="-unity-background-image-tint-color: rgb(24, 255, 0);"/>
                 <ui:Button text="Main Menu" name="btn_menu" class="menu"/>
                 <ui:Button text="Stuck? Respawn" name="btn_respawn" class="menu"/>
-                <ui:Button text="Reset Tutorial" name="btn_resetTut" class="menu"/>
+                <ui:Button text="Re-View Intro" name="btn_resetTut" class="menu"/>
                 <ui:Button text="Quit Game" name="btn_quit" class="menu" style="-unity-background-image-tint-color: rgb(255, 3, 3);"/>
             </ui:VisualElement>
         </ui:VisualElement>

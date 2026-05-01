@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class TutorialManager : MonoBehaviour
 {
-    private static TutorialManager Instance;
+    public static TutorialManager Instance;
 
     private UIDocument uiDocument;
     private Label lbl_title;
@@ -14,6 +14,9 @@ public class TutorialManager : MonoBehaviour
     private Button btn_next;
     private Button btn_close;
     private Image image;
+
+    public static bool isOpen = false;
+    public static bool canClose = false;
 
     private string[] title = {
         "Welcome to the Wild West!", //exposition
@@ -85,7 +88,7 @@ public class TutorialManager : MonoBehaviour
         Refresh();
     }
 
-    private void OnFinishTutorial(ClickEvent evt)
+    public void OnFinishTutorial(ClickEvent evt)
     {
         GameManager.SetTutorial(true);
         Hide();
@@ -94,7 +97,7 @@ public class TutorialManager : MonoBehaviour
     private void Refresh()
     {
         //error check (assume completed to avoid softlock)
-        if (currentPage < 0 || maxPage < currentPage) OnFinishTutorial(null);
+        if (currentPage < 0 || maxPage < currentPage) { OnFinishTutorial(null); return; }
 
         //set vis of prev (enabled everywhere except 0) (enabled when currentpage not 0)
         btn_prev.SetEnabled(currentPage != 0);
@@ -104,6 +107,7 @@ public class TutorialManager : MonoBehaviour
 
         //set vis of close (enabled only on maxPage) (enabled when currentpage == maxpage) also if player has seen tutorials already
         btn_close.SetEnabled(GameManager.CheckTutorial() || currentPage == maxPage);
+        canClose = (GameManager.CheckTutorial() || currentPage == maxPage);
 
         //only show image when at imageindex
         image.style.display = (currentPage == IMAGE_INDEX)? DisplayStyle.Flex : DisplayStyle.None;
@@ -126,15 +130,24 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+    public static void FreeView()
+    {
+        Instance.currentPage = 0;
+        Instance.Refresh();
+        Instance.Show();
+    }
+
     // hide the UI
     public void Hide()
     {
+        isOpen = false;
         uiDocument.rootVisualElement.style.display = DisplayStyle.None;
         TrainPlayerController.canMove = true;
     }
 
     public void Show()
     {
+        isOpen = true;
         uiDocument.rootVisualElement.style.display = DisplayStyle.Flex;
         TrainPlayerController.canMove = false;
     }
