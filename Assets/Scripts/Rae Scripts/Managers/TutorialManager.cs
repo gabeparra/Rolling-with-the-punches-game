@@ -13,6 +13,7 @@ public class TutorialManager : MonoBehaviour
     private Button btn_prev;
     private Button btn_next;
     private Button btn_close;
+    private Image image;
 
     private string[] title = {
         "Welcome to the Wild West!", //exposition
@@ -26,10 +27,12 @@ public class TutorialManager : MonoBehaviour
         "You've just been hired as a train conductor for a freight company based in a sprouting canyonside boomtown. For some reason the freight company is having a hard time keeping the position filled. You've heard reports of bandit raids along the railroad.\nSurely it won't be that bad... Right?",
         "Head to the train station to start your first trip as a conductor.\nYou'll be back...",
         "Your new employers issued you a revolver for self defense. If any stowaways are on board, you won't be allowed to approach the next station.\nLooks like you'll have to do some dirty work",
-        "Move with WASD, aim with your mouse, shoot with left click, jump with space, and dash with shift.\nYou can also use a controller in many areas.",
+        "",
         "Get your share of the payment from your trip. The company will still compensate you for your troubles even if your trip is unsuccessful. However, they still must punsh you somehow, so you recieve half the payment you would have otherwise.\nHead to the Supply Post to spend your cash on upgrades to make your job easier.",
         "After your shopping spree, head back to work. Do your best to fulfill the contract, come back here to get more upgrades, and keep that cycle going.\nGo for a high score and strike it rich!",
     };
+
+    private readonly int IMAGE_INDEX = 3;
 
     private int currentPage = 0;
     private int maxPage = 3;
@@ -58,6 +61,7 @@ public class TutorialManager : MonoBehaviour
         btn_prev = uiDocument.rootVisualElement.Q("btn_prev") as Button;
         btn_next = uiDocument.rootVisualElement.Q("btn_next") as Button;
         btn_close = uiDocument.rootVisualElement.Q("btn_close") as Button;
+        image = uiDocument.rootVisualElement.Q("image") as Image;
 
         Refresh();
 
@@ -93,17 +97,16 @@ public class TutorialManager : MonoBehaviour
         if (currentPage < 0 || maxPage < currentPage) OnFinishTutorial(null);
 
         //set vis of prev (enabled everywhere except 0) (enabled when currentpage not 0)
-        //btn_prev.style.display = (currentPage == 0)? DisplayStyle.None : DisplayStyle.Flex;
         btn_prev.SetEnabled(currentPage != 0);
 
         //set vis of next (enabled everywhere except maxPage) (enabled with currentpage not maxpage)
-        //btn_next.style.display = (currentPage == maxPage)? DisplayStyle.None : DisplayStyle.Flex;
         btn_next.SetEnabled(currentPage != maxPage);
 
-        //set vis of close (enabled only on maxPage) (enabled when currentpage == maxpage)
-        //btn_close.style.display = (currentPage == maxPage)? DisplayStyle.Flex : DisplayStyle.None;
-        btn_close.SetEnabled(currentPage == maxPage);
+        //set vis of close (enabled only on maxPage) (enabled when currentpage == maxpage) also if player has seen tutorials already
+        btn_close.SetEnabled(GameManager.CheckTutorial() || currentPage == maxPage);
 
+        //only show image when at imageindex
+        image.style.display = (currentPage == IMAGE_INDEX)? DisplayStyle.Flex : DisplayStyle.None;
 
         //set content
         lbl_title.text = title[currentPage];
