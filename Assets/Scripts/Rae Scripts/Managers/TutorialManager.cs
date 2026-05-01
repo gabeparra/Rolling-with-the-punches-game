@@ -31,7 +31,6 @@ public class TutorialManager : MonoBehaviour
         else //this is the object we want to use as our singleton
         {
             Instance = this;
-            DontDestroyOnLoad(this.gameObject);
         }
 
         //ensure no out-of-bounds
