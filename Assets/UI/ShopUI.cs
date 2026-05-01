@@ -72,8 +72,16 @@ public class ShopUI : MonoBehaviour
         }
 
         Debug.Log("button pressed: " + _str);
-        UpgradeManager.BuyUpgrade(_up);
-        RefreshData();
+        if(UpgradeManager.BuyUpgrade(_up))
+        {
+            //TODO: play success sound
+        }
+        else
+        {
+            //TODO: play fail sound
+        }
+
+        RefreshData(); // refreshing either way, just in case there was a display error that made the player think they would be able to afford the upgrade
     }
 
 
