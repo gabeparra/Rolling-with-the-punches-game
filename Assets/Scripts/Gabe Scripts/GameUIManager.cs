@@ -273,10 +273,7 @@ public class GameUIManager : MonoBehaviour
         CreateTitle(panel.transform, "GAME FINISHED", 60);
         CreateStatLabel(panel.transform, "FinishedMsg", "You conquered the Wild West!", 10f);
 
-        _gameFinishedFirstBtn = CreateButton(panel.transform, "MenuBtn_F", "Main Menu", -80f, () => {
-            GameManager.EndRun();
-            GoToMainMenu();
-        }).gameObject;
+        _gameFinishedFirstBtn = CreateButton(panel.transform, "MenuBtn_F", "Return to Hub", -80f, () => GoToHub()).gameObject;
 
         panel.SetActive(false);
         return panel;
