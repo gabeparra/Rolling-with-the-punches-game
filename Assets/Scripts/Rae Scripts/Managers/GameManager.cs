@@ -226,6 +226,8 @@ public class GameManager : MonoBehaviour
         Debug.Log($"{getCurrency()} + {amountToAdd} should equal what you see in shop");
         UpdateCurrency(amountToAdd); //add the converted gold to the meta save
 
+        Save();
+
     }
 
     public static void RestoreHealth()
