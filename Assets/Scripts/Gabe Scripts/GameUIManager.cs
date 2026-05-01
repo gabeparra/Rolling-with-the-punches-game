@@ -81,29 +81,6 @@ public class GameUIManager : MonoBehaviour
             }
         }
 
-        // Accept A button / Enter / Space to confirm on result panels
-        if (_anyPanelOpen && !IsPaused && ConfirmPressed())
-        {
-            if (_gameOverPanel.activeSelf)
-                RetryRun();
-            else if (_gameFinishedPanel.activeSelf)
-            {
-                GameManager.SetPlayerAlive(false);
-                GameManager.EndRun();
-                GoToMainMenu();
-            }
-        }
-    }
-
-    private bool ConfirmPressed()
-    {
-        // Keyboard
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
-            return true;
-        // Xbox A button (joystick button 0)
-        if (Input.GetKeyDown(KeyCode.JoystickButton0))
-            return true;
-        return false;
     }
 
     public void TogglePause()
