@@ -178,6 +178,18 @@ public class GameManager : MonoBehaviour
         public List<UpgradeManager.UpgradeTracker> purchasedUpgrades = new();
         //train inventory?? (scrapped)
         //items in bank?? (scrapped)
+        public bool tutorialSeen = false;
+    }
+
+    public static bool CheckTutorial()
+    {
+        return metaSave.tutorialSeen;
+    }
+
+    public static void SetTutorial(bool newStatus)
+    {
+        metaSave.tutorialSeen = newStatus;
+        Save();
     }
 
     private class RunObject
