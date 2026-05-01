@@ -21,10 +21,11 @@ public class UpgradeManager : MonoBehaviour
         }
     }
 
-    public static void BuyUpgrade(Upgrade upgrade)
+    public static bool BuyUpgrade(Upgrade upgrade)
     {
         int cost = GetCost(upgrade);
-        if(GameManager.UpdateCurrency(-cost))
+        bool result = GameManager.UpdateCurrency(-cost);
+        if(result)
         {
             string _name = upgrade.upgradeName;
             purchasedUpgrades[_name] = purchasedUpgrades.GetValueOrDefault(_name, 0) + 1;
@@ -34,6 +35,7 @@ public class UpgradeManager : MonoBehaviour
         }
 
         Debug.Log($"You have {GameManager.getCurrency()} cash");
+        return result;
 
     }
 
