@@ -3498,6 +3498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58da11c732f70d94d96c6899ed720b9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  hideMenuButton: 1
 --- !u!4 &1034348841
 Transform:
   m_ObjectHideFlags: 0
