@@ -228,6 +228,12 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public static void RestoreHealth()
+    {
+        if(runSave == null) return;
+        runSave.playerHealth = PlayerStats.maxHealth;
+    }
+
     public static int GetCurrentLevel()
     {
         if (runSave == null) return 0;
@@ -320,11 +326,24 @@ public class GameManager : MonoBehaviour
 
         // Entering a gameplay scene — start a run if we don't have one yet so
         // bandit-loot drains run gold (not meta cash) and the HUD shows run gold.
-        if (IsLevelScene(arg1.name) && runSave == null)
+        if (IsLevelScene(arg1.name))
         {
             Cursor.lockState = CursorLockMode.Confined;
-            Debug.Log("We've entered a level — starting run");
-            StartRun();
+            if(runSave == null)
+            {
+                Debug.Log("We've entered a level — starting run");
+                StartRun();
+                return;
+            }
+            else //we're already in a run, just restore things that "heal" between levels
+            {
+                RestoreHealth();
+                if (HUDManager.Instance != null) HUDManager.Instance.DrawAll();
+            }
+            
+            
+
+
         }
     }
 }

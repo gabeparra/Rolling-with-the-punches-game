@@ -22,10 +22,8 @@ public class HUDManager : MonoBehaviour
     [Header("Gold")]
     public TextMeshProUGUI goldText;
 
-    private int _hearts;
     private int _ammo;
     private int _maxAmmo;
-    private int _gold = 0;
     private int _enemiesRemaining;
     private int _totalKills = 0;
 
@@ -47,14 +45,15 @@ public class HUDManager : MonoBehaviour
 
     void Start()
     {
-        _hearts = heartIcons != null ? heartIcons.Length : 0;
         _maxAmmo = startingAmmo;
         _ammo = _maxAmmo;
         _enemiesRemaining = totalEnemies;
 
-        // Load currency from GameManager (returns run gold during a run, meta cash in hub)
-        _gold = GameManager.getCurrency();
-
+        DrawAll();
+    }
+    
+    public void DrawAll()
+    {
         DrawHearts();
         DrawAmmo();
         DrawGold();
@@ -63,8 +62,8 @@ public class HUDManager : MonoBehaviour
 
     public void LoseHeart()
     {
-        if (_hearts <= 0) return;
-        _hearts--;
+        if (GameManager.getPlayerHealth() <= 0) return;
+        GameManager.UpdatePlayerHealth(-1);
 
         // Losing a heart permanently reduces max ammo by 1
         /*
@@ -75,13 +74,13 @@ public class HUDManager : MonoBehaviour
         DrawHearts();
         DrawAmmo();
 
-        if (_hearts <= 0)
+        if (GameManager.getPlayerHealth() <= 0)
         {
             // BUG-26 fix: guard against double scene reload
             if (_isReloading) return;
             _isReloading = true;
             if (GameUIManager.Instance != null)
-                GameUIManager.Instance.ShowGameOver(_gold, _totalKills);
+                GameUIManager.Instance.ShowGameOver(GameManager.getCurrency(), _totalKills);
             else
                 SceneManager.LoadScene("HubScene");
         }
@@ -92,7 +91,7 @@ public class HUDManager : MonoBehaviour
         if (heartIcons == null || heartIcons.Length == 0) return;
         for (int i = 0; i < heartIcons.Length; i++)
             if (heartIcons[i] != null)
-                heartIcons[i].enabled = (i < _hearts);
+                heartIcons[i].enabled = (i < GameManager.getPlayerHealth());
     }
 
     public bool HasAmmo() => _ammo > 0;
@@ -124,18 +123,15 @@ public class HUDManager : MonoBehaviour
 
     public void OnEnemyKilled()
     {
-        _gold += 50;
+        GameManager.UpdateCurrency(PlayerStats.goldPerKill);
         _totalKills++;
         _enemiesRemaining = Mathf.Max(0, _enemiesRemaining - 1);
-
-        // Persist gold immediately so it survives death/win
-        GameManager.UpdateCurrency(50);
 
         DrawGold();
         DrawEnemies();
 
         if (_enemiesRemaining <= 0 && GameUIManager.Instance != null)
-            GameUIManager.Instance.ShowWin(_gold, _totalKills);
+            GameUIManager.Instance.ShowWin(GameManager.getCurrency(), _totalKills);
     }
 
     /// <summary>Bandit escaped with stolen gold — counts toward remaining but no kill reward.</summary>
@@ -144,14 +140,13 @@ public class HUDManager : MonoBehaviour
         _enemiesRemaining = Mathf.Max(0, _enemiesRemaining - 1);
         DrawEnemies();
         if (_enemiesRemaining <= 0 && GameUIManager.Instance != null)
-            GameUIManager.Instance.ShowWin(_gold, _totalKills);
+            GameUIManager.Instance.ShowWin(GameManager.getCurrency(), _totalKills);
     }
 
     /// <summary>Subtract gold from the player (clamped at 0). Used when bandits escape with loot.</summary>
     public void LoseGold(int amount)
     {
         if (amount <= 0) return;
-        _gold = Mathf.Max(0, _gold - amount);
         GameManager.UpdateCurrency(-amount);
         DrawGold();
     }
@@ -164,6 +159,6 @@ public class HUDManager : MonoBehaviour
 
     void DrawGold()
     {
-        if (goldText != null) goldText.text = _gold.ToString();
+        if (goldText != null) goldText.text = GameManager.getCurrency().ToString();
     }
 }

@@ -49,7 +49,7 @@ public class PlayerHealth : MonoBehaviour
         if (transform.localPosition.y < fallThreshold)
         {
             _isReloading = true;
-            int gold = HUDManager.Instance != null ? HUDManager.Instance.Gold : 0;
+            int gold = GameManager.getCurrency();
             int kills = HUDManager.Instance != null ? HUDManager.Instance.TotalKills : 0;
 
             if (GameUIManager.Instance != null)
