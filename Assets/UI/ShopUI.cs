@@ -98,6 +98,7 @@ public class ShopUI : MonoBehaviour
     {
         _list.RefreshItems();
         _lblCurrency.text = $"Cash: {GameManager.getCurrency()}";
+        if (HubManager.Instance != null) HubManager.Instance.Refresh();
     }
 
     //automatically bind event

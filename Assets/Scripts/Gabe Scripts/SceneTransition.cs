@@ -65,7 +65,7 @@ public class SceneTransition : MonoBehaviour
             else
             {
                 canLoad = true;
-                HubManager.ShowPrompt("Press E - " + sceneName);
+                HubManager.ShowPrompt("Start Trip");
             }
         }
     }

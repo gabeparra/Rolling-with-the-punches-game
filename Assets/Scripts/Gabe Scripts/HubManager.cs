@@ -36,21 +36,27 @@ public class HubManager : MonoBehaviour
 
         // Gold display — top-right
         int gold = GameManager.getCurrency();
-        _goldText = CreateLabel(root, "GoldDisplay", "Gold: " + gold, 28,
-            new Vector2(0.95f, 0.95f), new Vector2(0.95f, 0.95f), new Vector2(200, 40));
-        _goldText.alignment = TextAlignmentOptions.Right;
+        _goldText = CreateLabel(root, "GoldDisplay", "Cash: " + GameManager.getCurrency(), 28,
+            new Vector2(0.1f, 0.95f), new Vector2(0.95f, 0.95f), new Vector2(200, 40));
+        _goldText.alignment = TextAlignmentOptions.Left;
 
         // Prompt text — bottom-center, hidden by default
-        _promptText = CreateLabel(root, "PromptText", "", 32,
-            new Vector2(0.5f, 0.08f), new Vector2(0.5f, 0.08f), new Vector2(600, 50));
+        _promptText = CreateLabel(root, "PromptText", "", 48,
+            new Vector2(0.5f, 0.08f), new Vector2(0.5f, 0.2f), new Vector2(600, 50));
         _promptText.alignment = TextAlignmentOptions.Center;
         _promptText.gameObject.SetActive(false);
     }
 
-    void Update()
+    // void Update()
+    // {
+    //     if (_goldText != null)
+    //         _goldText.text = "Cash: " + GameManager.getCurrency();
+    // }
+
+    public void Refresh()
     {
         if (_goldText != null)
-            _goldText.text = "Gold: " + GameManager.getCurrency();
+            _goldText.text = "Cash: " + GameManager.getCurrency();
     }
 
     void OnDestroy()
@@ -63,7 +69,7 @@ public class HubManager : MonoBehaviour
     public static void ShowPrompt(string text)
     {
         if (Instance == null || Instance._promptText == null) return;
-        Instance._promptText.text = text;
+        Instance._promptText.text = $"Interact - {text}";
         Instance._promptText.gameObject.SetActive(true);
     }
 
