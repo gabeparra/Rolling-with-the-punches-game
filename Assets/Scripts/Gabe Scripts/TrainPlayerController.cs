@@ -17,7 +17,6 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
     static void ResetStatics() => canMove = true;
 
     [Header("Movement")]
-    public float speed = 14f;
     public float jumpForce = 5.5f;
     public float rotationSpeed = 30f;
     public float groundCheckDistance = 0.2f;
@@ -228,7 +227,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
             // input is held, deceleration when released — different rates so
             // stops feel snappier than starts.
             Vector3 currentVel = rb.linearVelocity;
-            Vector3 targetVel = new Vector3(moveDirection.x * speed, currentVel.y, moveDirection.z * speed);
+            Vector3 targetVel = new Vector3(moveDirection.x * PlayerStats.moveSpeed, currentVel.y, moveDirection.z * PlayerStats.moveSpeed);
 
             bool inputHeld = moveDirection.sqrMagnitude > 0.01f;
             float rate = inputHeld ? acceleration : deceleration;
