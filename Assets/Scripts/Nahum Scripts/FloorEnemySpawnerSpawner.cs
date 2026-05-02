@@ -194,7 +194,7 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
         Bandit bandit = enemy.GetComponent<Bandit>();
         if (bandit != null)
         {
-            bandit.defaultState = Bandit.State.Loot;
+            bandit.defaultState = Bandit.State.Attack;
             bandit.change_to_loot_state_chance = enemy_switch_to_looter_chance;
             bandit.loot_follow_type = loot_follow_type;
 

@@ -1643,9 +1643,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bandit
   health: 2
   defaultState: 0
-  change_to_loot_state_chance: 0.15
+  change_to_loot_state_chance: 0.05
   time_looted: 0
-  max_looting_time: Infinity
+  max_looting_time: 10
   loot_follow_type: 1
   loot_take_percentage: 0.2
   bullet_prefab: {fileID: 2806259705992299404, guid: 8e2e420051156894284f843b5f357277, type: 3}
