@@ -182,6 +182,10 @@ public class Bandit : MonoBehaviour
         // Play death sound at the bandit's position (independent of the destroyed gameObject)
         if (deathClip != null)
             AudioSource.PlayClipAtPoint(deathClip, parent.transform.position, 1f);
+
+        var fxPos = parent.transform.position + UnityEngine.Vector3.up * 1f;
+        EnemyDeathFX.Play(fxPos, new Color(1f, 0.55f, 0.15f));
+
         Destroy(parent);
     }
 

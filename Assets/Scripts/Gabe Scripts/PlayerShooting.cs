@@ -89,6 +89,7 @@ public class PlayerShooting : MonoBehaviour
             // Without this, the SphereCollider hits the train mesh instantly and destroys the tracer.
             Collider col = tracer.GetComponent<Collider>();
             if (col != null) col.enabled = false;
+            BulletVisuals.Enhance(tracer, new Color(1f, 0.95f, 0.3f), scale: 2.2f, trail: true);
             bt.Init(origin, hitPoint, tracerSpeed);
         }
 
