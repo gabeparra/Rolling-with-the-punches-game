@@ -7029,6 +7029,14 @@ PrefabInstance:
       propertyPath: 'upgrades.Array.data[8]'
       value: 
       objectReference: {fileID: 11400000, guid: c8b1f555c9fa8d34a85007c4a12dd6c1, type: 2}
+    - target: {fileID: 3370555430327788541, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3370555430327788541, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: 81cd2fc8fb6e74db9b7cb9ffb245d385, type: 3}
     - target: {fileID: 3666056308472865606, guid: 17ac94f0df6c25d4d9f5edf8845af80e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class ShopUI : MonoBehaviour
 {
     //list of upgrades available in shop
@@ -11,6 +12,11 @@ public class ShopUI : MonoBehaviour
     //icon to use for cash (you shouldn't have to mess with this. this is just easier than importing it through code)
     [SerializeField]
     private Background cashIcon;
+    [SerializeField]
+    private AudioClip registerSound;
+    [SerializeField]
+    private AudioClip errorSound;
+    private AudioSource audioSource;
 
     private UIDocument uiDocument;
     private Button _btnClose;
@@ -29,6 +35,9 @@ public class ShopUI : MonoBehaviour
         _list.itemsSource = upgrades;
 
         Hide(); //hide shop UI until player actually goes to shop
+
+        //initialize sounds
+        audioSource = GetComponent<AudioSource>();
 
         _list.bindItem = (e, i) =>
         {
@@ -82,10 +91,12 @@ public class ShopUI : MonoBehaviour
         if(UpgradeManager.BuyUpgrade(_up))
         {
             //TODO: play success sound
+            audioSource.PlayOneShot(registerSound);
         }
         else
         {
             //TODO: play fail sound
+            audioSource.PlayOneShot(errorSound);
         }
 
         RefreshData(); // refreshing either way, just in case there was a display error that made the player think they would be able to afford the upgrade

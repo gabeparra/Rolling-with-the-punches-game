@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 700636361097023533}
   - component: {fileID: 3408995133512763338}
   - component: {fileID: 7059963040724758950}
+  - component: {fileID: 1605475999308767117}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -50,8 +51,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aef3d6082c8aa645aae703cf752e5cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrainPlayerController
-  hubMode: 0
-  speed: 5
   jumpForce: 1
   rotationSpeed: 30
   groundCheckDistance: 0.2
@@ -263,6 +262,14 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!81 &1605475999308767117
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4648548846335853895}
+  m_Enabled: 1
 --- !u!1001 &4147719904969994049
 PrefabInstance:
   m_ObjectHideFlags: 0
