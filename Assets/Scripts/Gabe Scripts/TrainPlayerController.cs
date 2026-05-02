@@ -38,7 +38,7 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
     public float fallGravityMultiplier = 1.8f;
 
     [Header("Dash")]
-    public float dashSpeed = 14f;
+    public float dashSpeed = 22f;
 
     private Rigidbody rb;
     private Animator animator;
@@ -60,6 +60,19 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
     /// <summary>0 = ready, 1 = just used. Used by DashCooldownBar.</summary>
     public float DashCooldownNormalized => Mathf.Clamp01(dashCooldownTimer / PlayerStats.dashCooldown);
 
+    /// <summary>True while a dash is active — used by PlayerHealth for damage immunity.</summary>
+    public bool IsDashing => isDashing;
+
+    /// <summary>
+    /// Refunds part of the dash cooldown — currently called by PlayerHealth
+    /// on a "perfect dodge" (an enemy bullet that would have hit during a
+    /// dash). Encourages dashing INTO bullets rather than away from them.
+    /// </summary>
+    public void RefundDashCooldown(float fraction)
+    {
+        dashCooldownTimer = Mathf.Max(0f, dashCooldownTimer - PlayerStats.dashCooldown * fraction);
+    }
+
     void Start()
     {
         hubMode = SceneManager.GetActiveScene().name == "HubScene";
@@ -76,6 +89,13 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
             var scaler = gameObject.AddComponent<MaintainWorldScale>();
             scaler.targetScale = 0.75f;
             Debug.Log("scaler created");
+        }
+
+        // Visual + cooldown sweeteners for the dash (trail, FOV punch, ring
+        // pulse, perfect-dodge slow-mo). Self-contained component.
+        if (GetComponent<DashEffects>() == null)
+        {
+            gameObject.AddComponent<DashEffects>();
         }
     }
 
@@ -181,13 +201,14 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
             coyoteTimer = 0f;     // consume coyote
         }
 
-        // --- Dash --- (Left Shift or B button on Xbox)
+        // --- Dash --- (E on keyboard, B button on Xbox)
+        // Was Shift; rebound to E because Shift was triggering Windows
+        // sticky-keys during play. Sprint action listener removed for the
+        // same reason — its action-map binding is still Shift.
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.deltaTime;
 
-        bool dashPressed = Input.GetKeyDown(KeyCode.LeftShift) || Input.GetButtonDown("GameDash");
-        var sprintAction = InputSystem.actions != null ? InputSystem.actions.FindAction("Sprint") : null;
-        if (sprintAction != null && sprintAction.WasPressedThisFrame()) dashPressed = true;
+        bool dashPressed = Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameDash");
 
         if (dashPressed && !isDashing && dashCooldownTimer <= 0f && canMove)
         {

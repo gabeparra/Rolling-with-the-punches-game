@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     // BUG-26 fix: prevent double scene-reload from fall + death in same frame
     private static bool _isReloading = false;
     private AudioClip _oofClip;
+    private TrainPlayerController _controller;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics() => _isReloading = false;
@@ -18,6 +19,7 @@ public class PlayerHealth : MonoBehaviour
     void Awake()
     {
         _oofClip = GenerateOofSound();
+        _controller = GetComponent<TrainPlayerController>();
     }
 
     /// <summary>Generates a short descending tone similar to the classic Roblox "oof".</summary>
@@ -61,6 +63,16 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        // Dash immunity: bullets pass straight through during the dodge window.
+        // Surface as a "perfect dodge" reward — slow-mo, brighter pulse, refunds
+        // half the dash cooldown — instead of silent immunity.
+        if (_controller != null && _controller.IsDashing)
+        {
+            var fx = GetComponent<DashEffects>();
+            if (fx != null) fx.TriggerPerfectDodge();
+            return;
+        }
+
         if (_oofClip != null)
             AudioSource.PlayClipAtPoint(_oofClip, transform.position);
 

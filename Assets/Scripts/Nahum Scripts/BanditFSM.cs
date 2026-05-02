@@ -16,6 +16,8 @@ public class BanditFSM : FSM
 
     IdleState idleState;
 
+    CoverState coverState;
+
 
     public override void SetCurrentState(string state)
     {
@@ -43,12 +45,14 @@ public class BanditFSM : FSM
         lootState = parent.AddComponent<LootState>();
         attackState = parent.AddComponent<AttackState>();
         idleState = parent.AddComponent<IdleState>();
+        coverState = parent.AddComponent<CoverState>();
 
         states = new()
         {
         {"loot", lootState},
         {"attack", attackState},
-        {"idle", idleState}
+        {"idle", idleState},
+        {"cover", coverState}
         };
 
         foreach (State state in states.Values)
@@ -87,6 +91,24 @@ public class BanditFSM : FSM
         // searchState.floor = floor;
 
         if (current_state==null) {return;}
+
+        // Attack → Cover transition. Four gates:
+        //   1) Currently attacking
+        //   2) Damaged within coverFearWindow (under fire)
+        //   3) Health above coverHealthFloor (worth retreating)
+        //   4) Past coverCooldown (no attack↔cover pingpong)
+        if (current_state == attackState && bandit.useCover)
+        {
+            float sinceHit   = Time.time - bandit.lastDamagedAt;
+            float sinceCover = Time.time - bandit.lastLeftCoverAt;
+            float healthFrac = bandit.maxHealth > 0f ? bandit.health / bandit.maxHealth : 1f;
+            if (sinceHit   <  bandit.coverFearWindow &&
+                sinceCover >  bandit.coverCooldown   &&
+                healthFrac >= bandit.coverHealthFloor)
+            {
+                SetCurrentState("cover");
+            }
+        }
 
         // Revert to attack after no more good can be taken
         if (current_state==lootState)
