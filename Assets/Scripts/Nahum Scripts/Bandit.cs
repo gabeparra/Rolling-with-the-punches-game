@@ -42,6 +42,9 @@ public class Bandit : MonoBehaviour
 
     public NavMeshAgent agent;
 
+    private Animator animator;
+    private UnityEngine.Vector3 prevPos;
+
 
     // LEVEL
     [Range(1,100)]
@@ -133,6 +136,8 @@ public class Bandit : MonoBehaviour
     {
         parent = gameObject;
         agent = parent.GetComponent<NavMeshAgent>();
+        animator = GetComponentInChildren<Animator>();
+        prevPos = parent.transform.position;
         target = parent.transform;
         fsm = parent.AddComponent<BanditFSM>();
         fsm.Init(this);
@@ -169,6 +174,19 @@ public class Bandit : MonoBehaviour
     void Update()
     {
         fsm.DoUpdate();
+
+        if (animator != null)
+        {
+            UnityEngine.Vector3 cur = parent.transform.position;
+            UnityEngine.Vector3 delta = cur - prevPos;
+            delta.y = 0f;
+            // Threshold scaled to per-second movement; covers both navmesh
+            // velocity and rigidbody-velocity bandits without false-positives
+            // from physics jitter.
+            bool isMoving = delta.sqrMagnitude / Mathf.Max(Time.deltaTime, 0.0001f) > 0.05f;
+            animator.SetBool("isMoving", isMoving);
+            prevPos = cur;
+        }
     }
 
     void FixedUpdate()
