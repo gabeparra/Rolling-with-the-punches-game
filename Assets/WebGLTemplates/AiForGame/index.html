@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+  <!-- Unity WebGL needs eval/dynamic Function + WASM. Whitelist only those. -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' data: blob:;
+    script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob:;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:;
+    media-src 'self' data: blob:;
+    connect-src 'self';
+    worker-src 'self' blob:;
+    font-src 'self' data:;">
+  <title>{{{ PRODUCT_NAME }}}</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%; background: #000; color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #game-container { position: fixed; inset: 0; background: #000; }
+
+    #unity-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      background: #000; display: block;
+    }
+
+    .joystick, .button-grid { display: none; }
+    /* Only show in actual gameplay scenes; Menu/Hub use click-driven UI. */
+    body.touch.gameplay .joystick, body.touch.gameplay .button-grid { display: grid; }
+
+    .joystick {
+      position: absolute;
+      bottom: 16px;
+      width: 110px; height: 110px;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      touch-action: none;
+      z-index: 10;
+    }
+    #move-stick { left: 16px; }
+    #aim-stick  { right: 16px; }
+    .joystick .knob {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 50px; height: 50px;
+      margin: -25px 0 0 -25px;
+      background: rgba(255,255,255,0.22);
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .joystick .label {
+      position: absolute; left: 0; right: 0; top: -16px;
+      text-align: center; font-size: 9px; color: rgba(255,255,255,0.4);
+      letter-spacing: 1px;
+    }
+
+    .button-grid {
+      position: absolute;
+      top: 16px; right: 16px;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 8px;
+      z-index: 10;
+    }
+    .btn {
+      width: 52px; height: 52px;
+      background: rgba(0,0,0,0.35);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      color: rgba(255,255,255,0.85);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      display: flex; align-items: center; justify-content: center;
+      touch-action: none; cursor: pointer;
+    }
+    .btn.held, .btn:active {
+      background: rgba(255, 200, 50, 0.45);
+      border-color: rgba(255, 220, 100, 0.9);
+      color: #fff;
+    }
+
+    #unity-loading-bar {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      display: none; pointer-events: none; z-index: 20;
+    }
+    #unity-progress-bar-empty { width: 240px; height: 16px; background: #222; border: 1px solid #555; }
+    #unity-progress-bar-full { width: 0%; height: 100%; background: #f4d03f; transition: width 0.1s; }
+
+    #unity-warning {
+      position: absolute; left: 0; right: 0; top: 5%;
+      text-align: center; pointer-events: none; z-index: 20;
+    }
+    #unity-warning > div { display: inline-block; pointer-events: auto; }
+
+    #crosshair {
+      position: absolute;
+      width: 28px; height: 28px;
+      pointer-events: none;
+      display: none; z-index: 15;
+      transform: translate(-50%, -50%);
+    }
+    #crosshair::before, #crosshair::after {
+      content: ''; position: absolute;
+      background: rgba(255, 220, 80, 0.85);
+      box-shadow: 0 0 6px rgba(0,0,0,0.9);
+    }
+    #crosshair::before { left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; }
+    #crosshair::after  { top: 0; bottom: 0; left: 50%; width: 2px; margin-left: -1px; }
+    body:not(.touch) #crosshair.active { display: block; }
+    /* Hide the OS cursor over the canvas so only our yellow crosshair shows. */
+    body:not(.touch) #unity-canvas { cursor: none; }
+
+    #help-toggle {
+      position: absolute;
+      top: 10px; left: 10px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.8);
+      font-size: 16px; font-weight: 700;
+      cursor: pointer; z-index: 30;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0;
+    }
+    #help-toggle:hover { background: rgba(0,0,0,0.7); color: #fff; }
+    body.touch #help-toggle { top: auto; bottom: 8px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; font-size: 14px; }
+
+    #controls-help {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.78);
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 50;
+    }
+    #controls-help.visible { display: flex; }
+    .help-card {
+      background: linear-gradient(#1a1a1a, #0e0e0e);
+      border: 1px solid #444; border-radius: 8px;
+      padding: 24px 28px;
+      max-width: 720px; width: calc(100% - 40px);
+      color: #fff;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+    .help-title {
+      font-size: 22px; font-weight: 700; letter-spacing: 2px;
+      color: #f4d03f; text-align: center; margin-bottom: 18px;
+    }
+    .help-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 540px) { .help-cols { grid-template-columns: 1fr; } }
+    .help-heading {
+      font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.65);
+      border-bottom: 1px solid #333;
+      padding-bottom: 6px; margin-bottom: 8px;
+      text-align: center;
+    }
+    .help-col .row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+    .help-col .row span { color: rgba(255,255,255,0.7); }
+    .help-col .row b    { color: #f4d03f; font-weight: 700; }
+    .help-tip {
+      margin-top: 16px; text-align: center;
+      font-size: 12px; color: rgba(255,255,255,0.55); font-style: italic;
+    }
+    #help-dismiss {
+      display: block; margin: 18px auto 0;
+      background: #f4d03f; color: #111; border: none;
+      padding: 10px 32px;
+      font-size: 14px; font-weight: 700; letter-spacing: 1px;
+      border-radius: 4px; cursor: pointer;
+    }
+    #help-dismiss:hover { background: #ffe14f; }
+    #help-dismiss:active { transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="unity-canvas" width="{{{ WIDTH }}}" height="{{{ HEIGHT }}}" tabindex="-1"></canvas>
+
+    <div id="move-stick" class="joystick" data-stick="move">
+      <div class="label">MOVE</div>
+      <div class="knob"></div>
+    </div>
+    <div id="aim-stick" class="joystick" data-stick="aim">
+      <div class="label">AIM / FIRE</div>
+      <div class="knob"></div>
+    </div>
+    <div class="button-grid">
+      <div class="btn" data-key="Escape">PAUSE</div>
+      <div class="btn" data-key="KeyR">RELOAD</div>
+      <div class="btn" data-key="KeyE">DASH</div>
+      <div class="btn" data-key="Space">JUMP</div>
+    </div>
+
+    <div id="unity-loading-bar">
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+    <div id="unity-warning"></div>
+    <div id="crosshair"></div>
+    <button id="help-toggle" title="Show controls">?</button>
+
+    <div id="controls-help">
+      <div class="help-card">
+        <div class="help-title">CONTROLS</div>
+        <div class="help-cols">
+          <div class="help-col">
+            <div class="help-heading">KEYBOARD + MOUSE</div>
+            <div class="row"><span>Move</span><b>W A S D</b></div>
+            <div class="row"><span>Aim</span><b>Mouse</b></div>
+            <div class="row"><span>Shoot</span><b>Left Click</b></div>
+            <div class="row"><span>Jump</span><b>Space</b></div>
+            <div class="row"><span>Dash</span><b>E</b></div>
+            <div class="row"><span>Reload</span><b>R</b></div>
+            <div class="row"><span>Pause</span><b>Esc</b></div>
+          </div>
+          <div class="help-col">
+            <div class="help-heading">XBOX CONTROLLER</div>
+            <div class="row"><span>Move</span><b>Left Stick</b></div>
+            <div class="row"><span>Aim</span><b>Right Stick</b></div>
+            <div class="row"><span>Shoot</span><b>Right Trigger</b></div>
+            <div class="row"><span>Jump</span><b>A</b></div>
+            <div class="row"><span>Dash</span><b>B</b></div>
+            <div class="row"><span>Reload</span><b>X</b></div>
+            <div class="row"><span>Pause</span><b>Start</b></div>
+          </div>
+        </div>
+        <div class="help-tip">Tip: aim with the mouse cursor — the player faces wherever you point.</div>
+        <button id="help-dismiss">PLAY</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Bridge from Unity (TouchControlsBridge.jslib) — toggles the .gameplay
+    // class on body so touch joysticks/buttons only show in level scenes.
+    window.AIFG_setTouchControls = function (visible) {
+      document.body.classList.toggle('gameplay', !!visible);
+    };
+
+    const help = document.getElementById("controls-help");
+    if (!sessionStorage.getItem("aifg_help_dismissed")) help.classList.add("visible");
+    document.getElementById("help-dismiss").addEventListener("click", () => {
+      help.classList.remove("visible");
+      sessionStorage.setItem("aifg_help_dismissed", "1");
+    });
+    document.getElementById("help-toggle").addEventListener("click", () => help.classList.add("visible"));
+
+    if (typeof WebAssembly !== "undefined" && WebAssembly.instantiateStreaming) {
+      delete WebAssembly.instantiateStreaming;
+    }
+
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      document.body.classList.add('touch');
+    }
+
+    const canvas = document.querySelector("#unity-canvas");
+
+    const crosshair = document.getElementById("crosshair");
+    canvas.addEventListener("mousemove", (e) => {
+      crosshair.style.left = e.clientX + "px";
+      crosshair.style.top  = e.clientY + "px";
+      crosshair.classList.add("active");
+    });
+    canvas.addEventListener("mouseleave", () => crosshair.classList.remove("active"));
+
+    const KEY = {
+      KeyW:      { keyCode: 87, key: "w",      code: "KeyW" },
+      KeyA:      { keyCode: 65, key: "a",      code: "KeyA" },
+      KeyS:      { keyCode: 83, key: "s",      code: "KeyS" },
+      KeyD:      { keyCode: 68, key: "d",      code: "KeyD" },
+      KeyE:      { keyCode: 69, key: "e",      code: "KeyE" },
+      KeyR:      { keyCode: 82, key: "r",      code: "KeyR" },
+      Space:     { keyCode: 32, key: " ",      code: "Space" },
+      ShiftLeft: { keyCode: 16, key: "Shift",  code: "ShiftLeft" },
+      Escape:    { keyCode: 27, key: "Escape", code: "Escape" },
+    };
+    const heldKeys = new Set();
+    function fireKey(type, code) {
+      const d = KEY[code]; if (!d) return;
+      const ev = new KeyboardEvent(type, {
+        key: d.key, code: d.code, keyCode: d.keyCode, which: d.keyCode,
+        bubbles: true, cancelable: true,
+      });
+      canvas.dispatchEvent(ev);
+      document.dispatchEvent(ev);
+    }
+    function pressKey(code)   { if (!heldKeys.has(code)) { heldKeys.add(code);    fireKey("keydown", code); } }
+    function releaseKey(code) { if ( heldKeys.has(code)) { heldKeys.delete(code); fireKey("keyup",   code); } }
+
+    function dispatchMouse(type, x, y) {
+      const ev = new MouseEvent(type, {
+        clientX: x, clientY: y,
+        button: 0, buttons: type === "mousedown" ? 1 : 0,
+        bubbles: true, cancelable: true, view: window,
+      });
+      canvas.dispatchEvent(ev);
+    }
+
+    document.querySelectorAll(".btn").forEach((btn) => {
+      const code = btn.dataset.key;
+      const down = (e) => { e.preventDefault(); pressKey(code);   btn.classList.add("held"); };
+      const up   = (e) => { e.preventDefault(); releaseKey(code); btn.classList.remove("held"); };
+      btn.addEventListener("touchstart", down, { passive: false });
+      btn.addEventListener("touchend",   up,   { passive: false });
+      btn.addEventListener("touchcancel", up,  { passive: false });
+      btn.addEventListener("mousedown",  down);
+      btn.addEventListener("mouseup",    up);
+      btn.addEventListener("mouseleave", up);
+    });
+
+    let aimDx = 0, aimDy = 0, aimActive = false;
+
+    function setupJoystick(el, kind) {
+      const knob = el.querySelector(".knob");
+      const radius = () => el.getBoundingClientRect().width / 2 - 32;
+      let activeId = null;
+
+      function update(touchX, touchY) {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        let ox = touchX - cx, oy = touchY - cy;
+        const max = radius(), m = Math.hypot(ox, oy);
+        if (m > max) { ox = ox / m * max; oy = oy / m * max; }
+        knob.style.transform = `translate(${ox}px, ${oy}px)`;
+        applyStick(kind, ox / max, -oy / max);
+      }
+      function reset() { knob.style.transform = "translate(0,0)"; applyStick(kind, 0, 0); }
+
+      el.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        const t = e.changedTouches[0]; activeId = t.identifier;
+        update(t.clientX, t.clientY);
+      }, { passive: false });
+      el.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        for (const t of e.changedTouches) if (t.identifier === activeId) { update(t.clientX, t.clientY); break; }
+      }, { passive: false });
+      const finish = (e) => {
+        e.preventDefault();
+        for (const t of e.changedTouches) if (t.identifier === activeId) { activeId = null; reset(); break; }
+      };
+      el.addEventListener("touchend", finish, { passive: false });
+      el.addEventListener("touchcancel", finish, { passive: false });
+
+      let mAct = false;
+      const mm = (e) => { if (mAct) update(e.clientX, e.clientY); };
+      const mu = () => { if (!mAct) return; mAct = false; reset(); document.removeEventListener("mousemove", mm); document.removeEventListener("mouseup", mu); };
+      el.addEventListener("mousedown", (e) => { mAct = true; update(e.clientX, e.clientY); document.addEventListener("mousemove", mm); document.addEventListener("mouseup", mu); });
+    }
+
+    function applyStick(kind, dx, dy) {
+      if (kind === "move") {
+        const T = 0.30;
+        if (dy >  T) pressKey("KeyW"); else releaseKey("KeyW");
+        if (dy < -T) pressKey("KeyS"); else releaseKey("KeyS");
+        if (dx < -T) pressKey("KeyA"); else releaseKey("KeyA");
+        if (dx >  T) pressKey("KeyD"); else releaseKey("KeyD");
+      } else {
+        aimDx = dx; aimDy = dy;
+        aimActive = (dx*dx + dy*dy) > 0.04;
+      }
+    }
+
+    setupJoystick(document.querySelector("#move-stick"), "move");
+    setupJoystick(document.querySelector("#aim-stick"),  "aim");
+
+    function aimPoint() {
+      const r = canvas.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      return { x: cx + aimDx * r.width * 0.45, y: cy - aimDy * r.height * 0.45 };
+    }
+
+    setInterval(() => {
+      if (!aimActive) return;
+      const p = aimPoint();
+      dispatchMouse("mousemove", p.x, p.y);
+    }, 33);
+
+    setInterval(() => {
+      if (!aimActive) return;
+      const p = aimPoint();
+      dispatchMouse("mousemove", p.x, p.y);
+      dispatchMouse("mousedown", p.x, p.y);
+      setTimeout(() => dispatchMouse("mouseup", p.x, p.y), 30);
+    }, 350);
+
+    // On touch devices, swallow raw touch events on the canvas IN GAMEPLAY
+    // SCENES ONLY so taps/drags don't translate to aim/fire mouse events.
+    // Menu/SampleScene need to forward taps to Unity UI buttons (Play, etc.),
+    // so swallowing is gated by body.gameplay (set by TouchControlsBridge.cs).
+    // Joysticks and buttons handle their own touches at the element level.
+    if (document.body.classList.contains("touch")) {
+      const swallow = (e) => {
+        if (!document.body.classList.contains("gameplay")) return;
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      ["touchstart", "touchmove", "touchend", "touchcancel"].forEach((t) =>
+        canvas.addEventListener(t, swallow, { capture: true, passive: false })
+      );
+    }
+
+    function unityShowBanner(msg, type) {
+      const banner = document.querySelector("#unity-warning");
+      const div = document.createElement("div");
+      div.innerHTML = msg;
+      banner.appendChild(div);
+      if (type === "error")        div.style = "background: red;    color: white; padding: 10px;";
+      else if (type === "warning") div.style = "background: yellow; color: black; padding: 10px;";
+      else                         div.style = "background: #222;   color: white; padding: 10px;";
+      if (type !== "error") setTimeout(() => banner.removeChild(div), 5000);
+      banner.style.display = banner.children.length ? "block" : "none";
+    }
+
+    const buildUrl = "Build";
+    const config = {
+      arguments: [],
+      dataUrl:      buildUrl + "/{{{ DATA_FILENAME }}}",
+      frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+      codeUrl:      buildUrl + "/{{{ CODE_FILENAME }}}",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName:    "{{{ COMPANY_NAME }}}",
+      productName:    "{{{ PRODUCT_NAME }}}",
+      productVersion: "{{{ PRODUCT_VERSION }}}",
+      showBanner:     unityShowBanner,
+      devicePixelRatio: 1,
+    };
+
+    document.querySelector("#unity-loading-bar").style.display = "block";
+
+    const loader = document.createElement("script");
+    loader.src = buildUrl + "/{{{ LOADER_FILENAME }}}";
+    loader.onload = () => {
+      createUnityInstance(canvas, config, (p) => {
+        document.querySelector("#unity-progress-bar-full").style.width = (100 * p) + "%";
+      }).then((unityInstance) => {
+        document.querySelector("#unity-loading-bar").style.display = "none";
+        window.unityInstance = unityInstance;
+      }).catch((err) => alert(err));
+    };
+    document.body.appendChild(loader);
+  </script>
+</body>
+</html>

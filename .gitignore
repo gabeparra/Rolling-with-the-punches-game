@@ -50,3 +50,8 @@ test.blend
 /Assets/Saves.meta
 Train Game/
 .claude/
+Assets/Screenshots/
+Assets/_Recovery/
+Assets/Plugins/Roslyn/
+Assets/Resources/PerformanceTestRunInfo.json
+Assets/Resources/PerformanceTestRunSettings.json

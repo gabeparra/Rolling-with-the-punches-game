@@ -1,0 +1,19 @@
+using UnityEngine;
+/* 
+    This entire script just moves the train tracks from left to right to provide illusion of movement. 
+*/
+public class MoveTracks : MonoBehaviour
+{
+    public float speed = 5.0f; // Defines how quickly the tracks are moving
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        transform.Translate(Vector3.left * speed * Time.deltaTime); // This is moving the tracks left at set speed
+    }
+}

@@ -8,11 +8,11 @@ public class InventoryTrigger : MonoBehaviour {
     private bool playerInRange = false;
 
     private void Start() {
-        inventoryUI.SetActive(false);
+        if (inventoryUI != null)
+            inventoryUI.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other) {
-        Debug.Log("Trigger hit by: " + other.gameObject.name);
         if (other.CompareTag("Player")) {
             playerInRange = true;
             InventoryTetris.Instance.InitializeInventory();

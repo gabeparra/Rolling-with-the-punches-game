@@ -1,0 +1,15 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/HubMenuUI.uss?fileID=7433441132597879392&amp;guid=f748a73f2f5f3ab4cbbc33a422d14719&amp;type=3#HubMenuUI"/>
+    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.59);">
+        <ui:VisualElement style="flex-grow: 1; align-items: center; background-image: url(&quot;project://database/Assets/Fantasy%20Wooden%20GUI%20%20Free/normal_ui_set%20A/UI%20board%20Large%20Set.png?fileID=2800000&amp;guid=90a2dde0942123c4ebb9c4af580c5818&amp;type=3#UI board Large Set&quot;); -unity-background-scale-mode: scale-to-fit; margin-top: 40px; margin-bottom: 40px; margin-right: 40px; margin-left: 40px; padding-top: 144px; padding-bottom: 144px; padding-left: 300px; padding-right: 300px; justify-content: space-around;">
+            <ui:Label text="You are in the Hub" style="font-size: 72px;"/>
+            <ui:VisualElement style="flex-grow: 0; justify-content: space-between; align-self: center; height: 75%;">
+                <ui:Button text="Continue" name="btn_continue" class="menu" style="-unity-background-image-tint-color: rgb(24, 255, 0);"/>
+                <ui:Button text="Main Menu" name="btn_menu" class="menu"/>
+                <ui:Button text="Stuck? Respawn" name="btn_respawn" class="menu"/>
+                <ui:Button text="Re-View Intro" name="btn_resetTut" class="menu"/>
+                <ui:Button text="Quit Game" name="btn_quit" class="menu" style="-unity-background-image-tint-color: rgb(255, 3, 3);"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

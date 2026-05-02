@@ -16,6 +16,17 @@ public class WorldScroller : MonoBehaviour
     public bool IsStopped => stopped;
     public float TotalDistanceTraveled => totalDistanceTraveled;
 
+    void Awake()
+    {
+        // Reset track counter so fresh tracks can spawn each level
+        TrackSpawner.ResetCounter();
+
+        // Ensure ThemeLoader exists for theme switching (fog, weather, tinting).
+        // Normally assigned in the scene; created at runtime as fallback.
+        if (FindAnyObjectByType<ThemeLoader>() == null)
+            gameObject.AddComponent<ThemeLoader>();
+    }
+
     void FixedUpdate()
     {
         if (stopped) return;
@@ -29,8 +40,6 @@ public class WorldScroller : MonoBehaviour
             return;
         }
 
-        // Move world backward, then sync physics so child trigger colliders
-        // are recognized at their new positions (fires OnTriggerEnter on tracks)
         transform.position += Vector3.left * step;
         Physics.SyncTransforms();
     }

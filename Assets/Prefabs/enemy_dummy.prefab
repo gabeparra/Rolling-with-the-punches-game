@@ -1487,9 +1487,8 @@ GameObject:
   - component: {fileID: 3266982070212474485}
   - component: {fileID: 1282498913718802930}
   - component: {fileID: 8634686211946690269}
-  - component: {fileID: 2572289898706770401}
-  - component: {fileID: 8878929182145616396}
-  m_Layer: 0
+  - component: {fileID: 6589951404828784153}
+  m_Layer: 10
   m_Name: enemy_dummy
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1630,27 +1629,7 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &2572289898706770401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5236417412942557832}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c46e2c189cd5334a8f3073bc0f45565, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemy_AI
-  head: {fileID: 7204422259676507205}
-  bulletPrefab: {fileID: 2806259705992299404, guid: 8e2e420051156894284f843b5f357277, type: 3}
-  health: 6
-  loot_targets_container: {fileID: 0}
-  enemy_list: []
-  player: {fileID: 0}
-  shootInterval: 0.75
-  state: 0
---- !u!114 &8878929182145616396
+--- !u!114 &6589951404828784153
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1659,15 +1638,41 @@ MonoBehaviour:
   m_GameObject: {fileID: 5236417412942557832}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7bc3b53e0a5a454b889aa3d512e169c, type: 3}
+  m_Script: {fileID: 11500000, guid: 549a3f33546699e4e92bfb24e7adea48, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BanditFSM
-  parent: {fileID: 0}
-  target: {x: 0, y: 0, z: 0}
-  floor: {fileID: 0}
-  loot_targets_container: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::Bandit
+  health: 2
+  defaultState: 0
+  change_to_loot_state_chance: 0.05
+  time_looted: 0
+  max_looting_time: 10
+  loot_follow_type: 1
+  loot_take_percentage: 0.2
   bullet_prefab: {fileID: 2806259705992299404, guid: 8e2e420051156894284f843b5f357277, type: 3}
   enemy_target: {fileID: 0}
+  loot_targets_container: {fileID: 0}
+  loot_targets: []
+  floor: {fileID: 0}
+  target: {fileID: 0}
+  agent: {fileID: 0}
+  level: 1
+  shoot_interval_level_increment: -5
+  base_shoot_interval: 3.5
+  shoot_interval: 0.75
+  shoot_force_level_increment: 500
+  base_shoot_force: 2000
+  shoot_force: 8590
+  max_mag_size_level_increment: 1
+  base_max_mag_size: 6
+  max_mag_size: 0
+  mag_size: 0
+  reload_time_level_increment: -0.3
+  base_reload_time: 2
+  reload_time: 2
+  accuracy_level_increment: 0.15
+  base_accuracy: 0.25
+  accuracy: 0.3
+  deathClip: {fileID: 0}
 --- !u!1 &5522595536955711008
 GameObject:
   m_ObjectHideFlags: 0

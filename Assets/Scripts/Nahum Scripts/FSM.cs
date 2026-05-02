@@ -16,12 +16,12 @@ public class FSM : MonoBehaviour
     }
 
     // Update is called once per frame
-    protected virtual void Update()
+    public virtual void DoUpdate()
     {
         
     }
 
-    protected virtual void FixedUpdate()
+    public virtual void DoFixedUpdate()
     {
         
     }
@@ -37,6 +37,7 @@ public class FSM : MonoBehaviour
 
     public virtual void SetCurrentState(String state)
     {
+        if (current_state == states[state]) {return;}
         ExitCurrentState();
         current_state = states[state];
         current_state.StateEnter();

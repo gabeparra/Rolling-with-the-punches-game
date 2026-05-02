@@ -13,8 +13,14 @@ public class InventoryTetrisBackground : MonoBehaviour {
         if (isBuilt) return;
         isBuilt = true;
 
+        // Fallback to singleton if serialized reference is missing
+        if (inventoryTetris == null)
+            inventoryTetris = InventoryTetris.Instance;
+        if (inventoryTetris == null || inventoryTetris.GetGrid() == null) return;
+
         // Create background
         Transform template = transform.Find("Template");
+        if (template == null) return;
         template.gameObject.SetActive(false);
 
         for (int x = 0; x < inventoryTetris.GetGrid().GetWidth(); x++) {

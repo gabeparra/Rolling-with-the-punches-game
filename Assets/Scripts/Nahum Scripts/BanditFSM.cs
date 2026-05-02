@@ -1,67 +1,83 @@
-using System;
+// using System;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class BanditFSM : FSM
 {
-    public int health = 6; // Added by Hector to set enemy health value
-    public Vector3 target;
-    public GameObject floor;
-  
-    SearchState searchState;
+    public Bandit bandit;
+
+    // SearchState searchState;
 
     LootState lootState;
 
-    public GameObject loot_targets_container;
-    public Transform[] loot_targets;
+    AttackState attackState;
 
-    public int time_looting = 0;
-    public int time_looting_threshold = 5;
+    IdleState idleState;
 
-    public GameObject bullet_prefab;
+    CoverState coverState;
 
-    public GameObject enemy_target;
 
-    NavMeshAgent agent;
-
-    public override void SetCurrentState(String state)
+    public override void SetCurrentState(string state)
     {
         base.SetCurrentState(state);
         //current_state.SetTarget(target);
     }
 
+    public void Init(Bandit bandit)
+    {
+        this.bandit = bandit;
+        foreach (State state in states.Values)
+        {
+            state.Init(bandit, this, parent);
+        }
+    }
+
     void Awake()
     {
         parent = gameObject;
-        agent = parent.GetComponent<NavMeshAgent>();
-        target = parent.transform.position;
+ 
 
+        // searchState = parent.AddComponent<SearchState>();
+        // {"escape", parent.AddComponent<EscapeState>()},
 
-        searchState = parent.AddComponent<SearchState>();
         lootState = parent.AddComponent<LootState>();
-
+        attackState = parent.AddComponent<AttackState>();
+        idleState = parent.AddComponent<IdleState>();
+        coverState = parent.AddComponent<CoverState>();
 
         states = new()
         {
         {"loot", lootState},
-        {"escape", parent.AddComponent<EscapeState>()},
-        {"attack", parent.AddComponent<AttackState>()},
-        {"search", searchState}
+        {"attack", attackState},
+        {"idle", idleState},
+        {"cover", coverState}
         };
 
         foreach (State state in states.Values)
         {
-            state.Init(this, parent);
+            state.Init(bandit, this, parent);
         }
+        
+        InvokeRepeating("TryRandomSwitchToLooter",0,1f);
 
-        if (loot_targets_container)
+    }
+
+    void TryRandomSwitchToLooter()
+    {
+        if (current_state!=attackState) {return;}
+
+        float r = Random.Range(0,.9f);
+        if (r <= bandit.change_to_loot_state_chance)
         {
-            loot_targets = loot_targets_container.GetComponentsInChildren<Transform>();
+            SetCurrentState("loot");
+            print("randomly changed to looter: " + r);
         }
-
-        //print(loot_targets);
-
+        else
+        {
+            print("failed to switch: " + r);
+        }
     }
 
     protected override void Start()
@@ -69,38 +85,53 @@ public class BanditFSM : FSM
         base.Start();
     }
 
-    public void TakeDamage(int amount) // Method added by Hector to calculate damage taken by enemy
-    {
-        health -= amount;
 
-        if (health <= 0)
-        {
-            Die();
-        }
-    }
-
-    void Die() // Method added by Hector to destroy enemy on death
+    public override void DoUpdate()
     {
-        Destroy(parent);
-    }
-
-    protected override void Update()
-    {
-        searchState.floor = floor;
+        // searchState.floor = floor;
 
         if (current_state==null) {return;}
-        current_state.StateUpdate();
 
+        // Attack → Cover transition. Four gates:
+        //   1) Currently attacking
+        //   2) Damaged within coverFearWindow (under fire)
+        //   3) Health above coverHealthFloor (worth retreating)
+        //   4) Past coverCooldown (no attack↔cover pingpong)
+        if (current_state == attackState && bandit.useCover)
+        {
+            float sinceHit   = Time.time - bandit.lastDamagedAt;
+            float sinceCover = Time.time - bandit.lastLeftCoverAt;
+            float healthFrac = bandit.maxHealth > 0f ? bandit.health / bandit.maxHealth : 1f;
+            if (sinceHit   <  bandit.coverFearWindow &&
+                sinceCover >  bandit.coverCooldown   &&
+                healthFrac >= bandit.coverHealthFloor)
+            {
+                SetCurrentState("cover");
+            }
+        }
+
+        // Revert to attack after no more good can be taken
         if (current_state==lootState)
         {
-            if (time_looting >= time_looting_threshold)
+            if (GameManager.getCurrency() <= 0)
             {
                 SetCurrentState("attack");
             }
         }
+
+        // Revert to attack after spent enough time looting
+        if (current_state==lootState)
+        {
+            if (bandit.time_looted >= bandit.max_looting_time)
+            {
+                SetCurrentState("attack");
+            }
+        }
+
+        current_state.StateUpdate();
     }
 
-    protected override void FixedUpdate()
+    public override void DoFixedUpdate()
     {
         FollowTarget();
 
@@ -112,20 +143,57 @@ public class BanditFSM : FSM
 
     void FollowTarget()
     {
-        if (target!=parent.transform.position)
+        if (bandit == null || bandit.target == null) return;
+
+        // Prefer NavMeshAgent when on a navmesh.
+        if (bandit.agent != null && bandit.agent.enabled && bandit.agent.isOnNavMesh)
         {
-            agent.destination = target;
+            bandit.agent.destination = bandit.target.position;
+            return;
         }
+
+        // Fallback: velocity-based movement (used by train-deck spawns where
+        // the spawner disables the agent because the NavMesh is on the ground
+        // far below the train).
+        Rigidbody rb = parent.GetComponent<Rigidbody>();
+        if (rb == null || rb.isKinematic) return;
+
+        // Don't override horizontal velocity while airborne — otherwise bandits
+        // slide sideways through the air after spawning above the deck.
+        if (Mathf.Abs(rb.linearVelocity.y) > 0.5f) return;
+
+        Vector3 toTarget = bandit.target.position - parent.transform.position;
+        toTarget.y = 0f;
+        float dist = toTarget.magnitude;
+
+        const float arriveDist = 0.5f;
+        const float moveSpeed = 3.5f;
+
+        Vector3 vel = rb.linearVelocity;
+        if (dist > arriveDist)
+        {
+            Vector3 dir = toTarget / dist;
+            vel.x = dir.x * moveSpeed;
+            vel.z = dir.z * moveSpeed;
+            // Face the target (flat).
+            parent.transform.rotation = Quaternion.LookRotation(dir);
+        }
+        else
+        {
+            vel.x = 0f;
+            vel.z = 0f;
+        }
+        rb.linearVelocity = vel;
     }
 
     void OnDrawGizmos()
     {   
         const float marker_size = .5f;
-        if (target!=null)
+        if (bandit.target!=null)
         {
             // Draw Where Target is
             Gizmos.color = Color.violetRed;
-            Gizmos.DrawCube(target,marker_size * (new Vector3(1,1,1)));
+            Gizmos.DrawCube(bandit.target.position,marker_size * new Vector3(1,1,1));
         }
 
         if (current_state!=null)
