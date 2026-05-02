@@ -829,7 +829,7 @@ MonoBehaviour:
   max_mag_size_level_increment: 1
   base_shoot_force: 2000
   shoot_force_level_increment: 100
-  enemy_switch_to_looter_chance: 0.1
+  enemy_switch_to_looter_chance: 0.05
   loot_follow_type: 1
 --- !u!65 &122794043
 BoxCollider:
@@ -7426,7 +7426,7 @@ MonoBehaviour:
   max_mag_size_level_increment: 1
   base_shoot_force: 2000
   shoot_force_level_increment: 100
-  enemy_switch_to_looter_chance: 0.1
+  enemy_switch_to_looter_chance: 0.05
   loot_follow_type: 1
 --- !u!65 &1576950664
 BoxCollider:
