@@ -243,10 +243,16 @@
   </div>
 
   <script>
-    // Bridge from Unity (TouchControlsBridge.jslib) — toggles the .gameplay
-    // class on body so touch joysticks/buttons only show in level scenes.
+    // Bridge from Unity (TouchControlsBridge.jslib) — two independent flags:
+    //   gameplay — show the touch joysticks/buttons overlay
+    //   combat   — swallow bare-canvas taps so they don't drift the aim
+    // HubScene gets gameplay=true (joystick visible) but combat=false
+    // (tap-through to Unity UI buttons like Shop / Level Select).
     window.AIFG_setTouchControls = function (visible) {
       document.body.classList.toggle('gameplay', !!visible);
+    };
+    window.AIFG_setCombat = function (active) {
+      document.body.classList.toggle('combat', !!active);
     };
 
     const help = document.getElementById("controls-help");
@@ -396,14 +402,15 @@
       setTimeout(() => dispatchMouse("mouseup", p.x, p.y), 30);
     }, 350);
 
-    // On touch devices, swallow raw touch events on the canvas IN GAMEPLAY
+    // On touch devices, swallow raw touch events on the canvas IN COMBAT
     // SCENES ONLY so taps/drags don't translate to aim/fire mouse events.
-    // Menu/SampleScene need to forward taps to Unity UI buttons (Play, etc.),
-    // so swallowing is gated by body.gameplay (set by TouchControlsBridge.cs).
+    // Menu/HubScene/SampleScene need to forward taps to Unity UI buttons
+    // (Play, Shop, Level Select), so swallowing is gated by body.combat
+    // (set by TouchControlsBridge.cs only on Hector/Snow/Mountain scenes).
     // Joysticks and buttons handle their own touches at the element level.
     if (document.body.classList.contains("touch")) {
       const swallow = (e) => {
-        if (!document.body.classList.contains("gameplay")) return;
+        if (!document.body.classList.contains("combat")) return;
         e.preventDefault();
         e.stopPropagation();
       };

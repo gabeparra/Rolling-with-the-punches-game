@@ -16,9 +16,12 @@ public static class TouchControlsBridge
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     private static extern void AIFG_SetTouchControls(int visible);
+    [DllImport("__Internal")]
+    private static extern void AIFG_SetCombat(int active);
 #else
     // No-op on native/editor builds — touch overlay is a WebGL-only thing.
     private static void AIFG_SetTouchControls(int visible) { }
+    private static void AIFG_SetCombat(int active) { }
 #endif
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -35,17 +38,33 @@ public static class TouchControlsBridge
 
     private static void OnSceneChanged(Scene from, Scene to)
     {
-        bool gameplay = IsGameplayScene(to.name);
-        AIFG_SetTouchControls(gameplay ? 1 : 0);
+        // Two independent signals, intentionally not the same set of scenes:
+        //   gameplay — show the touch joystick + button overlay. Includes
+        //     HubScene so phone players can walk around.
+        //   combat   — the page swallows raw canvas touches so taps don't
+        //     drift the player aim/fire. EXCLUDES HubScene because the hub
+        //     is full of Unity UI buttons (Shop, Level Select) that need
+        //     to receive taps; combat scenes don't have tap-target UI.
+        AIFG_SetTouchControls(IsGameplayScene(to.name) ? 1 : 0);
+        AIFG_SetCombat       (IsCombatScene  (to.name) ? 1 : 0);
     }
 
     private static bool IsGameplayScene(string name)
     {
-        // Whitelist gameplay scenes. Menu Screen / SampleScene stay click-driven.
-        // HubScene is included so phone players can move around the hub too.
+        // Whitelist scenes that show the touch overlay. Menu Screen /
+        // SampleScene stay click-driven.
         return name == "Hector Scene"
             || name == "Snow scene"
             || name == "Mountain scene"
             || name == "HubScene";
+    }
+
+    private static bool IsCombatScene(string name)
+    {
+        // Combat scenes only — where bare-canvas taps would drift the aim.
+        // HubScene is intentionally NOT here so taps reach Unity UI buttons.
+        return name == "Hector Scene"
+            || name == "Snow scene"
+            || name == "Mountain scene";
     }
 }
