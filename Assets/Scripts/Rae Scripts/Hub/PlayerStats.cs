@@ -9,7 +9,7 @@ public static class PlayerStats
     private static float DASH_TIME_BASE = 0.12f; //seconds. How long player spends dashing while doing so. effectively controls the dash distance
     private static int MAX_JUMP_BASE = 1;
     private static float CURRENCY_RATE_BASE = 1f;
-    private static int GOLD_PER_KILL_BASE = 5;
+    private static int GOLD_PER_KILL_BASE = 7;
 
     public static float reloadTime => RELOAD_TIME_BASE - (0.25f *UpgradeManager.GetLevel("Reload Speed")); //each upgrade takes of a quarter second
     public static float moveSpeed => MOVE_SPEED_BASE + UpgradeManager.GetLevel("Move Speed");

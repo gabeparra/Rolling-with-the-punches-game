@@ -147,9 +147,61 @@ public class FloorEnemySpawnerSpawner : MonoBehaviour
 
         // Spawn slightly above the player — gravity settles them onto the deck.
         float sy = (player != null ? player.transform.position.y : transform.position.y) + 1f;
-        float sx = Random.Range(transform.position.x - size.x / 2 + 1f, transform.position.x + size.x / 2 - 1f);
-        float sz = Random.Range(transform.position.z - size.z / 2 + 1f, transform.position.z + size.z / 2 - 1f);
-        spawn_position = new Vector3(sx, sy, sz);
+
+        // Off-camera spawn: try 64 random samples on the deck and reject any
+        // that land within (±20%) of the camera frustum. If every sample is
+        // on-camera, deterministic fallback to the deck corner farthest from
+        // the camera — never spawns a bandit centered on the player's view.
+        Camera cam = Camera.main;
+        const float xPad = 1f, zPad = 1f;
+        float xMin = transform.position.x - size.x / 2f + xPad;
+        float xMax = transform.position.x + size.x / 2f - xPad;
+        float zMin = transform.position.z - size.z / 2f + zPad;
+        float zMax = transform.position.z + size.z / 2f - zPad;
+
+        const int   maxAttempts = 64;
+        const float vpMargin    = 0.20f;
+        bool foundOffscreen = false;
+        float sx = 0f, sz = 0f;
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            sx = Random.Range(xMin, xMax);
+            sz = Random.Range(zMin, zMax);
+            Vector3 candidate = new Vector3(sx, sy, sz);
+            if (cam == null) { spawn_position = candidate; foundOffscreen = true; break; }
+            Vector3 vp = cam.WorldToViewportPoint(candidate);
+            bool inView = vp.z > 0f
+                       && vp.x > -vpMargin && vp.x < 1f + vpMargin
+                       && vp.y > -vpMargin && vp.y < 1f + vpMargin;
+            if (!inView) { spawn_position = candidate; foundOffscreen = true; break; }
+        }
+        if (!foundOffscreen)
+        {
+            if (cam != null)
+            {
+                Vector3 camPos = cam.transform.position;
+                Vector3[] corners = new[]
+                {
+                    new Vector3(xMin, sy, zMin),
+                    new Vector3(xMin, sy, zMax),
+                    new Vector3(xMax, sy, zMin),
+                    new Vector3(xMax, sy, zMax),
+                };
+                float bestDist = -1f;
+                Vector3 best = corners[0];
+                foreach (var c in corners)
+                {
+                    float d = (c - camPos).sqrMagnitude;
+                    if (d > bestDist) { bestDist = d; best = c; }
+                }
+                spawn_position = best;
+                Debug.Log($"[Spawner] all {maxAttempts} samples on-camera; falling back to farthest deck corner {best}");
+            }
+            else
+            {
+                spawn_position = new Vector3(sx, sy, sz);
+            }
+        }
 
         Vector3 dirToPlayer = (player != null ? player.transform.position - spawn_position : transform.forward);
         dirToPlayer.y = 0;

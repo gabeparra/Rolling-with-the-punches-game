@@ -10,9 +10,26 @@ public class Bandit : MonoBehaviour
 
     public float health = 2f;
 
-    public enum State {Idle, Attack, Loot};
+    // NOTE: Cover appended at end so existing serialized defaultState values
+    // (Idle=0/Attack=1/Loot=2) keep meaning the same in saved scenes/prefabs.
+    public enum State {Idle, Attack, Loot, Cover};
 
     public State defaultState = State.Idle;
+
+    // ---- Cover behavior (CoverState) ----
+    [Tooltip("If true, healthy bandits break off attacks to seek cover when they take fire.")]
+    public bool useCover = true;
+    [Tooltip("How recently the bandit must have taken a hit to count as 'under fire'.")]
+    public float coverFearWindow = 1.75f;
+    [Tooltip("Minimum health fraction to bother taking cover.")]
+    [Range(0f, 1f)]
+    public float coverHealthFloor = 0.35f;
+    [Tooltip("Cooldown after leaving cover before re-entering.")]
+    public float coverCooldown = 4f;
+
+    [HideInInspector] public float lastDamagedAt = -1000f;
+    [HideInInspector] public float lastLeftCoverAt = -1000f;
+    [HideInInspector] public float maxHealth = 0f;
 
     public float change_to_loot_state_chance = 0.15f;
 
@@ -41,6 +58,9 @@ public class Bandit : MonoBehaviour
     public Transform target;
 
     public NavMeshAgent agent;
+
+    private Animator animator;
+    private UnityEngine.Vector3 prevPos;
 
 
     // LEVEL
@@ -133,6 +153,8 @@ public class Bandit : MonoBehaviour
     {
         parent = gameObject;
         agent = parent.GetComponent<NavMeshAgent>();
+        animator = GetComponentInChildren<Animator>();
+        prevPos = parent.transform.position;
         target = parent.transform;
         fsm = parent.AddComponent<BanditFSM>();
         fsm.Init(this);
@@ -150,6 +172,9 @@ public class Bandit : MonoBehaviour
         //     Debug.Log(key);
         // }
 
+        // Stash starting health for CoverState health-fraction comparisons.
+        maxHealth = health;
+
         switch (defaultState)
         {
             case State.Idle:
@@ -161,6 +186,9 @@ public class Bandit : MonoBehaviour
             case State.Attack:
                 fsm.SetCurrentState("attack");
                 break;
+            case State.Cover:
+                fsm.SetCurrentState("cover");
+                break;
         }
 
     }
@@ -169,6 +197,19 @@ public class Bandit : MonoBehaviour
     void Update()
     {
         fsm.DoUpdate();
+
+        if (animator != null)
+        {
+            UnityEngine.Vector3 cur = parent.transform.position;
+            UnityEngine.Vector3 delta = cur - prevPos;
+            delta.y = 0f;
+            // Threshold scaled to per-second movement; covers both navmesh
+            // velocity and rigidbody-velocity bandits without false-positives
+            // from physics jitter.
+            bool isMoving = delta.sqrMagnitude / Mathf.Max(Time.deltaTime, 0.0001f) > 0.05f;
+            animator.SetBool("isMoving", isMoving);
+            prevPos = cur;
+        }
     }
 
     void FixedUpdate()
@@ -182,12 +223,18 @@ public class Bandit : MonoBehaviour
         // Play death sound at the bandit's position (independent of the destroyed gameObject)
         if (deathClip != null)
             AudioSource.PlayClipAtPoint(deathClip, parent.transform.position, 1f);
+
+        var fxPos = parent.transform.position + UnityEngine.Vector3.up * 1f;
+        EnemyDeathFX.Play(fxPos, new Color(1f, 0.55f, 0.15f));
+
         Destroy(parent);
     }
 
     public void TakeDamage(int amount) // Method added by Hector to calculate damage taken by enemy
     {
         health -= amount;
+        // CoverState's transition gate polls this to detect "under fire" recently.
+        lastDamagedAt = Time.time;
 
         if (health <= 0)
         {

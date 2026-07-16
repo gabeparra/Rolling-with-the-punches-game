@@ -179,6 +179,8 @@ public class AttackState : State
         bandit.mag_size = Mathf.Clamp(bandit.mag_size-1,0,bandit.max_mag_size);
         SetTargetRay();
 
+        BulletVisuals.Enhance(bullet, new Color(1f, 0.25f, 0.15f), scale: 1.8f, trail: true);
+
         Destroy(bullet, 2f);
     }
 

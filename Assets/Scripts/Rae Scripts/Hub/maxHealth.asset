@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
   upgradeName: Max Health
   description: Add a heart to your max health
-  prices: 140000003200000064000000
-  maxLevel: 3
+  prices: 0f000000190000003100000034000000500000005800000064000000
+  maxLevel: 7

@@ -21,6 +21,16 @@ public class HUDManager : MonoBehaviour
     [Header("Gold")]
     public TextMeshProUGUI goldText;
 
+    [Header("Layout")]
+    [Tooltip("Pixel margin from screen edge for hearts (top-right corner).")]
+    public float heartMargin = 32f;
+    [Tooltip("Pixel size of each heart icon (square).")]
+    public float heartSize = 64f;
+    [Tooltip("Pixel spacing between hearts.")]
+    public float heartSpacing = 70f;
+    [Tooltip("Reference resolution the CanvasScaler scales against.")]
+    public Vector2 referenceResolution = new Vector2(1920f, 1080f);
+
     private int _ammo;
     private int _enemiesRemaining;
     private int _totalKills = 0;
@@ -38,6 +48,44 @@ public class HUDManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         _isReloading = false;
+
+        EnsureCanvasScaler();
+        LayoutHearts();
+    }
+
+    void EnsureCanvasScaler()
+    {
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) return;
+        Canvas root = canvas.rootCanvas != null ? canvas.rootCanvas : canvas;
+        if (root.renderMode == RenderMode.WorldSpace) return;
+
+        CanvasScaler scaler = root.GetComponent<CanvasScaler>();
+        if (scaler == null) scaler = root.gameObject.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = referenceResolution;
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+    }
+
+    void LayoutHearts()
+    {
+        if (heartIcons == null || heartIcons.Length == 0) return;
+        int n = heartIcons.Length;
+        for (int i = 0; i < n; i++)
+        {
+            Image h = heartIcons[i];
+            if (h == null) continue;
+            RectTransform rt = h.rectTransform;
+            rt.anchorMin = new Vector2(1f, 1f);
+            rt.anchorMax = new Vector2(1f, 1f);
+            rt.pivot     = new Vector2(1f, 1f);
+            rt.sizeDelta = new Vector2(heartSize, heartSize);
+            float xOffset = -heartMargin - (n - 1 - i) * heartSpacing;
+            rt.anchoredPosition = new Vector2(xOffset, -heartMargin);
+            rt.localScale = Vector3.one;
+            rt.localRotation = Quaternion.identity;
+        }
     }
 
     void Start()
