@@ -145,10 +145,13 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
 
             // Right-stick override (controller). Reads camera-relative so pushing
             // up on the stick aims away from the camera.
-            var lookAction = InputSystem.actions != null ? InputSystem.actions.FindAction("Look") : null;
-            if (lookAction != null && Gamepad.current != null)
+            // Read the stick device directly, not the Look action — Look is
+            // also bound to <Pointer>/delta, so on touchscreens every finger
+            // drag (including on the on-screen joysticks themselves) would
+            // yank the aim away from where the stick points.
+            if (Gamepad.current != null)
             {
-                Vector2 stick = lookAction.ReadValue<Vector2>();
+                Vector2 stick = Gamepad.current.rightStick.ReadValue();
                 if (stick.sqrMagnitude > 0.25f) // deadzone for right stick
                 {
                     Vector3 stickWorld = new Vector3(stick.x, 0f, stick.y);
