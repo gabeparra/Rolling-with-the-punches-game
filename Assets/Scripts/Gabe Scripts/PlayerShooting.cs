@@ -45,8 +45,10 @@ public class PlayerShooting : MonoBehaviour
                 _nextAutoFire = Time.time + autoFireInterval;
             }
         }
-        // Reload -- R or X button on Xbox
-        if ((Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("GameReload")
+        // Reload -- automatic when the mag runs dry; R / X button / RELOAD
+        // still work for early tactical reloads.
+        bool magEmpty = HUDManager.Instance != null && !HUDManager.Instance.HasAmmo();
+        if ((magEmpty || Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("GameReload")
             || (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame)) && !_reloading)
             StartCoroutine(Reload());
     }
