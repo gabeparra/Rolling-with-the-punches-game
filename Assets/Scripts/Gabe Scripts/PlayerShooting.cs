@@ -14,6 +14,8 @@ public class PlayerShooting : MonoBehaviour
     private AudioSource audioSource;
     private bool _reloading = false;
     private bool _triggerWasDown = false;
+    public float autoFireInterval = 0.25f; // seconds between shots while the touch aim stick is held
+    private float _nextAutoFire = 0f;
 
     void Update()
     {
@@ -27,6 +29,21 @@ public class PlayerShooting : MonoBehaviour
         {
             if (HUDManager.Instance != null && !HUDManager.Instance.HasAmmo()) { Debug.LogWarning("[PlayerShooting] No ammo"); return; }
             FireRaycast();
+        }
+
+        // Touch: deflecting the aim stick both aims and auto-fires (twin-stick
+        // style) — there's no spare finger for a trigger. Same deadzone as the
+        // aim code so shots only start once aiming is engaged. Mobile-only so
+        // desktop controller players don't fire just by aiming.
+        bool stickHeld = MobileTouchControls.Active && Gamepad.current != null
+            && Gamepad.current.rightStick.ReadValue().sqrMagnitude > 0.25f;
+        if (stickHeld && !_reloading && Time.time >= _nextAutoFire)
+        {
+            if (HUDManager.Instance == null || HUDManager.Instance.HasAmmo())
+            {
+                FireRaycast();
+                _nextAutoFire = Time.time + autoFireInterval;
+            }
         }
         // Reload -- R or X button on Xbox
         if ((Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("GameReload")

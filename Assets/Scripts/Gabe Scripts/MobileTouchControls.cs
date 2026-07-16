@@ -83,10 +83,10 @@ public static class MobileTouchControls
         MakeStick("MoveStick", new Vector2(0, 0), new Vector2(300, 280), "<Gamepad>/leftStick");
         MakeStick("AimStick", new Vector2(1, 0), new Vector2(-300, 280), "<Gamepad>/rightStick");
 
-        // Buttons — mirrors the WebGL overlay's grid. DASH shares a control
-        // with the hub's Interact action (buttonNorth) exactly like KeyE did
-        // on the web: dash in combat, open shop in the hub.
-        MakeButton("SHOOT",  new Vector2(1, 0), new Vector2(-620, 300), 170, "<Gamepad>/rightTrigger");
+        // Buttons — mirrors the WebGL overlay's grid. No SHOOT button: holding
+        // the aim stick auto-fires (PlayerShooting reads the right stick).
+        // DASH shares a control with the hub's Interact action (buttonNorth)
+        // exactly like KeyE did on the web: dash in combat, open shop in hub.
         MakeButton("JUMP",   new Vector2(1, 0), new Vector2(-600, 500), 140, "<Gamepad>/buttonSouth");
         MakeButton("DASH",   new Vector2(1, 0), new Vector2(-380, 560), 140, "<Gamepad>/buttonNorth");
         MakeButton("RELOAD", new Vector2(1, 0), new Vector2(-160, 580), 120, "<Gamepad>/buttonWest");
