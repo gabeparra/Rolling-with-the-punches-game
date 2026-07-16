@@ -54,4 +54,5 @@ Assets/Screenshots/
 Assets/_Recovery/
 Assets/Plugins/Roslyn/
 Assets/Resources/PerformanceTestRunInfo.json
-Assets/Resources/PerformanceTestRunSettings.json.utmp/
+Assets/Resources/PerformanceTestRunSettings.json
+.utmp/

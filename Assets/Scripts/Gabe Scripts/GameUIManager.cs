@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
@@ -67,7 +68,8 @@ public class GameUIManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape)
+            || (Gamepad.current != null && Gamepad.current.startButton.wasPressedThisFrame))
         {
             if (_anyPanelOpen && IsPaused)
             {

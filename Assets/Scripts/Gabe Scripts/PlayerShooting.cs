@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerShooting : MonoBehaviour
 {
@@ -17,7 +18,8 @@ public class PlayerShooting : MonoBehaviour
     void Update()
     {
         // Shoot -- Left mouse click, RB, or Right Trigger on Xbox
-        bool triggerDown = Input.GetAxis("GameShootTrigger") > 0.5f;
+        bool triggerDown = Input.GetAxis("GameShootTrigger") > 0.5f
+            || (Gamepad.current != null && Gamepad.current.rightTrigger.ReadValue() > 0.5f);
         bool triggerJustPressed = triggerDown && !_triggerWasDown;
         _triggerWasDown = triggerDown;
 
@@ -27,7 +29,8 @@ public class PlayerShooting : MonoBehaviour
             FireRaycast();
         }
         // Reload -- R or X button on Xbox
-        if ((Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("GameReload")) && !_reloading)
+        if ((Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("GameReload")
+            || (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame)) && !_reloading)
             StartCoroutine(Reload());
     }
 

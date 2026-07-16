@@ -103,6 +103,10 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
     {
         input.x = Input.GetAxisRaw("Horizontal");
         input.y = Input.GetAxisRaw("Vertical");
+        // Legacy axes can't see Input System devices (touch joystick emulates
+        // a virtual gamepad), so merge the left stick in manually.
+        if (input.sqrMagnitude < 0.01f && Gamepad.current != null)
+            input = Gamepad.current.leftStick.ReadValue();
         // Vector input from controller can have magnitude < 1 (analog stick).
         // Clamp magnitude so diagonal isn't faster than cardinal.
         Vector3 raw = new Vector3(input.x, 0, input.y);
@@ -122,7 +126,10 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         {
             Vector3 aimDir = transform.forward;
             Camera cam = Camera.main;
-            if (cam != null)
+            // On phones there is no real cursor — a stale mousePosition would
+            // yank the aim toward a screen corner, so mouse aim is skipped and
+            // the touch aim stick (right stick below) is the only aim source.
+            if (cam != null && !MobileTouchControls.Active)
             {
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
                 Plane aimPlane = new Plane(Vector3.up, transform.position);
@@ -185,7 +192,8 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         }
 
         // --- Jump input buffering ---
-        bool jumpPressed = Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("GameJump");
+        bool jumpPressed = Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("GameJump")
+            || (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame);
         if (jumpPressed) jumpBufferTimer = jumpBufferTime;
         else jumpBufferTimer -= Time.deltaTime;
 
@@ -208,7 +216,8 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.deltaTime;
 
-        bool dashPressed = Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameDash");
+        bool dashPressed = Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("GameDash")
+            || (Gamepad.current != null && Gamepad.current.buttonNorth.wasPressedThisFrame);
 
         if (dashPressed && !isDashing && dashCooldownTimer <= 0f && canMove)
         {
