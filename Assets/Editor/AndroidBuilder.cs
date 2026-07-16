@@ -36,6 +36,15 @@ public static class AndroidBuilder
         // Debug-keystore signing (Unity default when no custom keystore is set)
         // keeps installs compatible with the rest of the sideloaded fleet.
         PlayerSettings.Android.useCustomKeystore = false;
+        PlayerSettings.Android.forceInternetPermission = true;
+
+        // Landscape only — the touch layout assumes wide aspect; never rotate
+        // to portrait even if the phone does.
+        PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
+        PlayerSettings.allowedAutorotateToPortrait = false;
+        PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
+        PlayerSettings.allowedAutorotateToLandscapeLeft = true;
+        PlayerSettings.allowedAutorotateToLandscapeRight = true;
 
         var opts = new BuildPlayerOptions
         {

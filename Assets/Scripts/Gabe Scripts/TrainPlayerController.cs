@@ -157,11 +157,17 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
                     Vector3 stickWorld = new Vector3(stick.x, 0f, stick.y);
                     if (cam != null)
                     {
-                        Vector3 camFwd = cam.transform.forward; camFwd.y = 0f; camFwd.Normalize();
+                        // With a steep top-down camera, forward projects to
+                        // ~zero on the ground plane — use camera up instead so
+                        // the math never degenerates to a zero vector.
+                        Vector3 camFwd = cam.transform.forward; camFwd.y = 0f;
+                        if (camFwd.sqrMagnitude < 1e-4f) { camFwd = cam.transform.up; camFwd.y = 0f; }
+                        camFwd.Normalize();
                         Vector3 camRight = cam.transform.right; camRight.y = 0f; camRight.Normalize();
                         stickWorld = camRight * stick.x + camFwd * stick.y;
                     }
-                    aimDir = stickWorld.normalized;
+                    if (stickWorld.sqrMagnitude > 1e-4f)
+                        aimDir = stickWorld.normalized;
                 }
             }
 

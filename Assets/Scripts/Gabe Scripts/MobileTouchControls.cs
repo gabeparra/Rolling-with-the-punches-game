@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
@@ -68,6 +69,8 @@ public static class MobileTouchControls
 
         _root = new GameObject("MobileTouchControls");
         Object.DontDestroyOnLoad(_root);
+
+        _root.AddComponent<TouchDebugReporter>(); // TEMP: on-device input diagnostics
 
         var canvas = _root.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -143,6 +146,48 @@ public static class MobileTouchControls
         img.sprite = _circle;
         img.color = color;
         return go;
+    }
+
+    /// <summary>TEMP diagnostics: posts gamepad/stick state to the phone-bridge
+    /// every 2s while the overlay is up, so input plumbing can be debugged from
+    /// the dev box without screen access. Remove once touch input is stable.</summary>
+    class TouchDebugReporter : MonoBehaviour
+    {
+        float _next;
+
+        void Update()
+        {
+            if (!Active || Time.unscaledTime < _next) return;
+            _next = Time.unscaledTime + 2f;
+
+            var sb = new System.Text.StringBuilder();
+            sb.Append("pads=").Append(Gamepad.all.Count)
+              .Append(" cur=").Append(Gamepad.current != null ? Gamepad.current.deviceId : -1);
+            foreach (var g in Gamepad.all)
+                sb.Append(" [").Append(g.deviceId)
+                  .Append(" L=").Append(g.leftStick.ReadValue().ToString("F2"))
+                  .Append(" R=").Append(g.rightStick.ReadValue().ToString("F2"))
+                  .Append(" rt=").Append(g.rightTrigger.ReadValue().ToString("F2")).Append(']');
+            var player = FindFirstObjectByType<TrainPlayerController>();
+            if (player != null)
+                sb.Append(" fwd=").Append(player.transform.forward.ToString("F2"));
+            StartCoroutine(Post(sb.ToString()));
+        }
+
+        System.Collections.IEnumerator Post(string text)
+        {
+            var payload = JsonUtility.ToJson(new Ev { text = text });
+            using var req = new UnityEngine.Networking.UnityWebRequest(
+                "https://fedora.tail747dab.ts.net:9447/event", "POST");
+            req.uploadHandler = new UnityEngine.Networking.UploadHandlerRaw(
+                System.Text.Encoding.UTF8.GetBytes(payload));
+            req.downloadHandler = new UnityEngine.Networking.DownloadHandlerBuffer();
+            req.SetRequestHeader("Content-Type", "application/json");
+            yield return req.SendWebRequest();
+        }
+
+        [System.Serializable]
+        class Ev { public string device = "rolling-punches"; public string type = "touchdebug"; public string text = ""; }
     }
 
     /// <summary>Soft-edged white circle generated in code so the overlay
