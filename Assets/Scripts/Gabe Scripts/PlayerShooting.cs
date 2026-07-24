@@ -19,25 +19,36 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
+        bool fps = ViewModeManager.FpsActive;
+
         // Shoot -- Left mouse click, RB, or Right Trigger on Xbox
         bool triggerDown = Input.GetAxis("GameShootTrigger") > 0.5f
             || (Gamepad.current != null && Gamepad.current.rightTrigger.ReadValue() > 0.5f);
         bool triggerJustPressed = triggerDown && !_triggerWasDown;
         _triggerWasDown = triggerDown;
 
-        if ((Input.GetMouseButtonDown(0) || Input.GetButtonDown("GameShoot") || triggerJustPressed) && !_reloading)
+        // In FPS the trigger belongs exclusively to the auto-fire path below —
+        // letting the edge-trigger branch also fire would double-shoot on the
+        // first held frame.
+        if ((Input.GetMouseButtonDown(0) || Input.GetButtonDown("GameShoot")
+            || (triggerJustPressed && !fps)) && !_reloading)
         {
             if (HUDManager.Instance != null && !HUDManager.Instance.HasAmmo()) { Debug.LogWarning("[PlayerShooting] No ammo"); return; }
             FireRaycast();
         }
 
-        // Touch: deflecting the aim stick both aims and auto-fires (twin-stick
-        // style) — there's no spare finger for a trigger. Same deadzone as the
-        // aim code so shots only start once aiming is engaged. Mobile-only so
-        // desktop controller players don't fire just by aiming.
-        bool stickHeld = MobileTouchControls.Active && Gamepad.current != null
-            && Gamepad.current.rightStick.ReadValue().sqrMagnitude > 0.25f;
-        if (stickHeld && !_reloading && Time.time >= _nextAutoFire)
+        // Auto-fire sources:
+        //  - twin-stick modes on touch: dragging the aim zone both aims and
+        //    fires (no spare finger for a trigger); same 0.04 deadzone as the
+        //    aim-turn code in TrainPlayerController so aiming and firing
+        //    engage together
+        //  - first person: holding FIRE (mobile button or controller trigger)
+        bool touchAim = !fps && MobileTouchControls.AimHeld
+            && MobileTouchControls.AimVector.sqrMagnitude > 0.04f;
+        bool padAim = !fps && MobileTouchControls.Active && Gamepad.current != null
+            && Gamepad.current.rightStick.ReadValue().sqrMagnitude > 0.04f;
+        bool fpsHold = fps && triggerDown;
+        if ((touchAim || padAim || fpsHold) && !_reloading && Time.time >= _nextAutoFire)
         {
             if (HUDManager.Instance == null || HUDManager.Instance.HasAmmo())
             {
@@ -57,7 +68,15 @@ public class PlayerShooting : MonoBehaviour
     {
         _reloading = true;
         if (reloadClip != null && audioSource != null) audioSource.PlayOneShot(reloadClip);
-        yield return new WaitForSeconds(PlayerStats.reloadTime);
+        // Drive the RELOAD button's radial fill so phone players see progress.
+        float t = 0f;
+        while (t < PlayerStats.reloadTime)
+        {
+            MobileTouchControls.SetReloadProgress(t / PlayerStats.reloadTime);
+            yield return null;
+            t += Time.deltaTime;
+        }
+        MobileTouchControls.SetReloadProgress(0f);
         if (HUDManager.Instance != null) HUDManager.Instance.ReloadAmmo();
         _reloading = false;
     }
@@ -71,6 +90,12 @@ public class PlayerShooting : MonoBehaviour
 
         Vector3 origin = firePoint.position;
         Vector3 direction = transform.forward;
+        // First person aims with camera pitch — shoot along the camera ray.
+        if (ViewModeManager.GetFpsAim(out Vector3 fpsOrigin, out Vector3 fpsDir))
+        {
+            origin = fpsOrigin;
+            direction = fpsDir;
+        }
         Vector3 hitPoint = origin + direction * maxRange;
 
         // Use RaycastAll to skip the player and train body — the player is

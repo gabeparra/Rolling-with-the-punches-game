@@ -110,6 +110,9 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         // Vector input from controller can have magnitude < 1 (analog stick).
         // Clamp magnitude so diagonal isn't faster than cardinal.
         Vector3 raw = new Vector3(input.x, 0, input.y);
+        // First person: stick-up means "where I'm looking", not world +Z.
+        if (ViewModeManager.FpsActive)
+            raw = Quaternion.Euler(0f, ViewModeManager.Yaw, 0f) * raw;
         if(canMove)
         {
             moveDirection = raw.sqrMagnitude > 1f ? raw.normalized : raw;
@@ -122,7 +125,8 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
         // through cursor onto a horizontal plane at the player's height, then
         // rotate the player to face the hit point. Falls back to controller right
         // stick (Look action) if no mouse delta and the right stick is pushed.
-        if (!isDashing)
+        // First person: ViewModeManager's look drives the body rotation.
+        if (!isDashing && !ViewModeManager.FpsActive)
         {
             Vector3 aimDir = transform.forward;
             Camera cam = Camera.main;
@@ -143,32 +147,37 @@ public class TrainPlayerController : MonoBehaviour // Changed from 'PlayerMoveme
                 }
             }
 
-            // Right-stick override (controller). Reads camera-relative so pushing
-            // up on the stick aims away from the camera.
-            // Read the stick device directly, not the Look action — Look is
-            // also bound to <Pointer>/delta, so on touchscreens every finger
-            // drag (including on the on-screen joysticks themselves) would
-            // yank the aim away from where the stick points.
-            if (Gamepad.current != null)
+            // Stick override: the floating touch aim zone while held, else a
+            // real controller's right stick (read at device level — the Look
+            // action is also bound to <Pointer>/delta, which touch drags feed).
+            // Reads camera-relative so pushing up aims away from the camera.
+            Vector2 stick = MobileTouchControls.AimHeld
+                ? MobileTouchControls.AimVector
+                : (Gamepad.current != null ? Gamepad.current.rightStick.ReadValue() : Vector2.zero);
+            if (stick.sqrMagnitude > 0.04f)
             {
-                Vector2 stick = Gamepad.current.rightStick.ReadValue();
-                if (stick.sqrMagnitude > 0.25f) // deadzone for right stick
+                Vector3 stickWorld = new Vector3(stick.x, 0f, stick.y);
+                if (cam != null)
                 {
-                    Vector3 stickWorld = new Vector3(stick.x, 0f, stick.y);
-                    if (cam != null)
-                    {
-                        // With a steep top-down camera, forward projects to
-                        // ~zero on the ground plane — use camera up instead so
-                        // the math never degenerates to a zero vector.
-                        Vector3 camFwd = cam.transform.forward; camFwd.y = 0f;
-                        if (camFwd.sqrMagnitude < 1e-4f) { camFwd = cam.transform.up; camFwd.y = 0f; }
-                        camFwd.Normalize();
-                        Vector3 camRight = cam.transform.right; camRight.y = 0f; camRight.Normalize();
-                        stickWorld = camRight * stick.x + camFwd * stick.y;
-                    }
-                    if (stickWorld.sqrMagnitude > 1e-4f)
-                        aimDir = stickWorld.normalized;
+                    // With a steep top-down camera, forward projects to
+                    // ~zero on the ground plane — use camera up instead so
+                    // the math never degenerates to a zero vector.
+                    Vector3 camFwd = cam.transform.forward; camFwd.y = 0f;
+                    if (camFwd.sqrMagnitude < 1e-4f) { camFwd = cam.transform.up; camFwd.y = 0f; }
+                    camFwd.Normalize();
+                    Vector3 camRight = cam.transform.right; camRight.y = 0f; camRight.Normalize();
+                    stickWorld = camRight * stick.x + camFwd * stick.y;
                 }
+                if (stickWorld.sqrMagnitude > 1e-4f)
+                    aimDir = stickWorld.normalized;
+            }
+            else if (MobileTouchControls.Active && isMoving)
+            {
+                // Touch with no aim engaged (e.g. walking the hub, or running
+                // between fights): face where you're going, twin-stick style.
+                // Replaces the pre-zone behavior where the old hub aim stick
+                // was the only way to turn the character on phones.
+                aimDir = moveDirection.normalized;
             }
 
             Quaternion targetRotation = Quaternion.LookRotation(aimDir);

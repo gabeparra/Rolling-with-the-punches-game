@@ -1,30 +1,38 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// Native (Android/iOS) counterpart of the WebGL touch overlay: builds an
-/// on-screen move stick, aim stick and JUMP/DASH/SHOOT/RELOAD/PAUSE buttons
-/// at runtime — no scene edits, hooked via RuntimeInitializeOnLoad like
-/// TouchControlsBridge.
+/// Native (Android/iOS) touch controls, built at runtime — no scene edits.
 ///
-/// The controls emulate a virtual gamepad through the Input System's
-/// OnScreen components, so everything that already supports a controller
-/// (Move/Look/Interact actions, Gamepad.current fallbacks in the combat
-/// scripts) responds to touch with no per-script wiring.
+/// Layout: a move stick bottom-left (Input System OnScreenStick feeding the
+/// virtual gamepad's left stick), a full-height floating AIM ZONE covering the
+/// right side of the screen (touch anywhere, a stick appears under the finger;
+/// drag to aim, hold to auto-fire), and JUMP / DASH / RELOAD / PAUSE / VIEW
+/// buttons layered above the zone. The zone replaced a fixed aim stick that
+/// proved too easy to miss mid-fight (telemetry showed the right stick engaged
+/// in only ~10% of samples).
 /// </summary>
 public static class MobileTouchControls
 {
-    /// <summary>True while the touch overlay is visible in the current scene.
-    /// Combat scripts use this to skip mouse-based aim on phones.</summary>
+    /// <summary>True while the touch overlay is visible in the current scene.</summary>
     public static bool Active { get; private set; }
 
+    /// <summary>Aim-zone state: normalized drag vector (magnitude 0..1) and
+    /// whether a finger is currently down on the zone. Combat scripts read
+    /// these directly — no Input System indirection to go wrong.</summary>
+    public static Vector2 AimVector => TouchAimZone.Aim;
+    public static bool AimHeld => TouchAimZone.Held;
+
     static GameObject _root;
+    static GameObject _aimZone;
+    static GameObject _fireButton;
+    static Image _reloadFill;
     static Sprite _circle;
+    static bool _combatScene;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Init()
@@ -32,8 +40,7 @@ public static class MobileTouchControls
         if (!Application.isMobilePlatform) return;
 
         // Without this every touch doubles as mouse0 and taps anywhere would
-        // fire the gun (the WebGL overlay solved the same problem by
-        // swallowing canvas taps).
+        // fire the gun.
         Input.simulateMouseWithTouches = false;
 
         SceneManager.activeSceneChanged -= OnSceneChanged;
@@ -44,15 +51,34 @@ public static class MobileTouchControls
 
     static void OnSceneChanged(Scene from, Scene to)
     {
-        // Same whitelist as TouchControlsBridge: combat scenes + HubScene so
-        // phone players can walk around; Menu Screen stays tap-driven.
-        bool show = to.name == "Hector Scene"
-                 || to.name == "Snow scene"
-                 || to.name == "Mountain scene"
-                 || to.name == "HubScene";
+        _combatScene = TouchControlsBridge.IsCombatScene(to.name);
+        bool show = TouchControlsBridge.IsGameplayScene(to.name);
         Active = show;
         if (_root != null) _root.SetActive(show);
+        // The aim surface would swallow taps meant for the hub's own UI
+        // (Shop, Level Select) — combat scenes only. Same for the FPS FIRE
+        // button, which must also re-sync here so it can't stay stuck visible
+        // in the hub after leaving a run in first person.
+        if (_aimZone != null) _aimZone.SetActive(_combatScene);
+        if (_fireButton != null)
+            _fireButton.SetActive(_combatScene && ViewModeManager.Mode == ViewMode.FirstPerson);
+        // A reload interrupted by the scene change would leave its radial
+        // fill frozen mid-way on this persistent canvas.
+        SetReloadProgress(0f);
         if (show) EnsureEventSystem();
+    }
+
+    /// <summary>Called by ViewModeManager when the mode changes: FPS gets a
+    /// dedicated FIRE button (the aim zone is busy steering the camera).</summary>
+    public static void OnViewModeChanged(ViewMode mode)
+    {
+        if (_fireButton != null) _fireButton.SetActive(_combatScene && mode == ViewMode.FirstPerson);
+    }
+
+    /// <summary>Reload progress for the RELOAD button (0 = idle, 0..1 filling).</summary>
+    public static void SetReloadProgress(float t)
+    {
+        if (_reloadFill != null) _reloadFill.fillAmount = Mathf.Clamp01(t);
     }
 
     static void EnsureEventSystem()
@@ -70,41 +96,151 @@ public static class MobileTouchControls
         _root = new GameObject("MobileTouchControls");
         Object.DontDestroyOnLoad(_root);
 
-        _root.AddComponent<TouchDebugReporter>(); // TEMP: on-device input diagnostics
-
         var canvas = _root.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 500; // above gameplay HUD, below nothing that matters
+        canvas.sortingOrder = 500;
         var scaler = _root.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
         scaler.matchWidthOrHeight = 0.5f;
         _root.AddComponent<GraphicRaycaster>();
 
-        // Sticks: move (left thumb) and aim (right thumb). Aim feeds
-        // <Gamepad>/rightStick which the combat aim code already reads.
-        MakeStick("MoveStick", new Vector2(0, 0), new Vector2(300, 280), "<Gamepad>/leftStick");
-        MakeStick("AimStick", new Vector2(1, 0), new Vector2(-300, 280), "<Gamepad>/rightStick");
+        // Aim zone FIRST so later siblings (buttons) win raycasts above it.
+        BuildAimZone();
 
-        // Buttons — mirrors the WebGL overlay's grid. No SHOOT button: holding
-        // the aim stick auto-fires (PlayerShooting reads the right stick).
-        // DASH shares a control with the hub's Interact action (buttonNorth)
-        // exactly like KeyE did on the web: dash in combat, open shop in hub.
-        MakeButton("JUMP",   new Vector2(1, 0), new Vector2(-600, 500), 140, "<Gamepad>/buttonSouth");
-        MakeButton("DASH",   new Vector2(1, 0), new Vector2(-380, 560), 140, "<Gamepad>/buttonNorth");
-        MakeButton("RELOAD", new Vector2(1, 0), new Vector2(-160, 580), 120, "<Gamepad>/buttonWest");
+        MakeStick("MoveStick", new Vector2(0, 0), new Vector2(300, 280), "<Gamepad>/leftStick");
+
+        // Right-edge button column — clear of the natural aim-drag area.
+        // DASH doubles as the hub's Interact (buttonNorth), like KeyE on web.
+        MakeButton("JUMP",   new Vector2(1, 0), new Vector2(-140, 170), 150, "<Gamepad>/buttonSouth");
+        MakeButton("DASH",   new Vector2(1, 0), new Vector2(-140, 350), 130, "<Gamepad>/buttonNorth");
+        var reload = MakeButton("RELOAD", new Vector2(1, 0), new Vector2(-140, 510), 110, "<Gamepad>/buttonWest");
+        _reloadFill = MakeReloadFill(reload);
         MakeButton("PAUSE",  new Vector2(1, 1), new Vector2(-90, -90), 100, "<Gamepad>/start");
+
+        var view = MakeButton("VIEW", new Vector2(1, 1), new Vector2(-220, -90), 100, null);
+        view.AddComponent<Button>().onClick.AddListener(ViewModeManager.Cycle);
+
+        // FPS-only trigger; hidden in other modes (aim zone fires there).
+        // Visibility comes from the persisted mode, not a blanket false —
+        // ViewModeManager's own bootstrap may already have run and its
+        // OnViewModeChanged call would have hit a null button.
+        _fireButton = MakeButton("FIRE", new Vector2(1, 0), new Vector2(-330, 210), 170, "<Gamepad>/rightTrigger");
+        _fireButton.SetActive(_combatScene && ViewModeManager.Mode == ViewMode.FirstPerson);
+    }
+
+    static void BuildAimZone()
+    {
+        var zone = new GameObject("AimZone", typeof(RectTransform));
+        _aimZone = zone;
+        zone.transform.SetParent(_root.transform, false);
+        var rt = (RectTransform)zone.transform;
+        rt.anchorMin = new Vector2(0.42f, 0f);
+        rt.anchorMax = new Vector2(1f, 1f);
+        rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+        var img = zone.AddComponent<Image>();
+        img.color = new Color(0, 0, 0, 0f); // invisible but raycastable
+        img.raycastTarget = true;
+        var tz = zone.AddComponent<TouchAimZone>();
+
+        // Floating stick visual, hidden until a finger lands.
+        var bg = MakeCircleImage("AimStickVisual", Vector2.zero, Vector2.zero, 260, new Color(1f, 1f, 1f, 0.12f));
+        bg.transform.SetParent(zone.transform, false);
+        bg.GetComponent<Image>().raycastTarget = false;
+        var knob = MakeCircleImage("Knob", Vector2.one * 0.5f, Vector2.zero, 110, new Color(1f, 0.75f, 0.2f, 0.5f));
+        knob.transform.SetParent(bg.transform, false);
+        knob.GetComponent<Image>().raycastTarget = false;
+        bg.SetActive(false);
+        tz.visual = (RectTransform)bg.transform;
+        tz.knob = (RectTransform)knob.transform;
+    }
+
+    /// <summary>Floating twin-stick aim surface. Tracks a single pointer;
+    /// exposes the drag vector and held state as statics.</summary>
+    public class TouchAimZone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    {
+        public static Vector2 Aim { get; private set; }
+        public static bool Held { get; private set; }
+
+        public RectTransform visual;
+        public RectTransform knob;
+
+        // Reference-resolution (1080p canvas) units, not raw screen pixels —
+        // divided by the canvas scale factor per event so the same physical
+        // thumb travel gives the same deflection on any DPI.
+        const float Deadzone = 14f;
+        const float FullDeflect = 85f;
+
+        int _pointer = int.MinValue;
+        Vector2 _origin;
+        Canvas _canvas;
+
+        void Awake() { _canvas = GetComponentInParent<Canvas>(); }
+
+        float ToCanvasUnits => _canvas != null && _canvas.scaleFactor > 0f
+            ? 1f / _canvas.scaleFactor : 1f;
+
+        public void OnPointerDown(PointerEventData e)
+        {
+            if (_pointer != int.MinValue) return; // one finger owns the zone
+            _pointer = e.pointerId;
+            _origin = e.position;
+            Held = true; Aim = Vector2.zero;
+            if (visual != null)
+            {
+                visual.gameObject.SetActive(true);
+                PlaceOnCanvas(visual, e.position);
+                if (knob != null) knob.anchoredPosition = Vector2.zero;
+            }
+        }
+
+        public void OnDrag(PointerEventData e)
+        {
+            if (e.pointerId != _pointer) return;
+            Vector2 delta = (e.position - _origin) * ToCanvasUnits;
+            float mag = delta.magnitude;
+            Aim = mag < Deadzone ? Vector2.zero
+                : delta / mag * Mathf.Clamp01((mag - Deadzone) / (FullDeflect - Deadzone));
+            if (knob != null)
+                knob.anchoredPosition = Aim * FullDeflect;
+        }
+
+        public void OnPointerUp(PointerEventData e)
+        {
+            if (e.pointerId != _pointer) return;
+            Release();
+        }
+
+        // The OS can eat the pointer-up (notification shade, incoming call,
+        // app switch) — without these resets the zone would keep auto-firing
+        // in a frozen direction and refuse all new touches.
+        void OnDisable() { Release(); }
+        void OnApplicationFocus(bool focused) { if (!focused) Release(); }
+        void OnApplicationPause(bool paused) { if (paused) Release(); }
+
+        void Release()
+        {
+            _pointer = int.MinValue;
+            Held = false; Aim = Vector2.zero;
+            if (visual != null) visual.gameObject.SetActive(false);
+        }
+
+        void PlaceOnCanvas(RectTransform target, Vector2 screenPos)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                (RectTransform)transform, screenPos, null, out Vector2 local);
+            target.anchoredPosition = local;
+        }
     }
 
     static void MakeStick(string name, Vector2 corner, Vector2 pos, string controlPath)
     {
         var bg = MakeCircleImage(name, corner, pos, 320, new Color(1f, 1f, 1f, 0.15f));
+        bg.transform.SetParent(_root.transform, false);
         bg.GetComponent<Image>().raycastTarget = false;
 
         var knob = MakeCircleImage("Knob", Vector2.one * 0.5f, Vector2.zero, 140, new Color(1f, 1f, 1f, 0.45f));
         knob.transform.SetParent(bg.transform, false);
-        // Extend the knob's touch area to cover the whole stick background so
-        // grabs don't have to start dead-centre.
         knob.GetComponent<Image>().raycastPadding = new Vector4(-90, -90, -90, -90);
 
         var stick = knob.AddComponent<OnScreenStick>();
@@ -112,11 +248,15 @@ public static class MobileTouchControls
         stick.movementRange = 90;
     }
 
-    static void MakeButton(string label, Vector2 corner, Vector2 pos, float size, string controlPath)
+    static GameObject MakeButton(string label, Vector2 corner, Vector2 pos, float size, string controlPath)
     {
         var go = MakeCircleImage(label, corner, pos, size, new Color(1f, 0.75f, 0.2f, 0.35f));
-        var btn = go.AddComponent<OnScreenButton>();
-        btn.controlPath = controlPath;
+        go.transform.SetParent(_root.transform, false);
+        if (controlPath != null)
+        {
+            var btn = go.AddComponent<OnScreenButton>();
+            btn.controlPath = controlPath;
+        }
 
         var textGo = new GameObject("Label", typeof(RectTransform));
         textGo.transform.SetParent(go.transform, false);
@@ -131,12 +271,30 @@ public static class MobileTouchControls
         text.alignment = TextAnchor.MiddleCenter;
         text.color = new Color(1f, 1f, 1f, 0.9f);
         text.raycastTarget = false;
+        return go;
+    }
+
+    static Image MakeReloadFill(GameObject reloadButton)
+    {
+        var go = new GameObject("Fill", typeof(RectTransform));
+        go.transform.SetParent(reloadButton.transform, false);
+        go.transform.SetAsFirstSibling(); // under the label
+        var rt = (RectTransform)go.transform;
+        rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+        var img = go.AddComponent<Image>();
+        img.sprite = _circle;
+        img.color = new Color(1f, 1f, 1f, 0.55f);
+        img.raycastTarget = false;
+        img.type = Image.Type.Filled;
+        img.fillMethod = Image.FillMethod.Radial360;
+        img.fillAmount = 0f;
+        return img;
     }
 
     static GameObject MakeCircleImage(string name, Vector2 corner, Vector2 pos, float size, Color color)
     {
         var go = new GameObject(name, typeof(RectTransform));
-        go.transform.SetParent(_root.transform, false);
         var rt = (RectTransform)go.transform;
         rt.anchorMin = corner; rt.anchorMax = corner;
         rt.pivot = new Vector2(0.5f, 0.5f);
@@ -148,51 +306,9 @@ public static class MobileTouchControls
         return go;
     }
 
-    /// <summary>TEMP diagnostics: posts gamepad/stick state to the phone-bridge
-    /// every 2s while the overlay is up, so input plumbing can be debugged from
-    /// the dev box without screen access. Remove once touch input is stable.</summary>
-    class TouchDebugReporter : MonoBehaviour
-    {
-        float _next;
-
-        void Update()
-        {
-            if (!Active || Time.unscaledTime < _next) return;
-            _next = Time.unscaledTime + 2f;
-
-            var sb = new System.Text.StringBuilder();
-            sb.Append("pads=").Append(Gamepad.all.Count)
-              .Append(" cur=").Append(Gamepad.current != null ? Gamepad.current.deviceId : -1);
-            foreach (var g in Gamepad.all)
-                sb.Append(" [").Append(g.deviceId)
-                  .Append(" L=").Append(g.leftStick.ReadValue().ToString("F2"))
-                  .Append(" R=").Append(g.rightStick.ReadValue().ToString("F2"))
-                  .Append(" rt=").Append(g.rightTrigger.ReadValue().ToString("F2")).Append(']');
-            var player = FindFirstObjectByType<TrainPlayerController>();
-            if (player != null)
-                sb.Append(" fwd=").Append(player.transform.forward.ToString("F2"));
-            StartCoroutine(Post(sb.ToString()));
-        }
-
-        System.Collections.IEnumerator Post(string text)
-        {
-            var payload = JsonUtility.ToJson(new Ev { text = text });
-            using var req = new UnityEngine.Networking.UnityWebRequest(
-                "https://fedora.tail747dab.ts.net:9447/event", "POST");
-            req.uploadHandler = new UnityEngine.Networking.UploadHandlerRaw(
-                System.Text.Encoding.UTF8.GetBytes(payload));
-            req.downloadHandler = new UnityEngine.Networking.DownloadHandlerBuffer();
-            req.SetRequestHeader("Content-Type", "application/json");
-            yield return req.SendWebRequest();
-        }
-
-        [System.Serializable]
-        class Ev { public string device = "rolling-punches"; public string type = "touchdebug"; public string text = ""; }
-    }
-
     /// <summary>Soft-edged white circle generated in code so the overlay
-    /// needs no art assets.</summary>
-    static Sprite MakeCircleSprite(int res)
+    /// needs no art assets. Public: the FPS crosshair reuses it.</summary>
+    public static Sprite MakeCircleSprite(int res)
     {
         var tex = new Texture2D(res, res, TextureFormat.RGBA32, false);
         float r = res / 2f - 1f;
@@ -202,7 +318,7 @@ public static class MobileTouchControls
         for (int x = 0; x < res; x++)
         {
             float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), c);
-            byte a = (byte)(255 * Mathf.Clamp01(r - d)); // 1px AA edge
+            byte a = (byte)(255 * Mathf.Clamp01(r - d));
             pixels[y * res + x] = new Color32(255, 255, 255, a);
         }
         tex.SetPixels32(pixels);

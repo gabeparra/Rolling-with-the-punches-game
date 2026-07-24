@@ -49,7 +49,7 @@ public static class TouchControlsBridge
         AIFG_SetCombat       (IsCombatScene  (to.name) ? 1 : 0);
     }
 
-    private static bool IsGameplayScene(string name)
+    public static bool IsGameplayScene(string name)
     {
         // Whitelist scenes that show the touch overlay. Menu Screen /
         // SampleScene stay click-driven.
@@ -59,7 +59,7 @@ public static class TouchControlsBridge
             || name == "HubScene";
     }
 
-    private static bool IsCombatScene(string name)
+    public static bool IsCombatScene(string name)
     {
         // Combat scenes only — where bare-canvas taps would drift the aim.
         // HubScene is intentionally NOT here so taps reach Unity UI buttons.
